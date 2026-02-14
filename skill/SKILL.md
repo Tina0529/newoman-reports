@@ -1,7 +1,7 @@
 ---
 name: chatbot-message-analyzer
 description: |
-  GBaseSupport消息履历分析报告生成工具。分析客服chatbot的对话记录CSV文件，
+  GBaseSupport消息履历分析报告生成工具。支持CSV文件或GBase API两种数据源，
   生成包含KPI概览、时间维度分析、问题分类、用户行为洞察、错误模式分析、
   分析总结、改善建议的可视化HTML报告（日/中双语切换，ECharts图表）。
   当用户需要：(1)分析chatbot消息履历、(2)生成对话分析报告、
@@ -12,7 +12,9 @@ description: |
 
 # GBaseSupport Message Analyzer
 
-分析chatbot的消息履历CSV，生成交互式HTML分析报告。
+支持两种数据源分析chatbot消息履历，生成交互式HTML分析报告：
+- **CSV模式**：从本地CSV文件读取数据
+- **API模式**：通过GBase API直接获取消息履历（需提供dataset_id和bearer token）
 
 ## 资源文件位置
 
@@ -87,38 +89,53 @@ description: |
 
 ### Phase 1: 上下文收集
 
-在开始分析前，向用户确认以下信息：
+在开始分析前，确认数据源模式和基本信息：
 
-**必须确认：**
+**模式A — CSV模式（必须确认）：**
 1. **CSV文件路径** — 在当前工作目录中查找 `チャット履歴_*.csv` 文件
 2. **客户名称**（用于报告标题，如 NEWoMan高輪）
 3. **报告周期**（如 2025年12月）
 
-**可选确认：**
-4. **行业类型**（默认：零售/商業施設）
-5. **特别关注点**（如有）
+**模式B — API模式（必须确认）：**
+1. **Dataset ID** — GBase 知识库ID（UUID格式）
+2. **API Token** — GBase Bearer Token（运行时通过 `--token` 参数传入）
+3. **时间范围** — 开始日期和结束日期（YYYY-MM-DD格式）
+4. **客户名称**（用于报告标题）
+5. **报告周期**（如 2025年12月）
 
-**自动推断**：如果当前目录下存在CSV文件且文件名/路径包含客户名称和期间信息，可自动推断，无需每次都问用户。
+**可选确认：**
+- **行业类型**（默认：零售/商業施設）
+- **特别关注点**（如有）
+- **API Base URL**（默认：https://api.gbase.ai）
+
+**自动推断**：CSV模式下，如果当前目录存在CSV文件且文件名包含客户名称和期间信息，可自动推断。
 
 ### Phase 2: 数据解析
 
+#### CSV模式
 1. 读取CSV，自动尝试编码（UTF-8 → UTF-8-BOM → Shift-JIS → CP932）
 2. 识别字段映射（参考下方字段映射表）
 3. 数据清洗与预处理
 
-```python
-import pandas as pd
+#### API模式
+1. 通过 `GET /robots` 列出所有机器人，从 dataset_id 反查 ai_id
+2. 调用 `POST /questions/{ai_id}/session.messages.history.list` 分页获取消息（每页1000条）
+3. 将API响应字段映射为CSV格式的DataFrame
 
-# 编码自动检测
-for encoding in ['utf-8', 'utf-8-sig', 'shift-jis', 'cp932']:
-    try:
-        df = pd.read_csv(filepath, encoding=encoding)
-        break
-    except:
-        continue
-```
+**API → CSV 字段映射：**
 
-**字段映射参考：**
+| API响应字段 | 映射后列名 | 说明 |
+|------------|-----------|------|
+| `created_at` | 質問時間 | ISO 8601 datetime |
+| `question` | 質問 | 用户提问 |
+| `answer` | 回答 | Bot回答（可为null） |
+| `feedback_type` / `rating` | ユーザーフィードバック | good→良い, bad→悪い, null→- |
+| `feedback_content` | 評価理由 | 评价文字内容 |
+| `session_id` | チャット ID | 会话标识 |
+| `user_id` | ユーザー | 用户标识 |
+| `transfer_to_human` | 担当者に接続済み | true→はい, false→いいえ |
+
+**CSV模式字段映射参考：**
 
 | 标准字段 | 可能的列名 |
 |---------|-----------|
@@ -265,7 +282,7 @@ for encoding in ['utf-8', 'utf-8-sig', 'shift-jis', 'cp932']:
 
 ### Phase 5: 输出
 
-**输出到CSV文件所在的同一目录**（而非固定路径），确保报告和数据在一起。
+**CSV模式**：输出到CSV文件所在的同一目录。**API模式**：输出到当前工作目录（或`--output`指定目录）。
 
 **必须同时生成两个文件**（当未回答数>10时）：
 
@@ -319,9 +336,9 @@ if unanswered_count > 10:
 
 ## 使用方法（Claude Code）
 
-在Claude Code中使用此skill：
+### CSV模式
 
-```
+```bash
 # 方法1: 直接在包含CSV的目录下运行
 cd /path/to/month-data/
 # 然后告诉Claude: "分析这个月的聊天履历"
@@ -334,4 +351,42 @@ python3 ~/.claude/skills/chatbot-message-analyzer/scripts/analyze.py \
   --csv "チャット履歴_2025.12.01_2025.12.31.csv" \
   --client "NEWoMan高輪" \
   --period "2025年12月"
+```
+
+### API模式
+
+```bash
+# 方法1: 告诉Claude
+# "用 chatbot-message-analyzer 分析 dataset_id=xxx 的 2025年12月消息履历"
+# Claude会提示你输入token
+
+# 方法2: 运行脚本
+python3 ~/.claude/skills/chatbot-message-analyzer/scripts/analyze.py \
+  --dataset-id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" \
+  --token "your-gbase-bearer-token" \
+  --start-date "2025-12-01" \
+  --end-date "2025-12-31" \
+  --client "NEWoMan高輪" \
+  --period "2025年12月"
+
+# 可选: 指定输出目录和API地址
+python3 ~/.claude/skills/chatbot-message-analyzer/scripts/analyze.py \
+  --dataset-id "xxx" --token "xxx" \
+  --start-date "2025-12-01" --end-date "2025-12-31" \
+  --client "NEWoMan高輪" --period "2025年12月" \
+  --output "/path/to/output" \
+  --api-url "https://custom-api.gbase.ai"
+```
+
+### API认证说明
+
+API模式需要GBase的Bearer Token，通过 `--token` 参数传入。
+获取方式：登录 GBase 后台 → 设置 → API Keys → 复制 Token。
+
+**注意**：Token 不会被保存到任何文件，仅在运行时使用。
+
+### 依赖
+
+```bash
+pip install pandas requests
 ```

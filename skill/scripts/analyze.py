@@ -3,8 +3,12 @@
 GBaseSupport Message Analyzer
 チャットボットメッセージ履歴分析ツール
 
-Usage:
+Usage (CSV mode):
     python3 analyze.py --csv <path> --client <name> --period <period> [--output <dir>]
+
+Usage (API mode):
+    python3 analyze.py --dataset-id <id> --token <token> --start-date 2025-12-01 --end-date 2025-12-31 \
+        --client <name> --period <period> [--output <dir>]
 """
 
 import pandas as pd
@@ -12,10 +16,16 @@ import json
 import re
 import argparse
 import sys
+import time
 from datetime import datetime
 from collections import Counter
 from pathlib import Path
 import html as html_module
+
+try:
+    import requests
+except ImportError:
+    requests = None
 
 # ========================================
 # Skill root directory (for loading templates)
@@ -194,32 +204,230 @@ def escape_html(text):
     return html_module.escape(str(text))
 
 
+# ========================================
+# GBase API データ取得
+# ========================================
+
+def _api_headers(token):
+    """API リクエスト用ヘッダーを生成"""
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+
+
+def resolve_ai_id(base_url, token, dataset_id):
+    """dataset_id から ai_id を逆引きする
+
+    GET /robots でロボット一覧を取得し、default_dataset_id が一致するものを探す。
+    """
+    if requests is None:
+        print("❌ requests ライブラリが必要です: pip install requests")
+        sys.exit(1)
+
+    headers = _api_headers(token)
+    page = 1
+    size = 200
+
+    while True:
+        resp = requests.get(
+            f"{base_url}/robots",
+            headers=headers,
+            params={"page": page, "size": size},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        items = data.get("items", [])
+        if not items:
+            break
+
+        for robot in items:
+            # ロボットの詳細情報を取得して dataset_id を確認
+            robot_id = robot.get("id")
+            if not robot_id:
+                continue
+
+            detail_resp = requests.get(
+                f"{base_url}/robots/{robot_id}",
+                headers=headers,
+                timeout=30,
+            )
+            if detail_resp.status_code != 200:
+                continue
+
+            detail = detail_resp.json()
+            # datasets フィールドをチェック
+            datasets = detail.get("datasets", [])
+            for ds in datasets:
+                ds_id = ds.get("id", "") if isinstance(ds, dict) else str(ds)
+                if str(ds_id) == str(dataset_id):
+                    print(f"✅ dataset_id → ai_id 解決: {robot_id} ({robot.get('name', '')})")
+                    return str(robot_id)
+
+            # default_dataset_id もチェック
+            if str(detail.get("default_dataset_id", "")) == str(dataset_id):
+                print(f"✅ dataset_id → ai_id 解決: {robot_id} ({robot.get('name', '')})")
+                return str(robot_id)
+
+        total_pages = data.get("pages", 1)
+        if page >= total_pages:
+            break
+        page += 1
+
+    print(f"❌ dataset_id '{dataset_id}' に対応するAIが見つかりません")
+    sys.exit(1)
+
+
+def fetch_from_api(base_url, token, dataset_id, start_date, end_date):
+    """GBase API から消息履歴を取得し、CSV 互換の DataFrame を返す
+
+    1. dataset_id → ai_id の解決
+    2. /questions/{ai_id}/session.messages.history.list で全メッセージを分页取得
+    3. API レスポンスを CSV フォーマットの DataFrame に変換
+    """
+    if requests is None:
+        print("❌ requests ライブラリが必要です: pip install requests")
+        sys.exit(1)
+
+    # Step 1: ai_id を解決
+    ai_id = resolve_ai_id(base_url, token, dataset_id)
+
+    # Step 2: 時間範囲をISO 8601形式に変換
+    start_time = f"{start_date}T00:00:00Z"
+    end_time = f"{end_date}T23:59:59Z"
+
+    headers = _api_headers(token)
+    all_messages = []
+    page = 1
+    size = 1000  # API最大値
+
+    print(f"📡 API からメッセージ履歴を取得中...")
+    print(f"   AI ID: {ai_id}")
+    print(f"   期間: {start_date} ~ {end_date}")
+
+    while True:
+        resp = requests.post(
+            f"{base_url}/questions/{ai_id}/session.messages.history.list",
+            headers=headers,
+            params={
+                "start_time": start_time,
+                "end_time": end_time,
+                "page": page,
+                "size": size,
+                "include_test": "false",
+            },
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        items = data.get("items", [])
+        all_messages.extend(items)
+
+        total = data.get("total", 0)
+        total_pages = data.get("pages", 1)
+        print(f"   ページ {page}/{total_pages} 取得完了（累計: {len(all_messages)}/{total}件）")
+
+        if page >= total_pages:
+            break
+        page += 1
+        time.sleep(0.3)  # レート制限対策
+
+    if not all_messages:
+        print("❌ 指定期間のメッセージが見つかりません")
+        sys.exit(1)
+
+    print(f"✅ 合計 {len(all_messages)} 件のメッセージを取得")
+
+    # Step 3: API レスポンス → CSV互換 DataFrame に変換
+    rows = []
+    for msg in all_messages:
+        # feedback_type/rating → ユーザーフィードバック
+        feedback_type = msg.get("feedback_type")
+        rating = msg.get("rating", 0)
+        if feedback_type == "good" or (isinstance(rating, int) and rating > 0):
+            feedback = "良い"
+        elif feedback_type == "bad" or (isinstance(rating, int) and rating < 0):
+            feedback = "悪い"
+        else:
+            feedback = "-"
+
+        # transfer_to_human → 担当者に接続済み
+        transfer = "はい" if msg.get("transfer_to_human") else "いいえ"
+
+        rows.append({
+            "質問時間": msg.get("created_at", ""),
+            "質問": msg.get("question", ""),
+            "回答": msg.get("answer", ""),
+            "ユーザーフィードバック": feedback,
+            "評価理由": msg.get("feedback_content", ""),
+            "チャット ID": msg.get("session_id", ""),
+            "ユーザー": msg.get("user_id", ""),
+            "担当者に接続済み": transfer,
+        })
+
+    df = pd.DataFrame(rows)
+    return df
+
+
 def main():
-    parser = argparse.ArgumentParser(description='GBaseSupport Message Analyzer')
-    parser.add_argument('--csv', required=True, help='Path to chat history CSV file')
+    parser = argparse.ArgumentParser(
+        description='GBaseSupport Message Analyzer',
+        epilog='Either --csv (CSV mode) or --dataset-id + --token (API mode) is required.',
+    )
+    # Common arguments
     parser.add_argument('--client', required=True, help='Client name (e.g. NEWoMan高輪)')
     parser.add_argument('--period', required=True, help='Report period (e.g. 2025年12月)')
-    parser.add_argument('--output', default=None, help='Output directory (default: same as CSV)')
+    parser.add_argument('--output', default=None, help='Output directory (default: same as CSV or current dir)')
+
+    # CSV mode
+    parser.add_argument('--csv', default=None, help='Path to chat history CSV file (CSV mode)')
+
+    # API mode
+    parser.add_argument('--dataset-id', default=None, help='GBase dataset ID (API mode)')
+    parser.add_argument('--token', default=None, help='GBase API bearer token (API mode)')
+    parser.add_argument('--api-url', default='https://api.gbase.ai', help='GBase API base URL (default: https://api.gbase.ai)')
+    parser.add_argument('--start-date', default=None, help='Start date YYYY-MM-DD (API mode)')
+    parser.add_argument('--end-date', default=None, help='End date YYYY-MM-DD (API mode)')
+
     args = parser.parse_args()
 
-    csv_path = Path(args.csv).resolve()
     client_name = args.client
     period = args.period
-    output_dir = Path(args.output).resolve() if args.output else csv_path.parent
 
-    print(f"🔍 分析を開始します: {csv_path}")
+    # Determine data source mode
+    if args.csv:
+        # === CSV Mode ===
+        csv_path = Path(args.csv).resolve()
+        output_dir = Path(args.output).resolve() if args.output else csv_path.parent
 
-    # CSV読み込み
-    for encoding in ['utf-8', 'utf-8-sig', 'shift-jis', 'cp932']:
-        try:
-            df = pd.read_csv(csv_path, encoding=encoding)
-            print(f"✅ CSV読み込み成功（エンコーディング: {encoding}）")
-            break
-        except Exception:
-            continue
+        print(f"🔍 分析を開始します（CSVモード）: {csv_path}")
+
+        for encoding in ['utf-8', 'utf-8-sig', 'shift-jis', 'cp932']:
+            try:
+                df = pd.read_csv(csv_path, encoding=encoding)
+                print(f"✅ CSV読み込み成功（エンコーディング: {encoding}）")
+                break
+            except Exception:
+                continue
+        else:
+            print("❌ CSV読み込みに失敗しました")
+            sys.exit(1)
+
+    elif args.dataset_id and args.token:
+        # === API Mode ===
+        if not args.start_date or not args.end_date:
+            parser.error('API mode requires --start-date and --end-date')
+
+        output_dir = Path(args.output).resolve() if args.output else Path.cwd()
+
+        print(f"🔍 分析を開始します（APIモード）")
+        df = fetch_from_api(args.api_url, args.token, args.dataset_id, args.start_date, args.end_date)
+
     else:
-        print("❌ CSV読み込みに失敗しました")
-        sys.exit(1)
+        parser.error('Either --csv or (--dataset-id + --token + --start-date + --end-date) is required')
 
     print(f"📊 データ件数: {len(df)}件")
 
