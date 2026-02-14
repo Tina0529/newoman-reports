@@ -219,13 +219,36 @@ def _api_headers(token):
 def resolve_ai_id(base_url, token, dataset_id):
     """dataset_id から ai_id を逆引きする
 
-    GET /robots でロボット一覧を取得し、default_dataset_id が一致するものを探す。
+    方法1: GET /datasets/{dataset_id} → robots フィールドから直接取得（高速）
+    方法2: GET /robots 一覧から dataset_id を探す（フォールバック）
     """
     if requests is None:
         print("❌ requests ライブラリが必要です: pip install requests")
         sys.exit(1)
 
     headers = _api_headers(token)
+
+    # --- 方法1: GET /datasets/{dataset_id} から robots を直接取得 ---
+    try:
+        resp = requests.get(
+            f"{base_url}/datasets/{dataset_id}",
+            headers=headers,
+            timeout=30,
+        )
+        if resp.status_code == 200:
+            ds_data = resp.json()
+            robots = ds_data.get("robots", [])
+            if robots:
+                robot = robots[0]
+                robot_id = robot.get("id", "") if isinstance(robot, dict) else str(robot)
+                robot_name = robot.get("name", "") if isinstance(robot, dict) else ""
+                if robot_id:
+                    print(f"✅ dataset_id → ai_id 解決: {robot_id} ({robot_name})")
+                    return str(robot_id)
+    except Exception:
+        pass  # フォールバックへ
+
+    # --- 方法2: GET /robots 一覧から探す ---
     page = 1
     size = 200
 
@@ -244,30 +267,18 @@ def resolve_ai_id(base_url, token, dataset_id):
             break
 
         for robot in items:
-            # ロボットの詳細情報を取得して dataset_id を確認
             robot_id = robot.get("id")
             if not robot_id:
                 continue
 
-            detail_resp = requests.get(
-                f"{base_url}/robots/{robot_id}",
-                headers=headers,
-                timeout=30,
-            )
-            if detail_resp.status_code != 200:
-                continue
-
-            detail = detail_resp.json()
-            # datasets フィールドをチェック
-            datasets = detail.get("datasets", [])
+            datasets = robot.get("datasets", [])
             for ds in datasets:
                 ds_id = ds.get("id", "") if isinstance(ds, dict) else str(ds)
                 if str(ds_id) == str(dataset_id):
                     print(f"✅ dataset_id → ai_id 解決: {robot_id} ({robot.get('name', '')})")
                     return str(robot_id)
 
-            # default_dataset_id もチェック
-            if str(detail.get("default_dataset_id", "")) == str(dataset_id):
+            if str(robot.get("default_dataset_id", "")) == str(dataset_id):
                 print(f"✅ dataset_id → ai_id 解決: {robot_id} ({robot.get('name', '')})")
                 return str(robot_id)
 
@@ -280,10 +291,10 @@ def resolve_ai_id(base_url, token, dataset_id):
     sys.exit(1)
 
 
-def fetch_from_api(base_url, token, dataset_id, start_date, end_date):
+def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None):
     """GBase API から消息履歴を取得し、CSV 互換の DataFrame を返す
 
-    1. dataset_id → ai_id の解決
+    1. dataset_id → ai_id の解決（ai_id が直接指定されている場合はスキップ）
     2. /questions/{ai_id}/session.messages.history.list で全メッセージを分页取得
     3. API レスポンスを CSV フォーマットの DataFrame に変換
     """
@@ -292,7 +303,13 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date):
         sys.exit(1)
 
     # Step 1: ai_id を解決
-    ai_id = resolve_ai_id(base_url, token, dataset_id)
+    if ai_id:
+        print(f"✅ ai_id 直接指定: {ai_id}")
+    elif dataset_id:
+        ai_id = resolve_ai_id(base_url, token, dataset_id)
+    else:
+        print("❌ --dataset-id または --ai-id が必要です")
+        sys.exit(1)
 
     # Step 2: 時間範囲をISO 8601形式に変換
     start_time = f"{start_date}T00:00:00Z"
@@ -387,6 +404,7 @@ def main():
 
     # API mode
     parser.add_argument('--dataset-id', default=None, help='GBase dataset ID (API mode)')
+    parser.add_argument('--ai-id', default=None, help='GBase AI/robot ID - skip dataset_id lookup (API mode)')
     parser.add_argument('--token', default=None, help='GBase API bearer token (API mode)')
     parser.add_argument('--api-url', default='https://api.gbase.ai', help='GBase API base URL (default: https://api.gbase.ai)')
     parser.add_argument('--start-date', default=None, help='Start date YYYY-MM-DD (API mode)')
@@ -416,7 +434,7 @@ def main():
             print("❌ CSV読み込みに失敗しました")
             sys.exit(1)
 
-    elif args.dataset_id and args.token:
+    elif (args.dataset_id or args.ai_id) and args.token:
         # === API Mode ===
         if not args.start_date or not args.end_date:
             parser.error('API mode requires --start-date and --end-date')
@@ -424,10 +442,10 @@ def main():
         output_dir = Path(args.output).resolve() if args.output else Path.cwd()
 
         print(f"🔍 分析を開始します（APIモード）")
-        df = fetch_from_api(args.api_url, args.token, args.dataset_id, args.start_date, args.end_date)
+        df = fetch_from_api(args.api_url, args.token, args.dataset_id, args.start_date, args.end_date, ai_id=args.ai_id)
 
     else:
-        parser.error('Either --csv or (--dataset-id + --token + --start-date + --end-date) is required')
+        parser.error('Either --csv or (--dataset-id/--ai-id + --token + --start-date + --end-date) is required')
 
     print(f"📊 データ件数: {len(df)}件")
 
@@ -573,7 +591,13 @@ def main():
 
     main_html = main_template
     main_html = main_html.replace("NEWoMan 高輪", client_name)
+    main_html = main_html.replace("NEWoMan高輪 2025年12月", f"{client_name} {period}")
     main_html = main_html.replace("2025/01/14", generated_date)
+
+    # 分析期間を動的に設定（データの実際の日付範囲）
+    date_from = df['質問時間'].min().strftime('%Y/%m/%d')
+    date_to = df['質問時間'].max().strftime('%Y/%m/%d')
+    main_html = main_html.replace("2025/12/01 - 2025/12/31", f"{date_from} - {date_to}")
 
     unanswered_filename = f"{client_name}_{period}_未回答一覧.html"
     main_html = main_html.replace("__UNANSWERED_LINK__", unanswered_filename)
@@ -639,6 +663,156 @@ def main():
     main_html = re.sub(r'<div class="error-percent">19%</div>', f'<div class="error-percent">{error_stats["search_fail"]/uc*100:.0f}%</div>' if uc > 0 else '<div class="error-percent">0%</div>', main_html)
     main_html = re.sub(r'<div class="error-value">1</div>', f'<div class="error-value">{error_stats["reconfirm"]}</div>', main_html)
     main_html = re.sub(r'<div class="error-percent">1%</div>', f'<div class="error-percent">{error_stats["reconfirm"]/uc*100:.0f}%</div>' if uc > 0 else '<div class="error-percent">0%</div>', main_html)
+
+    # ========================================
+    # 分析サマリー（動的生成）
+    # ========================================
+
+    # 利用ピーク時間帯
+    peak_hour_idx = hour_data.index(max(hour_data))
+    hour_range_labels = ["0〜6時", "6〜9時", "9〜12時", "12〜15時", "15〜18時", "18〜21時", "21〜24時"]
+    peak_hour_label = hour_range_labels[peak_hour_idx]
+    peak_hour_pct = max(hour_data) / total_messages * 100 if total_messages > 0 else 0
+
+    # 最多曜日
+    weekday_names_full = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
+    peak_weekday = weekday_names_full[weekday_data.index(max(weekday_data))]
+
+    # 外国語比率
+    foreign_count = sum(int(language_counts.get(l, 0)) for l in ["英語", "中国語", "韓国語"])
+    foreign_pct = foreign_count / total_messages * 100 if total_messages > 0 else 0
+
+    # 最多カテゴリ
+    top_cat = category_data[0] if category_data else None
+    top_cat_name = top_cat["name"] if top_cat else ""
+    top_cat_pct = top_cat["percent"] if top_cat else 0
+    sorted_cats = sorted(category_data, key=lambda x: x["count"], reverse=True)
+    top_cat_name = sorted_cats[0]["name"] if sorted_cats else ""
+    top_cat_pct = sorted_cats[0]["percent"] if sorted_cats else 0
+
+    # 未回答の主要エラータイプ
+    total_errors = error_stats["info_nashi"] + error_stats["search_fail"] + error_stats["reconfirm"]
+    main_error_pct = error_stats["info_nashi"] / total_errors * 100 if total_errors > 0 else 0
+
+    summary_items_ja = [
+        f"<strong>利用状況</strong>：月間<span class='highlight-text'>{total_messages}件</span>のメッセージを処理し、正常回答率は{kpi['normal_answer_rate']:.1f}%",
+        f"<strong>質問傾向</strong>：最多カテゴリは<span class='highlight-text'>「{top_cat_name}」（{top_cat_pct:.0f}%）</span>",
+        f"<strong>利用ピーク</strong>：<span class='highlight-text'>{peak_hour_label}（{peak_hour_pct:.0f}%）</span>に集中、{peak_weekday}が最多",
+        f"<strong>インバウンド</strong>：<span class='highlight-text'>約{foreign_pct:.0f}%が外国語</span>での問い合わせ",
+        f"<strong>改善ポイント</strong>：未回答の<span class='highlight-text'>{main_error_pct:.0f}%は情報なしエラー</span>でFAQ拡充で改善可能",
+    ]
+    summary_items_zh = [
+        f"<strong>使用情况</strong>：月度处理<span class='highlight-text'>{total_messages}条</span>消息，正常回答率{kpi['normal_answer_rate']:.1f}%",
+        f"<strong>问题趋势</strong>：最多类别为<span class='highlight-text'>「{top_cat_name}」（{top_cat_pct:.0f}%）</span>",
+        f"<strong>使用高峰</strong>：集中在<span class='highlight-text'>{peak_hour_label}（{peak_hour_pct:.0f}%）</span>，{peak_weekday}最多",
+        f"<strong>入境游</strong>：<span class='highlight-text'>约{foreign_pct:.0f}%为外语</span>咨询",
+        f"<strong>改善要点</strong>：<span class='highlight-text'>{main_error_pct:.0f}%为信息缺失错误</span>，可通过完善FAQ改善",
+    ]
+
+    summary_html = "\n".join(
+        f'                        <li data-ja="{ja}" data-zh="{zh}">{ja}</li>'
+        for ja, zh in zip(summary_items_ja, summary_items_zh)
+    )
+    # 分析サマリーのul内容を置換
+    main_html = re.sub(
+        r'(<div class="summary-content">\s*<ul>).*?(</ul>)',
+        rf'\1\n{summary_html}\n                    \2',
+        main_html,
+        flags=re.DOTALL,
+    )
+
+    # ========================================
+    # 改善提案（動的生成）
+    # ========================================
+
+    # 未回答質問のキーワード頻度分析で提案を生成
+    suggestion_items = []
+
+    # 提案1: 情報なしエラーが多い場合
+    if error_stats["info_nashi"] > 0:
+        # 未回答質問から頻出キーワードを抽出
+        unanswered_questions = unanswered_df['質問'].tolist()
+        all_words = []
+        for q in unanswered_questions:
+            q_str = str(q)
+            # 簡易キーワード抽出（カタカナ語、漢字語）
+            words = re.findall(r'[\u30A0-\u30FF]{2,}|[\u4E00-\u9FFF]{2,}', q_str)
+            all_words.extend(words)
+        word_freq = Counter(all_words).most_common(5)
+        top_words = '」「'.join([w for w, c in word_freq[:3]]) if word_freq else '不明'
+
+        suggestion_items.append({
+            "priority": "high", "badge": "badge-red",
+            "title_ja": "FAQ情報の拡充", "title_zh": "FAQ信息补充",
+            "desc_ja": f"「{top_words}」など未回答となっている質問のFAQ追加を推奨します。（情報なし: {error_stats['info_nashi']}件）",
+            "desc_zh": f"建议补充「{top_words}」等未回答问题的FAQ。（信息缺失: {error_stats['info_nashi']}件）",
+        })
+
+    # 提案2: 検索失敗が多い場合
+    if error_stats["search_fail"] > 5:
+        suggestion_items.append({
+            "priority": "high", "badge": "badge-red",
+            "title_ja": "ナレッジベースの検索精度向上", "title_zh": "知识库搜索精度提升",
+            "desc_ja": f"検索失敗が{error_stats['search_fail']}件あり、ナレッジベースの構造や表記ゆれへの対応改善を推奨します。",
+            "desc_zh": f"搜索失败{error_stats['search_fail']}件，建议改善知识库结构和同义词处理。",
+        })
+
+    # 提案3: フィードバック率が低い場合
+    if kpi["feedback_rate"] < 5:
+        suggestion_items.append({
+            "priority": "medium", "badge": "badge-yellow",
+            "title_ja": "ユーザーフィードバックの促進", "title_zh": "促进用户反馈",
+            "desc_ja": f"フィードバック率が{kpi['feedback_rate']:.1f}%と低いため、評価ボタンの視認性向上を推奨します。",
+            "desc_zh": f"反馈率仅{kpi['feedback_rate']:.1f}%，建议提高评价按钮的可见性。",
+        })
+
+    # 提案4: 外国語が多い場合
+    if foreign_pct > 5:
+        top_foreign = max(["英語", "中国語", "韓国語"], key=lambda l: int(language_counts.get(l, 0)))
+        suggestion_items.append({
+            "priority": "medium", "badge": "badge-yellow",
+            "title_ja": f"多言語対応の強化（{top_foreign}）", "title_zh": f"加强多语言支持（{top_foreign}）",
+            "desc_ja": f"外国語での問い合わせが約{foreign_pct:.0f}%あり、{top_foreign}のFAQ充実を推奨します。",
+            "desc_zh": f"外语咨询约{foreign_pct:.0f}%，建议充实{top_foreign}FAQ。",
+        })
+
+    # 提案5: 好評率が低い場合
+    if kpi["good_rate"] < 60:
+        suggestion_items.append({
+            "priority": "high", "badge": "badge-red",
+            "title_ja": "回答品質の改善", "title_zh": "回答质量改善",
+            "desc_ja": f"好評率が{kpi['good_rate']:.1f}%と低いため、回答の詳細度や正確性の見直しを推奨します。",
+            "desc_zh": f"好评率{kpi['good_rate']:.1f}%偏低，建议改善回答的详细度和准确性。",
+        })
+
+    # フォールバック: 提案が少ない場合
+    if len(suggestion_items) < 2:
+        suggestion_items.append({
+            "priority": "low", "badge": "badge-green",
+            "title_ja": "定期的なFAQ見直し", "title_zh": "定期FAQ审查",
+            "desc_ja": "月次でのFAQ見直しと更新を継続し、回答品質の維持向上を図りましょう。",
+            "desc_zh": "建议每月审查并更新FAQ，持续提升回答质量。",
+        })
+
+    suggestion_html = ""
+    for item in suggestion_items:
+        priority_class = f"priority-{item['priority']}"
+        suggestion_html += f'''
+                <li class="suggestion-item {priority_class}">
+                    <div class="suggestion-title">
+                        <span class="badge {item['badge']}" data-ja="優先度：{item['priority'].replace('high','高').replace('medium','中').replace('low','低')}" data-zh="优先级：{item['priority'].replace('high','高').replace('medium','中').replace('low','低')}">優先度：{item['priority'].replace('high','高').replace('medium','中').replace('low','低')}</span>
+                        <span data-ja="{item['title_ja']}" data-zh="{item['title_zh']}">{item['title_ja']}</span>
+                    </div>
+                    <div class="suggestion-desc" data-ja="{item['desc_ja']}" data-zh="{item['desc_zh']}">{item['desc_ja']}</div>
+                </li>'''
+
+    # 改善提案のul内容を置換
+    main_html = re.sub(
+        r'(<ul class="suggestion-list">).*?(</ul>)',
+        rf'\1{suggestion_html}\n            \2',
+        main_html,
+        flags=re.DOTALL,
+    )
 
     # ========================================
     # 未回答一覧ページ生成
