@@ -355,6 +355,57 @@ body {
 .admin-status.error { background: var(--danger-light); color: #991B1B; }
 .admin-status.loading { background: var(--primary-light); color: #1E40AF; }
 
+/* Client Management */
+.client-management {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.client-management h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.client-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    background: var(--bg);
+}
+
+.client-item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.client-item-slug {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+.client-delete-btn {
+    color: var(--text-muted) !important;
+    font-size: 14px;
+}
+.client-delete-btn:hover {
+    color: var(--danger) !important;
+    background: var(--danger-light) !important;
+}
+
 /* Modal */
 .modal-overlay {
     position: fixed;

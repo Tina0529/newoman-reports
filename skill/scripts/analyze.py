@@ -54,6 +54,13 @@ FILLER_PHRASES = [
     "ニュウマン高輪の情報をお調べいたします",
 ]
 
+# メッセージツリーの誘導文言（未回答としてカウントしない）
+GUIDE_PHRASES = [
+    "以下の質問を選択してください",
+    "以下から選択してください",
+    "該当する質問を選んでください",
+]
+
 # ========================================
 # 質問分類キーワード（零售/商業施設）
 # ========================================
@@ -116,6 +123,11 @@ def is_unanswered(answer):
     answer_stripped = answer.strip()
     if not answer_stripped:
         return True, "情報なし"
+
+    # メッセージツリーの誘導文言は正常回答として扱う
+    for guide in GUIDE_PHRASES:
+        if guide in answer:
+            return False, None
 
     for keyword in UNANSWERED_KEYWORDS:
         if keyword in answer:

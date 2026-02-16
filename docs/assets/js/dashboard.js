@@ -7,7 +7,15 @@
     let trendChart = null;
     let volumeChart = null;
     let weekdayChart = null;
-    let clientList = []; // [{slug, name}]
+    let clientList = []; // [{slug, name, hidden?}]
+
+    // UTF-8 safe base64 helpers
+    function utf8ToBase64(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+    function base64ToUtf8(b64) {
+        return decodeURIComponent(escape(atob(b64)));
+    }
 
     // Detect client slug from URL or default
     function getClientSlug() {
@@ -36,11 +44,15 @@
         }
     }
 
+    function getVisibleClients() {
+        return clientList.filter(c => !c.hidden);
+    }
+
     function populateClientSelector() {
         const sel = document.getElementById('client-selector');
         sel.innerHTML = '';
         const currentSlug = getClientSlug();
-        clientList.forEach(c => {
+        getVisibleClients().forEach(c => {
             const opt = new Option(c.name, c.slug);
             sel.appendChild(opt);
         });
@@ -50,6 +62,39 @@
             const url = new URL(window.location);
             url.searchParams.set('client', newSlug);
             window.location.href = url.toString();
+        });
+    }
+
+    function renderClientManagement() {
+        const container = document.getElementById('client-management-list');
+        if (!container) return;
+        const isJa = window.i18n && window.i18n.current() === 'ja';
+        const visible = getVisibleClients();
+        if (visible.length === 0) {
+            container.innerHTML = `<p style="color:var(--text-muted);font-size:13px;">${isJa ? 'クライアントがありません' : '没有客户'}</p>`;
+            return;
+        }
+        container.innerHTML = visible.map(c => `
+            <div class="client-item">
+                <div class="client-item-info">
+                    <span class="client-item-name">${c.name}</span>
+                    <span class="client-item-slug">${c.slug}</span>
+                </div>
+                <button class="btn btn-ghost btn-sm client-delete-btn" data-slug="${c.slug}" title="${isJa ? '削除' : '删除'}">✕</button>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.client-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const slug = this.dataset.slug;
+                const client = clientList.find(c => c.slug === slug);
+                const confirmMsg = isJa
+                    ? `「${client.name}」を削除しますか？（データは保持されます）`
+                    : `确定删除「${client.name}」吗？（数据会保留）`;
+                if (confirm(confirmMsg)) {
+                    deleteClient(slug);
+                }
+            });
         });
     }
 
@@ -488,49 +533,113 @@
         setTimeout(poll, 5000); // First check after 5s
     }
 
+    // Read clients.json from GitHub API (returns {data, sha})
+    async function readClientsJsonFromGitHub(githubToken) {
+        let data = [];
+        let sha = null;
+        try {
+            const getResp = await fetch(
+                `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
+                { headers: { 'Authorization': `Bearer ${githubToken}` } }
+            );
+            if (getResp.ok) {
+                const fileData = await getResp.json();
+                sha = fileData.sha;
+                data = JSON.parse(base64ToUtf8(fileData.content));
+            }
+        } catch (e) { /* file doesn't exist yet */ }
+        return { data, sha };
+    }
+
+    // Write clients.json to GitHub API
+    async function writeClientsJsonToGitHub(githubToken, data, sha, message) {
+        const body = {
+            message: message,
+            content: utf8ToBase64(JSON.stringify(data, null, 2)),
+        };
+        if (sha) body.sha = sha;
+
+        await fetch(
+            `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                },
+                body: JSON.stringify(body),
+            }
+        );
+    }
+
     // Update clients.json via GitHub API after workflow success
     async function updateClientsJson(githubToken, clientName, clientSlug) {
         try {
-            // Read existing clients.json
-            let existing = [];
-            let sha = null;
-            try {
-                const getResp = await fetch(
-                    `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
-                    { headers: { 'Authorization': `Bearer ${githubToken}` } }
-                );
-                if (getResp.ok) {
-                    const fileData = await getResp.json();
-                    sha = fileData.sha;
-                    existing = JSON.parse(atob(fileData.content));
-                }
-            } catch (e) { /* file doesn't exist yet */ }
+            const { data: existing, sha } = await readClientsJsonFromGitHub(githubToken);
 
-            // Add new client if not already present
-            if (!existing.find(c => c.slug === clientSlug)) {
+            const found = existing.find(c => c.slug === clientSlug);
+            if (found) {
+                // Re-activate if hidden, update name
+                if (found.hidden || found.name !== clientName) {
+                    found.hidden = false;
+                    found.name = clientName;
+                    await writeClientsJsonToGitHub(githubToken, existing, sha, `Update client: ${clientName}`);
+                }
+            } else {
                 existing.push({ slug: clientSlug, name: clientName });
                 existing.sort((a, b) => a.name.localeCompare(b.name));
-
-                const body = {
-                    message: `Add client: ${clientName}`,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(existing, null, 2)))),
-                };
-                if (sha) body.sha = sha;
-
-                await fetch(
-                    `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${githubToken}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                        },
-                        body: JSON.stringify(body),
-                    }
-                );
+                await writeClientsJsonToGitHub(githubToken, existing, sha, `Add client: ${clientName}`);
             }
         } catch (e) {
             console.error('Failed to update clients.json:', e);
+        }
+    }
+
+    // Logical delete: set hidden=true in clients.json
+    async function deleteClient(slug) {
+        const githubToken = sessionStorage.getItem('admin_github_token');
+        const isJa = window.i18n && window.i18n.current() === 'ja';
+
+        if (!githubToken) {
+            showAdminStatus('error', isJa
+                ? 'GitHub Tokenが必要です。管理パネルにTokenを入力してください。'
+                : '需要GitHub Token，请在管理面板中输入Token。');
+            return;
+        }
+
+        showAdminStatus('loading', isJa ? '削除中...' : '删除中...');
+
+        try {
+            const { data: existing, sha } = await readClientsJsonFromGitHub(githubToken);
+            const client = existing.find(c => c.slug === slug);
+            if (client) {
+                client.hidden = true;
+                await writeClientsJsonToGitHub(githubToken, existing, sha, `Hide client: ${client.name}`);
+
+                // Update local state
+                const local = clientList.find(c => c.slug === slug);
+                if (local) local.hidden = true;
+                populateClientSelector();
+                renderClientManagement();
+
+                showAdminStatus('success', isJa
+                    ? `「${client.name}」を削除しました。`
+                    : `已删除「${client.name}」。`);
+
+                // If we just deleted the current client, switch to first visible
+                if (getClientSlug() === slug) {
+                    const visible = getVisibleClients();
+                    if (visible.length > 0) {
+                        const url = new URL(window.location);
+                        url.searchParams.set('client', visible[0].slug);
+                        setTimeout(() => { window.location.href = url.toString(); }, 1500);
+                    }
+                }
+            }
+        } catch (e) {
+            showAdminStatus('error', isJa
+                ? `削除エラー: ${e.message}`
+                : `删除错误: ${e.message}`);
         }
     }
 
@@ -585,6 +694,9 @@
 
         // Admin update button
         document.getElementById('admin-update').addEventListener('click', triggerWorkflow);
+
+        // Render client management list in admin panel
+        renderClientManagement();
     };
 
     // Auto-init if already authenticated
