@@ -17,6 +17,7 @@ import re
 import argparse
 import sys
 import time
+import shutil
 from datetime import datetime
 from collections import Counter
 from pathlib import Path
@@ -389,6 +390,87 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
     return df
 
 
+def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_counts, feedback_rate):
+    """Dashboard用のKPI統計を計算"""
+    total = kpi["total_messages"]
+    foreign_count = sum(int(language_counts.get(l, 0)) for l in ["英語", "中国語", "韓国語"])
+    foreign_pct = foreign_count / total * 100 if total > 0 else 0
+
+    # 有人対応率
+    if '担当者に接続済み' in df.columns:
+        human_count = len(df[df['担当者に接続済み'] == 'はい'])
+        human_rate = human_count / total * 100 if total > 0 else 0
+    else:
+        human_rate = 0
+
+    unique_users = df['ユーザー'].nunique() if 'ユーザー' in df.columns else 0
+
+    # 曜日別分布 (月~日 = 0~6)
+    weekday_counts = df['曜日'].value_counts().sort_index()
+    weekday_data = [int(weekday_counts.get(i, 0)) for i in range(7)]
+
+    return {
+        "period": period,
+        "year_month": year_month,
+        "total_messages": total,
+        "normal_answer_rate": round(kpi["normal_answer_rate"], 1),
+        "unanswered_rate": round(kpi["unanswered_rate"], 1),
+        "good_rating_rate": round(kpi["good_rate"], 1),
+        "feedback_rate": round(feedback_rate, 1),
+        "daily_average": round(avg_daily, 1),
+        "unique_users": unique_users,
+        "human_transfer_rate": round(human_rate, 1),
+        "foreign_language_pct": round(foreign_pct, 1),
+        "weekday_counts": weekday_data,
+    }
+
+
+def update_dashboard_json(site_dir, client_slug, client_name, month_stats,
+                          report_filename, unanswered_filename=None):
+    """Dashboard JSONを更新し、レポートHTMLをサイトディレクトリにコピー"""
+    client_dir = Path(site_dir) / "clients" / client_slug
+    reports_dir = client_dir / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    json_path = client_dir / "dashboard-data.json"
+
+    # 既存データを読み込み
+    if json_path.exists():
+        with open(json_path, "r", encoding="utf-8") as f:
+            dashboard = json.load(f)
+    else:
+        dashboard = {
+            "client": client_name,
+            "client_slug": client_slug,
+            "updated_at": "",
+            "months": [],
+        }
+
+    # 同じ year_month のデータがあれば置換、なければ追加
+    year_month = month_stats["year_month"]
+    months = [m for m in dashboard["months"] if m["year_month"] != year_month]
+
+    # report_file / unanswered_file パスを追加
+    month_entry = dict(month_stats)
+    month_entry["report_file"] = f"reports/{year_month}.html"
+    if unanswered_filename:
+        month_entry["unanswered_file"] = f"reports/{year_month}_unanswered.html"
+
+    months.append(month_entry)
+    months.sort(key=lambda m: m["year_month"])
+
+    dashboard["months"] = months
+    dashboard["updated_at"] = datetime.now().isoformat()
+    dashboard["client"] = client_name
+    dashboard["client_slug"] = client_slug
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(dashboard, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ dashboard-data.json 更新: {json_path}")
+    return json_path
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='GBaseSupport Message Analyzer',
@@ -409,6 +491,10 @@ def main():
     parser.add_argument('--api-url', default='https://api.gbase.ai', help='GBase API base URL (default: https://api.gbase.ai)')
     parser.add_argument('--start-date', default=None, help='Start date YYYY-MM-DD (API mode)')
     parser.add_argument('--end-date', default=None, help='End date YYYY-MM-DD (API mode)')
+
+    # Site integration mode
+    parser.add_argument('--site-dir', default=None, help='Path to docs/ directory for dashboard site integration')
+    parser.add_argument('--client-slug', default=None, help='URL-safe client identifier (e.g. newoman-takanawa)')
 
     args = parser.parse_args()
 
@@ -452,6 +538,11 @@ def main():
     # 前処理
     df['質問時間'] = pd.to_datetime(df['質問時間'], errors='coerce')
     df = df.dropna(subset=['質問時間'])
+
+    # APIデータはUTC (+00:00) → JST (+09:00) に変換
+    if df['質問時間'].dt.tz is not None:
+        df['質問時間'] = df['質問時間'].dt.tz_convert('Asia/Tokyo').dt.tz_localize(None)
+        print("🕐 タイムゾーン変換: UTC → JST (+9h)")
 
     df['日付'] = df['質問時間'].dt.date
     df['曜日'] = df['質問時間'].dt.dayofweek
@@ -616,6 +707,10 @@ def main():
     main_html = re.sub(r'<div class="stat-value">29\.3</div>', f'<div class="stat-value">{avg_daily:.1f}</div>', main_html)
     main_html = re.sub(r'<div class="stat-value">84</div>', f'<div class="stat-value">{max_count}</div>', main_html)
     main_html = re.sub(r'<div class="stat-value">6</div>', f'<div class="stat-value">{min_count}</div>', main_html)
+    max_date_label = f"{month}/{max_day}"
+    min_date_label = f"{month}/{min_day}"
+    main_html = main_html.replace("__MAX_DATE__", max_date_label)
+    main_html = main_html.replace("__MIN_DATE__", min_date_label)
 
     # Chart data
     main_html = re.sub(r"data: \[19,24,33,33,21,47,44,22,17,19,30,34,37,65,33,24,36,22,84,42,45,20,30,8,9,6,17,27,27,13,21\]", f"data: {daily_data}", main_html)
@@ -858,11 +953,60 @@ def main():
         f.write(main_html)
     print(f"\n✅ メインレポート生成: {main_filename}")
 
+    sub_filename = None
     if total_unanswered > 10:
         sub_filename = output_dir / f"{client_name}_{period}_未回答一覧.html"
         with open(sub_filename, "w", encoding="utf-8") as f:
             f.write(unanswered_html)
         print(f"✅ 未回答一覧生成: {sub_filename}")
+
+    # ========================================
+    # サイト統合（--site-dir 指定時）
+    # ========================================
+
+    if args.site_dir and args.client_slug:
+        site_dir = Path(args.site_dir).resolve()
+
+        # year_month を period から抽出（例: "2026年1月" → "2026-01"）
+        ym_match = re.search(r'(\d{4})\D+(\d{1,2})', period)
+        if ym_match:
+            year_month = f"{ym_match.group(1)}-{int(ym_match.group(2)):02d}"
+        else:
+            year_month = df['質問時間'].iloc[0].strftime('%Y-%m')
+
+        # KPI統計を計算
+        month_stats = compute_kpi_for_dashboard(
+            df, kpi, period, year_month, avg_daily, language_counts, feedback_rate
+        )
+
+        # dashboard-data.json を更新
+        update_dashboard_json(
+            site_dir, args.client_slug, client_name, month_stats,
+            str(main_filename),
+            str(sub_filename) if total_unanswered > 10 else None,
+        )
+
+        # レポートHTMLをサイトディレクトリにコピー
+        reports_dir = site_dir / "clients" / args.client_slug / "reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+
+        dest_main = reports_dir / f"{year_month}.html"
+        shutil.copy2(main_filename, dest_main)
+        # サイト用にリンクを修正（未回答一覧のファイル名を相対パスに）
+        with open(dest_main, "r", encoding="utf-8") as f:
+            html_content = f.read()
+        html_content = html_content.replace(
+            f'href="{client_name}_{period}_未回答一覧.html"',
+            f'href="{year_month}_unanswered.html"'
+        )
+        with open(dest_main, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        print(f"✅ レポートコピー: {dest_main}")
+
+        if total_unanswered > 10:
+            dest_sub = reports_dir / f"{year_month}_unanswered.html"
+            shutil.copy2(sub_filename, dest_sub)
+            print(f"✅ 未回答一覧コピー: {dest_sub}")
 
     print("\n🎉 分析完了！")
 

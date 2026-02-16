@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未回答質問一覧 - NEWoMan高輪 2025年10月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-400: #9CA3AF;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--danger); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--danger-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--danger); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .data-table th:first-child { border-radius: var(--radius-md) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-md) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background var(--transition); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .number { text-align: center; width: 50px; font-family: var(--font-mono); color: var(--gray-400); }
+        .data-table .timestamp { width: 140px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .question-cell { width: 30%; }
+        .data-table .answer-cell { width: 40%; font-size: 0.8125rem; color: var(--text-muted); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                <span data-ja="未回答質問一覧" data-zh="未回答问题列表">未回答質問一覧</span>
+            </h1>
+            <div class="header-actions">
+                <a href="NEWoMan高輪_2025年10月_分析レポート.html" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">94</span><span class="summary-label" data-ja="件の未回答" data-zh="条未回答">件の未回答</span></div>
+            <div class="summary-item"><span class="badge badge-red">情報なし</span><span class="summary-label">93件 (98%)</span></div>
+            <div class="summary-item"><span class="badge badge-yellow">検索失敗</span><span class="summary-label">0件 (0%)</span></div>
+            <div class="summary-item"><span class="badge badge-gray">再確認</span><span class="summary-label">1件 (1%)</span></div>
+        </div>
+        <div class="section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTable('all')" data-ja="すべて" data-zh="全部">すべて</button>
+                <button class="filter-btn" onclick="filterTable('情報なし')">情報なし</button>
+                <button class="filter-btn" onclick="filterTable('検索失敗')">検索失敗</button>
+                <button class="filter-btn" onclick="filterTable('再確認')">再確認</button>
+            </div>
+            <table class="data-table" id="unansweredTable">
+                <thead><tr><th>#</th><th data-ja="日時" data-zh="时间">日時</th><th data-ja="タイプ" data-zh="类型">タイプ</th><th data-ja="質問内容" data-zh="问题内容">質問内容</th><th data-ja="Bot回答" data-zh="Bot回答">Bot回答</th></tr></thead>
+                <tbody>
+<tr>
+    <td class="number">1</td>
+    <td class="timestamp">2025-10-31 14:42:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ニュウマン高輪のBGMについて教えて</td>
+    <td class="answer-cell">ニュウマン高輪のBGMについてですね。承知いたしました。今から情報をお調べいたします。申し訳ございませんが、お問い合わせいただいたニュウマン高輪のBGMに関する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか。</td>
+</tr>
+<tr>
+    <td class="number">2</td>
+    <td class="timestamp">2025-10-31 13:11:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ニュウマン高輪の英語版のフロアガイドが欲しい</td>
+    <td class="answer-cell">ニュウマン高輪の英語版フロアガイドについてですね。承知いたしました。
+ニュウマン高輪の英語版フロアガイドについてですね。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただ...</td>
+</tr>
+<tr>
+    <td class="number">3</td>
+    <td class="timestamp">2025-10-31 12:31:57</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">今は今</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。お問い合わせありがとうございます。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">4</td>
+    <td class="timestamp">2025-10-30 13:31:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ええと。ターリーズコーヒーはどっかにありますか？</td>
+    <td class="answer-cell">ニュウマン高輪の店舗情報についてですね。ただいま、お調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店にはタリーズコーヒーはございません。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていた...</td>
+</tr>
+<tr>
+    <td class="number">5</td>
+    <td class="timestamp">2025-10-30 13:31:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">中華料理はどこにあります</td>
+    <td class="answer-cell">ニュウマン高輪店のAIチャットアシスタントです。中華料理に関する情報をお探しですね。ただいま、関連情報を検索いたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただ...</td>
+</tr>
+<tr>
+    <td class="number">6</td>
+    <td class="timestamp">2025-10-29 10:05:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">充電プラグがあるカフェ</td>
+    <td class="answer-cell">申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">7</td>
+    <td class="timestamp">2025-10-28 17:44:29</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Experience Ticket でスターバックスカードにチャージできますか？</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。Experience Ticketでスターバックスカードにチャージできるかについてですね。ただいま情報をお調べいたします。
+申し訳ございませんが、Experience Ticketでスターバックスカードにチャージできるかどうかについては、情報が見つかりま...</td>
+</tr>
+<tr>
+    <td class="number">8</td>
+    <td class="timestamp">2025-10-28 12:15:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">UGGに行きたい</td>
+    <td class="answer-cell">ニュウマン高輪の店舗情報についてですね。UGGに関する情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">9</td>
+    <td class="timestamp">2025-10-27 09:15:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">列出Base3 - Base10的位置</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた「Base3」から「Base10」に一致する情報は見つかりませんでした。ニュウマン高輪店には「+Base 0」、「+Base 1」、「+Base 2」といった施設がございます。
+
+よろしけ...</td>
+</tr>
+<tr>
+    <td class="number">10</td>
+    <td class="timestamp">2025-10-26 15:09:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">marniの店舗はどこ？</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。marniの店舗情報についてですね。承知いたしました。今すぐお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えてい...</td>
+</tr>
+<tr>
+    <td class="number">11</td>
+    <td class="timestamp">2025-10-25 18:51:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">満席でないレストランは？</td>
+    <td class="answer-cell">承知いたしました。満席ではないレストランについてお調べいたします。申し訳ございませんが、満席ではないレストランに関するリアルタイムの情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">12</td>
+    <td class="timestamp">2025-10-25 13:03:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">秋田関連のイベントは</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">13</td>
+    <td class="timestamp">2025-10-24 14:50:29</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">SABONある？</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。SABONについてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか...</td>
+</tr>
+<tr>
+    <td class="number">14</td>
+    <td class="timestamp">2025-10-24 14:44:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Misumi</td>
+    <td class="answer-cell">申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">15</td>
+    <td class="timestamp">2025-10-24 12:28:21</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">包丁みたい</td>
+    <td class="answer-cell">ニュウマン高輪店のAIチャットアシスタントです。包丁についてですね。ただいま、関連情報を調べておりますので、少々お待ちください。
+ニュウマン高輪店のAIチャットアシスタントです。包丁についてですね。
+
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ...</td>
+</tr>
+<tr>
+    <td class="number">16</td>
+    <td class="timestamp">2025-10-24 12:26:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ぬいぐるみ</td>
+    <td class="answer-cell">ニュウマン高輪店のAIチャットアシスタントです。ぬいぐるみについてですね。ただいま、関連情報を調べておりますので、少々お待ちください。
+ニュウマン高輪店のAIチャットアシスタントです。ぬいぐるみについてですね。
+
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。...</td>
+</tr>
+<tr>
+    <td class="number">17</td>
+    <td class="timestamp">2025-10-24 10:42:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">お蕎麦屋さんの内装写真はありますか？</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。お蕎麦屋さんの内装写真についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけま...</td>
+</tr>
+<tr>
+    <td class="number">18</td>
+    <td class="timestamp">2025-10-23 15:47:39</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">レターセットはどこに売ってる？</td>
+    <td class="answer-cell">ニュウマン高輪の店舗や関連情報についてですね。承知いたしました。今から情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">19</td>
+    <td class="timestamp">2025-10-22 18:56:30</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ファミリーマートはどこ</td>
+    <td class="answer-cell">ニュウマン高輪の店舗情報についてですね。ファミリーマートの場所をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店にはファミリーマートはございません。
+
+よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少...</td>
+</tr>
+<tr>
+    <td class="number">20</td>
+    <td class="timestamp">2025-10-21 16:54:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">和菓子屋さんある？</td>
+    <td class="answer-cell">ニュウマン高輪のAIチャットアシスタントです。和菓子屋さんについてですね。承知いたしました。お調べいたしますので、少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する和菓子屋さんは見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう...</td>
+</tr>
+<tr>
+    <td class="number">21</td>
+    <td class="timestamp">2025-10-20 17:59:46</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">スカーフを探しています</td>
+    <td class="answer-cell">ニュウマン高輪店の情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">22</td>
+    <td class="timestamp">2025-10-20 12:40:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">MAISON  CLASSIC FACTORY</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">23</td>
+    <td class="timestamp">2025-10-20 12:10:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ルフトバウムで持ち込んだ食べ物の飲食はできますか</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフとして、ルフトバウムでの持ち込み飲食についてお調べいたします。少々お待ちください。申し訳ございませんが、ルフトバウムでの持ち込み飲食に関する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょ...</td>
+</tr>
+<tr>
+    <td class="number">24</td>
+    <td class="timestamp">2025-10-19 15:30:06</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">JWマリオット　エントランス</td>
+    <td class="answer-cell">ニュウマン高輪店のJWマリオットのエントランスについてですね。ただいま情報をお調べいたします。申し訳ございませんが、JWマリオット・ホテル東京のエントランスに関する詳細な情報は、現在のところ見つかりませんでした。
+
+JWマリオット・ホテル東京は、THE LINKPILLAR 1 SOUTHの23階か...</td>
+</tr>
+<tr>
+    <td class="number">25</td>
+    <td class="timestamp">2025-10-19 14:07:35</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ロッカーはどこ</td>
+    <td class="answer-cell">ニュウマン高輪店のロッカーの場所についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致するロッカーの情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">26</td>
+    <td class="timestamp">2025-10-19 14:07:19</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ロッカーはどこでスカルは</td>
+    <td class="answer-cell">ニュウマン高輪店のロッカーの場所についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">27</td>
+    <td class="timestamp">2025-10-19 12:15:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">荷物を預けるところは？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">28</td>
+    <td class="timestamp">2025-10-18 14:33:39</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">アシックス</td>
+    <td class="answer-cell">ニュウマン高輪店の情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">29</td>
+    <td class="timestamp">2025-10-16 20:30:58</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">トゥーストゥース行き方</td>
+    <td class="answer-cell">承知いたしました。トゥーストゥースへの行き方についてお調べいたします。
+トゥーストゥースはニュウマン高輪のSouth・5Fにございます。詳しい行き方については、現在の情報では見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでし...</td>
+</tr>
+<tr>
+    <td class="number">30</td>
+    <td class="timestamp">2025-10-16 08:17:43</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ニュウマン高輪の建築家は？</td>
+    <td class="answer-cell">ニュウマン高輪の建築家についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">31</td>
+    <td class="timestamp">2025-10-15 17:59:08</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">日持ちがいいお菓子</td>
+    <td class="answer-cell">ニュウマン高輪店で日持ちのするお菓子についてですね。承知いたしました。お調べいたしますので、少々お待ちください。
+ニュウマン高輪店で日持ちのするお菓子についてですね。承知いたしました。
+
+RAG検索の結果、日持ちに関する具体的な情報は見つかりませんでした。申し訳ございませんが、お問い合わせいただいた...</td>
+</tr>
+<tr>
+    <td class="number">32</td>
+    <td class="timestamp">2025-10-13 18:48:06</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">メンズピアスほしい</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">33</td>
+    <td class="timestamp">2025-10-13 15:23:23</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">名刺入れはどこの店で買えますか?</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフです。名刺入れをお探しなのですね。承知いたしました。お調べいたしますので、少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていた...</td>
+</tr>
+<tr>
+    <td class="number">34</td>
+    <td class="timestamp">2025-10-12 16:32:19</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">トムフォードはありますか</td>
+    <td class="answer-cell">ニュウマン高輪店の情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか。</td>
+</tr>
+<tr>
+    <td class="number">35</td>
+    <td class="timestamp">2025-10-12 15:49:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ベイクルーズ</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフとして、ベイクルーズに関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">36</td>
+    <td class="timestamp">2025-10-11 16:57:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">アイス屋さんはどこ？</td>
+    <td class="answer-cell">ニュウマン高輪店の店舗情報についてですね。ただいま、関連情報を調べておりますので、少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか...</td>
+</tr>
+<tr>
+    <td class="number">37</td>
+    <td class="timestamp">2025-10-11 14:02:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">エレベーターはどこ</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせですね。エレベーターの場所について、ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店内のエレベーターの具体的な場所については、現在の情報では確認できませんでした。
+
+よろしければ...</td>
+</tr>
+<tr>
+    <td class="number">38</td>
+    <td class="timestamp">2025-10-11 13:25:43</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">グルテンフリー</td>
+    <td class="answer-cell">承知いたしました。ニュウマン高輪店に関する情報をお調べいたします。
+
+申し訳ございませんが、グルテンフリーに対応している店舗についての情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">39</td>
+    <td class="timestamp">2025-10-11 12:41:37</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">26に行き方を知りたい</td>
+    <td class="answer-cell">ニュウマン高輪店についてですね。26番の場所への行き方について、詳細をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた「26」という場所に関する具体的な情報が見つかりませんでした。ニュウマン高輪店には、1階から5階、そして28階と29階に店舗がございますが、「26」...</td>
+</tr>
+<tr>
+    <td class="number">40</td>
+    <td class="timestamp">2025-10-11 10:22:30</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">インターナショナルカードでキャッシングが出来る場所</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお探しですね。承知いたしました。インターナショナルカードでキャッシングができる場所について、今すぐお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容について...</td>
+</tr>
+<tr>
+    <td class="number">41</td>
+    <td class="timestamp">2025-10-10 16:26:39</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ペットと入れる飲食店</td>
+    <td class="answer-cell">ニュウマン高輪店のペットと入れる飲食店についてですね。ただいま情報をお調べいたします。
+ニュウマン高輪では、食品衛生管理上、一部ショップを除き、食品売場・飲食店へのペット同伴はできません。
+
+ただし、テラス席などでペットと一緒にお食事が楽しめる店舗もございます。
+
+現在、ペットと一緒にお食事ができる...</td>
+</tr>
+<tr>
+    <td class="number">42</td>
+    <td class="timestamp">2025-10-10 15:45:20</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">今日からポップアップです</td>
+    <td class="answer-cell">ニュウマン高輪店のポップアップ情報についてですね。承知いたしました。
+今からお調べいたしますので、少々お待ちください。
+ニュウマン高輪店のポップアップ情報についてですね。承知いたしました。
+今からお調べいたしますので、少々お待ちください。本日、10月10日から開催されているポップアップの情報は見つか...</td>
+</tr>
+<tr>
+    <td class="number">43</td>
+    <td class="timestamp">2025-10-10 15:44:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">昨日からポップアップ</td>
+    <td class="answer-cell">ニュウマン高輪店のポップアップ情報についてですね。承知いたしました。
+今からお調べいたしますので、少々お待ちください。昨日から開催されているポップアップの情報についてですね。お調べしましたが、昨日、10月9日から始まったと特定できるポップアップの情報は見つかりませんでした。
+
+ニュウマン高輪店には、...</td>
+</tr>
+<tr>
+    <td class="number">44</td>
+    <td class="timestamp">2025-10-10 14:06:52</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">cosのポップアップSHOPを教えてください</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">45</td>
+    <td class="timestamp">2025-10-09 13:57:42</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">デカフェ</td>
+    <td class="answer-cell">ニュウマン高輪店でデカフェについてですね。承知いたしました。お調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">46</td>
+    <td class="timestamp">2025-10-09 13:57:05</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">うどんの店</td>
+    <td class="answer-cell">ニュウマン高輪店のうどん店についてですね。承知いたしました。お調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致するうどんの専門店は見つかりませんでした。ニュウマン高輪店には、蕎麦をお楽しみいただける店舗がございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|-...</td>
+</tr>
+<tr>
+    <td class="number">47</td>
+    <td class="timestamp">2025-10-08 17:31:04</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">有料の本屋はあるんですか</td>
+    <td class="answer-cell">ニュウマン高輪店の本屋についてですね。承知いたしました。今すぐお調べいたします。
+ニュウマン高輪店の本屋についてですね。承知いたしました。今すぐお調べいたします。
+
+ニュウマン高輪には、[BUNKITSU TOKYO (ブンキツ トーキョー)](https://www.newoman.jp/taka...</td>
+</tr>
+<tr>
+    <td class="number">48</td>
+    <td class="timestamp">2025-10-08 15:07:24</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">英語版のフロアガイドはないのか</td>
+    <td class="answer-cell">ニュウマン高輪店の英語版フロアガイドについてですね。承知いたしました。ただいま情報をお調べいたします。ニュウマン高輪店の英語版フロアガイドについてですね。お調べしましたが、申し訳ございませんが、お問い合わせいただいた内容に一致する情報は現在のところ見つかりませんでした。
+
+よろしければ、ニュウマン高...</td>
+</tr>
+<tr>
+    <td class="number">49</td>
+    <td class="timestamp">2025-10-08 15:07:04</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">英語版のフロアガイドは？</td>
+    <td class="answer-cell">ニュウマン高輪店のフロアガイドについてですね。承知いたしました。ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">50</td>
+    <td class="timestamp">2025-10-07 18:26:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゴルフのお店</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。ゴルフのお店についてですね。ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致するゴルフ用品を取り扱っている店舗は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容について...</td>
+</tr>
+<tr>
+    <td class="number">51</td>
+    <td class="timestamp">2025-10-07 18:23:10</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゴルフ</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。ゴルフについてですね。ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致するゴルフ用品を取り扱っている店舗は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少...</td>
+</tr>
+<tr>
+    <td class="number">52</td>
+    <td class="timestamp">2025-10-07 18:23:00</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゴルフは？</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。ゴルフについてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致するゴルフ用品を取り扱っている店舗は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し...</td>
+</tr>
+<tr>
+    <td class="number">53</td>
+    <td class="timestamp">2025-10-07 18:22:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゴルフ用品ある？</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。ゴルフ用品についてですね。ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致するゴルフ用品を取り扱っている店舗は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についても...</td>
+</tr>
+<tr>
+    <td class="number">54</td>
+    <td class="timestamp">2025-10-07 17:19:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田急線町田駅の改札口はいくつある？</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフとして、お問い合わせありがとうございます。小田急線町田駅の改札口についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店に関する情報でしたらお調べできますので、よろしければ別のキー...</td>
+</tr>
+<tr>
+    <td class="number">55</td>
+    <td class="timestamp">2025-10-06 15:46:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">アグはありますか？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">56</td>
+    <td class="timestamp">2025-10-06 13:53:12</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">トゥモ、ローランド。どこにある？</td>
+    <td class="answer-cell">ニュウマン高輪店の店舗情報についてですね。承知いたしました。今から情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた「トゥモ、ローランド」に一致する情報はニュウマン高輪店では見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教え...</td>
+</tr>
+<tr>
+    <td class="number">57</td>
+    <td class="timestamp">2025-10-05 16:50:52</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">いくら</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお探しですね。承知いたしました。今すぐ情報をお調べいたします。ニュウマン高輪店に関する情報をお探しですね。承知いたしました。今すぐ情報をお調べいたします。
+
+28階の店舗の予算について、現在お調べできる情報は以下の通りです。
+
+*   [高輪それがし](https://...</td>
+</tr>
+<tr>
+    <td class="number">58</td>
+    <td class="timestamp">2025-10-05 15:54:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">2階南駐車場に行くエレベーターの場所は？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店には、2階南駐車場への直通エレベーターに関する具体的な情報がございません。
+
+よろしければ、別のキーワードでお探しいただくか、お...</td>
+</tr>
+<tr>
+    <td class="number">59</td>
+    <td class="timestamp">2025-10-05 15:06:58</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ロボットはどこにいる？</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフとして、お問い合わせありがとうございます。ただいま、お問い合わせ内容について確認いたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店には「ロボット」という店舗や施設はございません。よろしければ、別のキーワードでお...</td>
+</tr>
+<tr>
+    <td class="number">60</td>
+    <td class="timestamp">2025-10-05 14:20:57</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">7階日本庭園</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">61</td>
+    <td class="timestamp">2025-10-05 13:31:16</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">olend</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。ただいま、お問い合わせ内容に基づき情報を検索しております。
+
+olendという店舗は見つかりませんでした。どのようなショップや商品をお探しでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">62</td>
+    <td class="timestamp">2025-10-05 13:29:16</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">バーミキュラレストランの待ち時間</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。バーミキュラレストランの待ち時間について、情報をお調べいたします。
+申し訳ございませんが、バーミキュラレストランの現在の待ち時間に関する情報は、あいにく見つかりませんでした。
+
+よろしければ、ご予約も承っておりますので、ご利用をご検討ください...</td>
+</tr>
+<tr>
+    <td class="number">63</td>
+    <td class="timestamp">2025-10-05 13:15:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">釣具屋</td>
+    <td class="answer-cell">ニュウマン高輪店の情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">64</td>
+    <td class="timestamp">2025-10-05 12:57:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">28階までのエレベーターの予約方法</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。お問い合わせいただいた28階までのエレベーターの予約方法については、情報が見つかりませんでした。28階・29階のルフトバウムへは、North 2Fにございます直通エレベーターをご利用いただけます。予約は不要でございます。</td>
+</tr>
+<tr>
+    <td class="number">65</td>
+    <td class="timestamp">2025-10-05 12:32:05</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">预计12月开店的店铺有哪些</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお探しですね。12月にオープン予定の店舗について、ただいま情報をお調べいたします。
+ニュウマン高輪店の開業情報についてお調べしたところ、2025年12月に新規オープンする店舗に関する具体的な情報は見つかりませんでした。
+
+現在の情報では、ニュウマン高輪の大部分の店舗は2...</td>
+</tr>
+<tr>
+    <td class="number">66</td>
+    <td class="timestamp">2025-10-05 11:48:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ノース1階から29階に行きたいエレベーターはどこ？</td>
+    <td class="answer-cell">お問い合わせありがとうございます。エレベーターの場所についてですね。ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">67</td>
+    <td class="timestamp">2025-10-05 10:11:02</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">保冷ロッカーある？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">68</td>
+    <td class="timestamp">2025-10-04 18:26:36</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">25階に行くエレベーターはどこにありますか？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店には、LUFTBAUMエリアに28階と29階の店舗がございますが、25階へのエレベーターに関する具体的な情報はございません。
+
+よ...</td>
+</tr>
+<tr>
+    <td class="number">69</td>
+    <td class="timestamp">2025-10-04 16:28:50</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゴミ箱はどこ？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">70</td>
+    <td class="timestamp">2025-10-04 15:09:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">床屋</td>
+    <td class="answer-cell">ニュウマン高輪店の情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">71</td>
+    <td class="timestamp">2025-10-04 15:01:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">どさんこ</td>
+    <td class="answer-cell">承知いたしました。ニュウマン高輪店の情報についてお調べいたします。
+
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">72</td>
+    <td class="timestamp">2025-10-04 14:29:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ディズニーの商品が買えるお店</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお探しですね。ディズニーの商品が買えるお店について、お調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">73</td>
+    <td class="timestamp">2025-10-04 13:34:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">中華料理が食べたい。</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフでございます。中華料理をお探しですね。承知いたしました。お調べいたしますので、少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えて...</td>
+</tr>
+<tr>
+    <td class="number">74</td>
+    <td class="timestamp">2025-10-04 11:38:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ラ焼肉　高輪</td>
+    <td class="answer-cell">ニュウマン高輪店のスタッフとして、お客様のお問い合わせに迅速に対応させていただきます。ただいま、「ラ焼肉 高輪」に関する情報を確認いたします。
+「ラ焼肉 高輪」という店舗名では情報が見つかりませんでしたが、「焼肉 たかなわ」という店舗がニュウマン高輪にございます。
+
+店舗名: [焼肉 たかなわ](h...</td>
+</tr>
+<tr>
+    <td class="number">75</td>
+    <td class="timestamp">2025-10-03 17:47:34</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">DIVAからRigo</td>
+    <td class="answer-cell">ニュウマン高輪店の店舗やサービスについてのご質問ですね。承知いたしました。
+お問い合わせいただいた「DIVA」については、ニュウマン高輪店では情報が見つかりませんでした。
+
+「Rigo」については、[Rigo SPANISH ITALIAN](https://www.newoman.jp/takan...</td>
+</tr>
+<tr>
+    <td class="number">76</td>
+    <td class="timestamp">2025-10-03 17:31:57</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">妊婦でも食べられる食事</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。妊婦の方でもお召し上がりいただけるお食事について、情報をお調べいたします。少々お待ちください。ニュウマン高輪店で妊婦の方でもお召し上がりいただけるお食事についてお調べいたしましたところ、特定の「妊婦向けメニュー」を明示している店舗は見つかりま...</td>
+</tr>
+<tr>
+    <td class="number">77</td>
+    <td class="timestamp">2025-10-03 14:54:08</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">あ、眺望の写真</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報ですね。眺望の写真について、RAG検索で情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">78</td>
+    <td class="timestamp">2025-10-03 14:53:35</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">実際の写真はありますか？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報ですね。ウルフギャング・ステーキハウスからの実際の眺望について、RAG検索で情報をお調べいたします。
+ウルフギャング・ステーキハウスからの眺望についてですね。RAG検索で確認しましたが、夜景の写真はございましたが、日中の眺望に関する具体的な写真の情報は見つかりませんでした...</td>
+</tr>
+<tr>
+    <td class="number">79</td>
+    <td class="timestamp">2025-10-03 14:51:28</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">それでは、28階または29階の庭園からでも良いので、レインボーブリッジが眺められる日中の写真が見てみたいです</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報ですね。28階または29階の庭園からレインボーブリッジが眺められる日中の写真について、RAG検索で情報をお調べいたします。ニュウマン高輪店に関する情報ですね。28階または29階の庭園からレインボーブリッジが眺められる日中の写真についてお調べしましたが、申し訳ございませんが...</td>
+</tr>
+<tr>
+    <td class="number">80</td>
+    <td class="timestamp">2025-10-03 14:49:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">28階と29階の他のお店でも良いので、店内からレインボーブリッチが見える日中の写真があれば見たいです</td>
+    <td class="answer-cell">ニュウマン高輪店の28階と29階の店舗から見えるレインボーブリッジの日中の眺望についてですね。承知いたしました。RAG検索で情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。28階または29階の店舗からレインボーブリッジが見える日中の写真は...</td>
+</tr>
+<tr>
+    <td class="number">81</td>
+    <td class="timestamp">2025-10-03 14:48:13</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">日中の写真もありますか？</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報ですね。ウルフギャング・ステーキハウスからの日中の眺望について、RAG検索で情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ウルフギャング・ステーキハウスからの日中の眺望に関する写真は、現在の情報にはございませ...</td>
+</tr>
+<tr>
+    <td class="number">82</td>
+    <td class="timestamp">2025-10-03 14:32:35</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">マリオットへの行き方</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。マリオットへの行き方についてですね。ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店には「マリオット」という店舗はございません。
+
+よろしければ、別のキー...</td>
+</tr>
+<tr>
+    <td class="number">83</td>
+    <td class="timestamp">2025-10-03 14:02:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">喫煙所付きのカフェか飲食店はある？</td>
+    <td class="answer-cell">ニュウマン高輪店の喫煙所付きのカフェや飲食店についてお調べいたします。少々お待ちください。
+ニュウマン高輪店には、喫煙所がSouth 1F、4F、North 5F、LUFTBAUM 28Fにございます。LUFTBAUM 28Fの喫煙所は電子たばこ・加熱式たばこ専用です。
+
+RAG検索の結果、喫煙所が...</td>
+</tr>
+<tr>
+    <td class="number">84</td>
+    <td class="timestamp">2025-10-03 14:01:11</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">喫煙所が店内にある飲食店又は喫茶店はありますか？</td>
+    <td class="answer-cell">ニュウマン高輪店の喫煙所に関する情報をお調べいたします。少々お待ちください。
+ニュウマン高輪店には、喫煙所がSouth 1F、4F、North 5F、LUFTBAUM 28Fにございます。LUFTBAUM 28Fの喫煙所は電子たばこ・加熱式たばこ専用です。
+
+喫煙所が店内にある飲食店や喫茶店について...</td>
+</tr>
+<tr>
+    <td class="number">85</td>
+    <td class="timestamp">2025-10-03 13:43:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">白チャート</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。申し訳ございませんが、「白チャート」に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">86</td>
+    <td class="timestamp">2025-10-03 13:43:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ソフトクリーム</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、ソフトクリームを直接取り扱っている店舗の情報は見つかりませんでした。
+
+しかし、ニュウマン高輪店にはスイーツやカフェの店舗がいくつかございます。よろしければ、以下のような店舗で別のスイーツやドリンクをお楽しみ...</td>
+</tr>
+<tr>
+    <td class="number">87</td>
+    <td class="timestamp">2025-10-03 13:42:59</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">全国地図</td>
+    <td class="answer-cell">ニュウマン高輪店の地図についてですね。承知いたしました。
+今から情報をお調べいたしますので、少々お待ちください。
+全国地図についてですね。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。ニュウマン高輪店に関する情報として、高輪ゲートウェイシティのエリアマップと、...</td>
+</tr>
+<tr>
+    <td class="number">88</td>
+    <td class="timestamp">2025-10-03 13:42:49</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゲーム買いたい</td>
+    <td class="answer-cell">お問い合わせありがとうございます。ゲームをお探しとのこと、承知いたしました。
+ニュウマン高輪店に関する情報をお調べいたします。
+
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教...</td>
+</tr>
+<tr>
+    <td class="number">89</td>
+    <td class="timestamp">2025-10-03 13:42:26</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell">イタリア食べたい</td>
+    <td class="answer-cell"></td>
+</tr>
+<tr>
+    <td class="number">90</td>
+    <td class="timestamp">2025-10-03 13:41:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ユニクロ</td>
+    <td class="answer-cell">ニュウマン高輪店に関する情報をお調べいたします。少々お待ちください。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？</td>
+</tr>
+<tr>
+    <td class="number">91</td>
+    <td class="timestamp">2025-10-03 12:41:18</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ミハラヤスヒロ</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。お問い合わせいただいた内容について、ただいま情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えて...</td>
+</tr>
+<tr>
+    <td class="number">92</td>
+    <td class="timestamp">2025-10-03 12:40:39</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">みはらゆきひろ</td>
+    <td class="answer-cell">ニュウマン高輪店に関するお問い合わせありがとうございます。お問い合わせいただいた内容について、ただいま情報をお調べいたします。
+申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教え...</td>
+</tr>
+<tr>
+    <td class="number">93</td>
+    <td class="timestamp">2025-10-02 13:13:57</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">5階のスターバックスからLISHまでどうやって行ったらいい？</td>
+    <td class="answer-cell">ニュウマン高輪店の店舗に関する情報ですね。承知いたしました。RAG検索で最新情報を確認してご案内します。申し訳ございませんが、お問い合わせいただいた内容に一致する情報は見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか...</td>
+</tr>
+<tr>
+    <td class="number">94</td>
+    <td class="timestamp">2025-10-01 15:04:49</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ローソンってどこ？</td>
+    <td class="answer-cell">ニュウマン高輪店の店舗情報についてですね。ただいま、ローソンに関する情報をお調べいたします。申し訳ございませんが、お問い合わせいただいた内容に一致する情報はニュウマン高輪店では見つかりませんでした。よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく教えていただけますで...</td>
+</tr></tbody>
+            </table>
+        </div>
+        <footer class="footer"><span data-ja="NEWoMan高輪 2025年10月 メッセージ履歴分析" data-zh="NEWoMan高輪 2025年10月 消息履历分析">NEWoMan高輪 2025年10月 メッセージ履歴分析</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#unansweredTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { const badge = row.querySelector('.badge'); row.style.display = (badge && badge.getAttribute('data-ja') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>

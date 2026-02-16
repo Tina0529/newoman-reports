@@ -1,0 +1,87 @@
+name: Update Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_id:
+        description: 'GBase Dataset ID'
+        required: true
+        type: string
+      api_token:
+        description: 'GBase API Token'
+        required: true
+        type: string
+      month:
+        description: 'Target month (YYYY-MM)'
+        required: true
+        type: string
+      client_name:
+        description: 'Client name'
+        required: false
+        default: 'NEWoMan高輪'
+        type: string
+      client_slug:
+        description: 'Client slug'
+        required: false
+        default: 'newoman-takanawa'
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas requests
+
+      - name: Run analysis
+        run: |
+          YEAR=$(echo "${{ inputs.month }}" | cut -d'-' -f1)
+          MONTH_NUM=$(echo "${{ inputs.month }}" | cut -d'-' -f2)
+          MONTH_INT=$((10#$MONTH_NUM))
+          START_DATE="${{ inputs.month }}-01"
+
+          # Calculate last day of month using Python
+          END_DATE=$(python3 -c "
+          from datetime import date, timedelta
+          y, m = $YEAR, $MONTH_INT
+          if m == 12:
+              last = date(y, 12, 31)
+          else:
+              last = date(y, m + 1, 1) - timedelta(days=1)
+          print(last.strftime('%Y-%m-%d'))
+          ")
+
+          PERIOD="${YEAR}年${MONTH_INT}月"
+
+          echo "Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
+
+          python3 skill/scripts/analyze.py \
+            --dataset-id "${{ inputs.dataset_id }}" \
+            --token "${{ inputs.api_token }}" \
+            --start-date "$START_DATE" \
+            --end-date "$END_DATE" \
+            --client "${{ inputs.client_name }}" \
+            --period "$PERIOD" \
+            --output /tmp \
+            --site-dir docs \
+            --client-slug "${{ inputs.client_slug }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/clients/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update report: ${{ inputs.month }}"
+            git push
+          fi

@@ -1,0 +1,127 @@
+{
+  "client": "NEWoMan高輪",
+  "client_slug": "newoman-takanawa",
+  "updated_at": "2026-02-15T21:28:34.038304",
+  "months": [
+    {
+      "period": "2025年9月",
+      "year_month": "2025-09",
+      "total_messages": 1443,
+      "normal_answer_rate": 87.6,
+      "unanswered_rate": 12.4,
+      "good_rating_rate": 39.0,
+      "feedback_rate": 31.3,
+      "daily_average": 48.1,
+      "unique_users": 5,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 3.0,
+      "weekday_counts": [
+        120,
+        370,
+        384,
+        92,
+        141,
+        181,
+        155
+      ],
+      "report_file": "reports/2025-09.html",
+      "unanswered_file": "reports/2025-09_unanswered.html"
+    },
+    {
+      "period": "2025年10月",
+      "year_month": "2025-10",
+      "total_messages": 1413,
+      "normal_answer_rate": 93.3,
+      "unanswered_rate": 6.7,
+      "good_rating_rate": 73.3,
+      "feedback_rate": 1.1,
+      "daily_average": 45.6,
+      "unique_users": 5,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 6.4,
+      "weekday_counts": [
+        187,
+        142,
+        110,
+        135,
+        330,
+        230,
+        279
+      ],
+      "report_file": "reports/2025-10.html",
+      "unanswered_file": "reports/2025-10_unanswered.html"
+    },
+    {
+      "period": "2025年11月",
+      "year_month": "2025-11",
+      "total_messages": 1289,
+      "normal_answer_rate": 88.5,
+      "unanswered_rate": 11.5,
+      "good_rating_rate": 72.0,
+      "feedback_rate": 1.9,
+      "daily_average": 43.0,
+      "unique_users": 6,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 8.5,
+      "weekday_counts": [
+        232,
+        142,
+        107,
+        138,
+        107,
+        258,
+        305
+      ],
+      "report_file": "reports/2025-11.html",
+      "unanswered_file": "reports/2025-11_unanswered.html"
+    },
+    {
+      "period": "2025年12月",
+      "year_month": "2025-12",
+      "total_messages": 909,
+      "normal_answer_rate": 89.5,
+      "unanswered_rate": 10.5,
+      "good_rating_rate": 70.0,
+      "feedback_rate": 2.2,
+      "daily_average": 29.3,
+      "unique_users": 460,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 7.8,
+      "weekday_counts": [
+        121,
+        108,
+        117,
+        94,
+        145,
+        143,
+        181
+      ],
+      "report_file": "reports/2025-12.html",
+      "unanswered_file": "reports/2025-12_unanswered.html"
+    },
+    {
+      "period": "2026年1月",
+      "year_month": "2026-01",
+      "total_messages": 670,
+      "normal_answer_rate": 83.9,
+      "unanswered_rate": 16.1,
+      "good_rating_rate": 76.5,
+      "feedback_rate": 2.5,
+      "daily_average": 23.1,
+      "unique_users": 8,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 7.2,
+      "weekday_counts": [
+        108,
+        38,
+        93,
+        85,
+        87,
+        161,
+        98
+      ],
+      "report_file": "reports/2026-01.html",
+      "unanswered_file": "reports/2026-01_unanswered.html"
+    }
+  ]
+}

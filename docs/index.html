@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- Password Gate Modal -->
+    <div id="auth-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h2 data-ja="パスワードを入力してください" data-zh="请输入密码">パスワードを入力してください</h2>
+            <input type="password" id="auth-password" placeholder="Password" autocomplete="off">
+            <button id="auth-submit" data-ja="ログイン" data-zh="登录">ログイン</button>
+            <p id="auth-error" class="error-text" style="display:none;" data-ja="パスワードが正しくありません" data-zh="密码不正确">パスワードが正しくありません</p>
+        </div>
+    </div>
+
+    <div id="app" style="display:none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 id="client-name" class="header-title">Chatbot Analytics</h1>
+                <span id="updated-at" class="header-subtitle"></span>
+            </div>
+            <div class="header-right">
+                <button id="lang-toggle" class="btn btn-ghost" title="言語切替">
+                    <span id="lang-label">中文</span>
+                </button>
+                <button id="admin-btn" class="btn btn-outline" style="display:none;" data-ja="管理" data-zh="管理">管理</button>
+            </div>
+        </header>
+
+        <!-- Period Selector -->
+        <section class="period-selector">
+            <label data-ja="期間選択" data-zh="期间选择">期間選択</label>
+            <div class="period-controls">
+                <select id="period-start"></select>
+                <span>~</span>
+                <select id="period-end"></select>
+                <button id="period-apply" class="btn btn-primary btn-sm" data-ja="適用" data-zh="应用">適用</button>
+            </div>
+        </section>
+
+        <!-- KPI Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="総メッセージ数" data-zh="总消息数">総メッセージ数</div>
+                <div class="kpi-value" id="kpi-total">-</div>
+                <div class="kpi-trend" id="kpi-total-trend"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="正常回答率" data-zh="正常回答率">正常回答率</div>
+                <div class="kpi-value" id="kpi-answer-rate">-</div>
+                <div class="kpi-trend" id="kpi-answer-trend"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="未回答率" data-zh="未回答率">未回答率</div>
+                <div class="kpi-value" id="kpi-unanswered">-</div>
+                <div class="kpi-trend" id="kpi-unanswered-trend"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="好評価率" data-zh="好评率">好評価率</div>
+                <div class="kpi-value" id="kpi-good-rate">-</div>
+                <div class="kpi-trend" id="kpi-good-trend"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="フィードバック率" data-zh="反馈率">フィードバック率</div>
+                <div class="kpi-value" id="kpi-feedback">-</div>
+                <div class="kpi-trend" id="kpi-feedback-trend"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" data-ja="日平均件数" data-zh="日均件数">日平均件数</div>
+                <div class="kpi-value" id="kpi-daily-avg">-</div>
+                <div class="kpi-trend" id="kpi-daily-trend"></div>
+            </div>
+        </section>
+
+        <!-- Monthly Report Links -->
+        <section class="reports-section">
+            <h2 data-ja="月次レポート一覧" data-zh="月度报告列表">月次レポート一覧</h2>
+            <div id="report-list" class="report-grid"></div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts-row">
+            <div class="chart-card chart-wide">
+                <h3 data-ja="月次KPIトレンド" data-zh="月度KPI趋势">月次KPIトレンド</h3>
+                <div id="chart-trend" class="chart-container"></div>
+            </div>
+        </section>
+
+        <section class="charts-row">
+            <div class="chart-card">
+                <h3 data-ja="月別メッセージ数 / 日平均" data-zh="月度消息数 / 日均">月別メッセージ数 / 日平均</h3>
+                <div id="chart-volume" class="chart-container"></div>
+            </div>
+            <div class="chart-card">
+                <h3 data-ja="曜日別分布" data-zh="星期分布">曜日別分布</h3>
+                <div id="chart-weekday" class="chart-container"></div>
+            </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="admin-panel" class="admin-panel" style="display:none;">
+            <h2 data-ja="管理パネル" data-zh="管理面板">管理パネル</h2>
+            <p class="admin-desc" data-ja="新しい月のデータを取得してレポートを自動生成します。" data-zh="获取新月份的数据并自动生成分析报告。">新しい月のデータを取得してレポートを自動生成します。</p>
+            <div class="admin-form">
+                <div class="form-group">
+                    <label data-ja="Dataset ID" data-zh="Dataset ID">Dataset ID</label>
+                    <input type="text" id="admin-dataset-id" placeholder="b30daf1b-..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label data-ja="API Token" data-zh="API Token">API Token</label>
+                    <input type="password" id="admin-api-token" placeholder="ak-..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label data-ja="GitHub Token" data-zh="GitHub Token">GitHub Token</label>
+                    <input type="password" id="admin-github-token" placeholder="ghp_..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label data-ja="対象月" data-zh="目标月份">対象月</label>
+                    <input type="month" id="admin-month">
+                </div>
+                <button id="admin-update" class="btn btn-primary" data-ja="データ更新 & レポート生成" data-zh="更新数据 & 生成报告">データ更新 & レポート生成</button>
+            </div>
+            <div id="admin-status" class="admin-status" style="display:none;"></div>
+        </section>
+
+        <footer class="footer">
+            <p>Powered by GBaseSupport Analytics</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
