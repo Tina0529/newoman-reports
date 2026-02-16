@@ -350,7 +350,9 @@
 
     async function triggerWorkflow() {
         const clientName = document.getElementById('admin-client-name').value.trim();
-        const clientSlug = document.getElementById('admin-client-slug').value.trim();
+        let clientSlug = document.getElementById('admin-client-slug').value.trim().toLowerCase();
+        // Auto-update the field to show the normalized slug
+        document.getElementById('admin-client-slug').value = clientSlug;
         const datasetId = document.getElementById('admin-dataset-id').value.trim();
         const apiToken = document.getElementById('admin-api-token').value.trim();
         const githubToken = document.getElementById('admin-github-token').value.trim();
