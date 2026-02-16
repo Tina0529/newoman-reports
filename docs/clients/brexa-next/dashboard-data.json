@@ -1,0 +1,31 @@
+{
+  "client": "BREXA-Next",
+  "client_slug": "brexa-next",
+  "updated_at": "2026-02-16T08:03:49.240261",
+  "months": [
+    {
+      "period": "2026年1月",
+      "year_month": "2026-01",
+      "total_messages": 1132,
+      "normal_answer_rate": 49.8,
+      "unanswered_rate": 50.2,
+      "good_rating_rate": 62.5,
+      "feedback_rate": 0.7,
+      "daily_average": 36.5,
+      "unique_users": 2,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 8.0,
+      "weekday_counts": [
+        148,
+        144,
+        242,
+        226,
+        164,
+        103,
+        105
+      ],
+      "report_file": "reports/2026-01.html",
+      "unanswered_file": "reports/2026-01_unanswered.html"
+    }
+  ]
+}
