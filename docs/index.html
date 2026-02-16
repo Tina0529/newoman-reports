@@ -35,14 +35,20 @@
             </div>
         </header>
 
-        <!-- Period Selector -->
+        <!-- Client & Period Selector -->
         <section class="period-selector">
-            <label data-ja="期間選択" data-zh="期间选择">期間選択</label>
-            <div class="period-controls">
-                <select id="period-start"></select>
-                <span>~</span>
-                <select id="period-end"></select>
-                <button id="period-apply" class="btn btn-primary btn-sm" data-ja="適用" data-zh="应用">適用</button>
+            <div class="selector-group">
+                <label data-ja="クライアント" data-zh="客户">クライアント</label>
+                <select id="client-selector"></select>
+            </div>
+            <div class="selector-group">
+                <label data-ja="期間選択" data-zh="期间选择">期間選択</label>
+                <div class="period-controls">
+                    <select id="period-start"></select>
+                    <span>~</span>
+                    <select id="period-end"></select>
+                    <button id="period-apply" class="btn btn-primary btn-sm" data-ja="適用" data-zh="应用">適用</button>
+                </div>
             </div>
         </section>
 
@@ -110,6 +116,14 @@
             <h2 data-ja="管理パネル" data-zh="管理面板">管理パネル</h2>
             <p class="admin-desc" data-ja="新しい月のデータを取得してレポートを自動生成します。" data-zh="获取新月份的数据并自动生成分析报告。">新しい月のデータを取得してレポートを自動生成します。</p>
             <div class="admin-form">
+                <div class="form-group">
+                    <label data-ja="クライアント名" data-zh="客户名称">クライアント名</label>
+                    <input type="text" id="admin-client-name" placeholder="NEWoMan高輪" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label data-ja="クライアントSlug" data-zh="客户Slug">クライアントSlug</label>
+                    <input type="text" id="admin-client-slug" placeholder="newoman-takanawa" autocomplete="off">
+                </div>
                 <div class="form-group">
                     <label data-ja="Dataset ID" data-zh="Dataset ID">Dataset ID</label>
                     <input type="text" id="admin-dataset-id" placeholder="b30daf1b-..." autocomplete="off">

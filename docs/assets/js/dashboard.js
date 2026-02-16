@@ -1,5 +1,5 @@
 /**
- * dashboard.js - Chart rendering, period selection, data loading
+ * dashboard.js - Chart rendering, period selection, data loading, multi-client support
  */
 (function() {
     let dashboardData = null;
@@ -7,6 +7,7 @@
     let trendChart = null;
     let volumeChart = null;
     let weekdayChart = null;
+    let clientList = []; // [{slug, name}]
 
     // Detect client slug from URL or default
     function getClientSlug() {
@@ -17,6 +18,39 @@
     // Format year_month "2025-09" → "2025/09"
     function fmtMonth(ym) {
         return ym.replace('-', '/');
+    }
+
+    async function loadClientList() {
+        try {
+            const resp = await fetch('clients/clients.json');
+            if (resp.ok) {
+                clientList = await resp.json();
+            }
+        } catch (e) {
+            // clients.json not found — build from current data only
+        }
+        // Ensure current client is in the list
+        const currentSlug = getClientSlug();
+        if (!clientList.find(c => c.slug === currentSlug)) {
+            clientList.push({ slug: currentSlug, name: currentSlug });
+        }
+    }
+
+    function populateClientSelector() {
+        const sel = document.getElementById('client-selector');
+        sel.innerHTML = '';
+        const currentSlug = getClientSlug();
+        clientList.forEach(c => {
+            const opt = new Option(c.name, c.slug);
+            sel.appendChild(opt);
+        });
+        sel.value = currentSlug;
+        sel.addEventListener('change', function() {
+            const newSlug = sel.value;
+            const url = new URL(window.location);
+            url.searchParams.set('client', newSlug);
+            window.location.href = url.toString();
+        });
     }
 
     async function loadData() {
@@ -300,7 +334,10 @@
         renderReportLinks(filteredMonths);
     }
 
-    // GitHub repo for workflow dispatch
+    // ========================================
+    // Admin: GitHub Actions workflow trigger
+    // ========================================
+
     const GITHUB_REPO = 'Tina0529/newoman-reports';
     const WORKFLOW_FILE = 'update-report.yml';
 
@@ -312,20 +349,32 @@
     }
 
     async function triggerWorkflow() {
+        const clientName = document.getElementById('admin-client-name').value.trim();
+        const clientSlug = document.getElementById('admin-client-slug').value.trim();
         const datasetId = document.getElementById('admin-dataset-id').value.trim();
         const apiToken = document.getElementById('admin-api-token').value.trim();
         const githubToken = document.getElementById('admin-github-token').value.trim();
         const month = document.getElementById('admin-month').value;
         const isJa = window.i18n && window.i18n.current() === 'ja';
 
-        if (!datasetId || !apiToken || !githubToken || !month) {
+        if (!clientName || !clientSlug || !datasetId || !apiToken || !githubToken || !month) {
             showAdminStatus('error', isJa
                 ? 'すべてのフィールドを入力してください。'
                 : '请填写所有字段。');
             return;
         }
 
+        // Validate slug format (lowercase, hyphens, no spaces)
+        if (!/^[a-z0-9-]+$/.test(clientSlug)) {
+            showAdminStatus('error', isJa
+                ? 'Slugは半角英数字とハイフンのみ使用できます（例: newoman-takanawa）'
+                : 'Slug只能使用小写英文字母、数字和连字符（例: newoman-takanawa）');
+            return;
+        }
+
         // Save credentials for convenience
+        localStorage.setItem('admin_client_name', clientName);
+        localStorage.setItem('admin_client_slug', clientSlug);
         localStorage.setItem('admin_dataset_id', datasetId);
         sessionStorage.setItem('admin_api_token', apiToken);
         sessionStorage.setItem('admin_github_token', githubToken);
@@ -349,6 +398,8 @@
                             dataset_id: datasetId,
                             api_token: apiToken,
                             month: month,
+                            client_name: clientName,
+                            client_slug: clientSlug,
                         },
                     }),
                 }
@@ -358,7 +409,7 @@
                 showAdminStatus('loading', isJa
                     ? 'ワークフローを起動しました。進捗を確認中...'
                     : '工作流已启动，正在检查进度...');
-                pollWorkflowStatus(githubToken, isJa);
+                pollWorkflowStatus(githubToken, isJa, clientName, clientSlug);
             } else if (resp.status === 401 || resp.status === 403) {
                 showAdminStatus('error', isJa
                     ? 'GitHub Tokenが無効です。repo権限のあるPATを使用してください。'
@@ -378,7 +429,7 @@
         }
     }
 
-    function pollWorkflowStatus(githubToken, isJa) {
+    function pollWorkflowStatus(githubToken, isJa, clientName, clientSlug) {
         let attempts = 0;
         const maxAttempts = 60; // 10 minutes max (10s interval)
 
@@ -407,9 +458,12 @@
 
                 if (run.status === 'completed') {
                     if (run.conclusion === 'success') {
+                        // Update clients.json with the new client
+                        updateClientsJson(githubToken, clientName, clientSlug);
+                        const switchUrl = `?client=${clientSlug}`;
                         showAdminStatus('success', isJa
-                            ? '更新完了！ページを更新してください。'
-                            : '更新完成！请刷新页面。');
+                            ? `更新完了！ 「${clientName}」のダッシュボードを表示するにはページを更新してください。`
+                            : `更新完成！请刷新页面查看「${clientName}」的看板。`);
                     } else {
                         showAdminStatus('error', isJa
                             ? `ワークフロー失敗: ${run.conclusion}。GitHubのActionsタブで詳細を確認してください。`
@@ -432,8 +486,60 @@
         setTimeout(poll, 5000); // First check after 5s
     }
 
-    // Public init function called after auth
+    // Update clients.json via GitHub API after workflow success
+    async function updateClientsJson(githubToken, clientName, clientSlug) {
+        try {
+            // Read existing clients.json
+            let existing = [];
+            let sha = null;
+            try {
+                const getResp = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
+                    { headers: { 'Authorization': `Bearer ${githubToken}` } }
+                );
+                if (getResp.ok) {
+                    const fileData = await getResp.json();
+                    sha = fileData.sha;
+                    existing = JSON.parse(atob(fileData.content));
+                }
+            } catch (e) { /* file doesn't exist yet */ }
+
+            // Add new client if not already present
+            if (!existing.find(c => c.slug === clientSlug)) {
+                existing.push({ slug: clientSlug, name: clientName });
+                existing.sort((a, b) => a.name.localeCompare(b.name));
+
+                const body = {
+                    message: `Add client: ${clientName}`,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(existing, null, 2)))),
+                };
+                if (sha) body.sha = sha;
+
+                await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/docs/clients/clients.json`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${githubToken}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                        },
+                        body: JSON.stringify(body),
+                    }
+                );
+            }
+        } catch (e) {
+            console.error('Failed to update clients.json:', e);
+        }
+    }
+
+    // ========================================
+    // Init
+    // ========================================
+
     window.initDashboard = async function() {
+        await loadClientList();
+        populateClientSelector();
+
         const success = await loadData();
         if (!success) {
             document.getElementById('app').innerHTML = '<div style="text-align:center;padding:60px;"><h2>Data not available</h2><p>dashboard-data.json not found</p></div>';
@@ -449,6 +555,14 @@
                 (isJa ? '最終更新: ' : '最后更新: ') + d.toLocaleDateString('ja-JP');
         }
 
+        // Update client name in client list if we have real data
+        const currentSlug = getClientSlug();
+        const clientInList = clientList.find(c => c.slug === currentSlug);
+        if (clientInList && clientInList.name === currentSlug && dashboardData.client) {
+            clientInList.name = dashboardData.client;
+            populateClientSelector();
+        }
+
         populatePeriodSelectors();
         updateDashboard();
 
@@ -456,18 +570,16 @@
         document.getElementById('period-apply').addEventListener('click', updateDashboard);
 
         // Restore saved admin credentials
+        const savedClientName = localStorage.getItem('admin_client_name');
+        if (savedClientName) document.getElementById('admin-client-name').value = savedClientName;
+        const savedClientSlug = localStorage.getItem('admin_client_slug');
+        if (savedClientSlug) document.getElementById('admin-client-slug').value = savedClientSlug;
         const savedDatasetId = localStorage.getItem('admin_dataset_id');
-        if (savedDatasetId) {
-            document.getElementById('admin-dataset-id').value = savedDatasetId;
-        }
+        if (savedDatasetId) document.getElementById('admin-dataset-id').value = savedDatasetId;
         const savedApiToken = sessionStorage.getItem('admin_api_token');
-        if (savedApiToken) {
-            document.getElementById('admin-api-token').value = savedApiToken;
-        }
+        if (savedApiToken) document.getElementById('admin-api-token').value = savedApiToken;
         const savedGithubToken = sessionStorage.getItem('admin_github_token');
-        if (savedGithubToken) {
-            document.getElementById('admin-github-token').value = savedGithubToken;
-        }
+        if (savedGithubToken) document.getElementById('admin-github-token').value = savedGithubToken;
 
         // Admin update button
         document.getElementById('admin-update').addEventListener('click', triggerWorkflow);
