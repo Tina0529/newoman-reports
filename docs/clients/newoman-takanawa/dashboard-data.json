@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-02-15T21:28:34.038304",
+  "updated_at": "2026-02-16T07:24:19.850789",
   "months": [
     {
       "period": "2025年9月",
@@ -122,6 +122,30 @@
       ],
       "report_file": "reports/2026-01.html",
       "unanswered_file": "reports/2026-01_unanswered.html"
+    },
+    {
+      "period": "2026年2月",
+      "year_month": "2026-02",
+      "total_messages": 383,
+      "normal_answer_rate": 93.2,
+      "unanswered_rate": 6.8,
+      "good_rating_rate": 28.6,
+      "feedback_rate": 1.8,
+      "daily_average": 23.9,
+      "unique_users": 5,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 11.0,
+      "weekday_counts": [
+        52,
+        35,
+        50,
+        47,
+        61,
+        49,
+        89
+      ],
+      "report_file": "reports/2026-02.html",
+      "unanswered_file": "reports/2026-02_unanswered.html"
     }
   ]
 }
