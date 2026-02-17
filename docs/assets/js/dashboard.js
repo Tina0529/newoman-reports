@@ -28,6 +28,24 @@
         return ym.replace('-', '/');
     }
 
+    // Persist hidden slugs locally so deletions take effect before GitHub Pages redeploys
+    function getLocalHiddenSlugs() {
+        try {
+            return JSON.parse(localStorage.getItem('hidden_client_slugs') || '[]');
+        } catch (e) { return []; }
+    }
+    function addLocalHiddenSlug(slug) {
+        const hidden = getLocalHiddenSlugs();
+        if (!hidden.includes(slug)) {
+            hidden.push(slug);
+            localStorage.setItem('hidden_client_slugs', JSON.stringify(hidden));
+        }
+    }
+    function removeLocalHiddenSlug(slug) {
+        const hidden = getLocalHiddenSlugs().filter(s => s !== slug);
+        localStorage.setItem('hidden_client_slugs', JSON.stringify(hidden));
+    }
+
     async function loadClientList() {
         try {
             const resp = await fetch('clients/clients.json');
@@ -37,6 +55,26 @@
         } catch (e) {
             // clients.json not found — build from current data only
         }
+        // Apply local hidden state (covers gap before GitHub Pages redeploys)
+        const localHidden = getLocalHiddenSlugs();
+        clientList.forEach(c => {
+            if (localHidden.includes(c.slug)) c.hidden = true;
+            // If server says hidden but not in local list, sync local → server won
+            // If server says NOT hidden and local says hidden, local wins (fresher)
+        });
+        // Sync: if server already has hidden=true, remove from local cache (server caught up)
+        clientList.forEach(c => {
+            if (c.hidden && !localHidden.includes(c.slug)) {
+                // Server already hidden, no need for local override
+            }
+        });
+        // Clean up local hidden slugs that server now reflects
+        const serverHiddenSlugs = clientList.filter(c => c.hidden).map(c => c.slug);
+        const cleanedLocal = localHidden.filter(s => !serverHiddenSlugs.includes(s));
+        if (cleanedLocal.length !== localHidden.length) {
+            localStorage.setItem('hidden_client_slugs', JSON.stringify(cleanedLocal));
+        }
+
         // Ensure current client is in the list
         const currentSlug = getClientSlug();
         if (!clientList.find(c => c.slug === currentSlug)) {
@@ -590,6 +628,8 @@
                 existing.sort((a, b) => a.name.localeCompare(b.name));
                 await writeClientsJsonToGitHub(githubToken, existing, sha, `Add client: ${clientName}`);
             }
+            // Clear from local hidden cache (client is now active)
+            removeLocalHiddenSlug(clientSlug);
         } catch (e) {
             console.error('Failed to update clients.json:', e);
         }
@@ -616,9 +656,25 @@
                 client.hidden = true;
                 await writeClientsJsonToGitHub(githubToken, existing, sha, `Hide client: ${client.name}`);
 
+                // Persist locally so deletion survives page reload before GitHub Pages redeploys
+                addLocalHiddenSlug(slug);
+
                 // Update local state
                 const local = clientList.find(c => c.slug === slug);
                 if (local) local.hidden = true;
+
+                // Clear admin form fields if they match the deleted client
+                const adminSlugField = document.getElementById('admin-client-slug');
+                if (adminSlugField && adminSlugField.value === slug) {
+                    document.getElementById('admin-client-name').value = '';
+                    adminSlugField.value = '';
+                    document.getElementById('admin-dataset-id').value = '';
+                    localStorage.removeItem('admin_client_name');
+                    localStorage.removeItem('admin_client_slug');
+                    localStorage.removeItem('admin_dataset_id');
+                }
+
+                // Re-render client selector and management list
                 populateClientSelector();
                 renderClientManagement();
 
@@ -649,6 +705,20 @@
 
     window.initDashboard = async function() {
         await loadClientList();
+
+        // If current client is hidden (deleted), redirect to first visible client
+        const currentSlug = getClientSlug();
+        const currentClient = clientList.find(c => c.slug === currentSlug);
+        if (currentClient && currentClient.hidden) {
+            const visible = getVisibleClients();
+            if (visible.length > 0) {
+                const url = new URL(window.location);
+                url.searchParams.set('client', visible[0].slug);
+                window.location.href = url.toString();
+                return;
+            }
+        }
+
         populateClientSelector();
 
         const success = await loadData();
