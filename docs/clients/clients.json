@@ -1,7 +1,8 @@
 [
   {
     "slug": "brexa-next",
-    "name": "BREXA-Next"
+    "name": "BREXA-Next",
+    "hidden": true
   },
   {
     "slug": "newoman-takanawa",
