@@ -176,9 +176,38 @@ def categorize_unanswered(question, answer):
 
 
 def count_session_depth(df):
-    """会話深度を集計"""
-    session_counts = df.groupby('チャット ID').size()
+    """会話深度を集計
+
+    CSV形式: 各セッションの最初の行にのみ チャットID と ユーザーの質問数 が入り、
+    後続行は NaN。この場合 ユーザーの質問数 カラムを直接使用する。
+
+    API形式: 全行に session_id が入る。groupby で集計。
+    """
     depth = {"1回": 0, "2回": 0, "3回": 0, "4回+": 0}
+
+    # CSV形式: ユーザーの質問数カラムが存在し、有効な値がある場合はそれを使う
+    if 'ユーザーの質問数' in df.columns:
+        q_counts = df['ユーザーの質問数'].dropna()
+        if len(q_counts) > 0:
+            for count in q_counts:
+                count = int(count)
+                if count == 1:
+                    depth["1回"] += 1
+                elif count == 2:
+                    depth["2回"] += 1
+                elif count == 3:
+                    depth["3回"] += 1
+                else:
+                    depth["4回+"] += 1
+            return depth
+
+    # API形式 or フォールバック: チャットIDでgroupby
+    # NaNのチャットIDは前の値で埋める（CSV形式で ユーザーの質問数 がない場合）
+    chat_ids = df['チャット ID'].copy()
+    if chat_ids.isna().any():
+        chat_ids = chat_ids.ffill()
+
+    session_counts = df.groupby(chat_ids).size()
     for count in session_counts:
         if count == 1:
             depth["1回"] += 1
