@@ -384,6 +384,28 @@ body {
     align-items: center;
     gap: 12px;
 }
+.client-item-select {
+    cursor: pointer;
+    flex: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 200ms;
+}
+.client-item-select:hover {
+    background: var(--primary-light);
+}
+.client-item-active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.client-item-cached {
+    font-size: 11px;
+    color: var(--success);
+    background: var(--success-light);
+    padding: 1px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
+}
 
 .client-item-name {
     font-size: 14px;

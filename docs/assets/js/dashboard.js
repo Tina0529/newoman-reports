@@ -46,6 +46,31 @@
         localStorage.setItem('hidden_client_slugs', JSON.stringify(hidden));
     }
 
+    // Per-client credential cache (localStorage)
+    function saveClientCredentials(slug, creds) {
+        try {
+            localStorage.setItem('client_creds_' + slug, JSON.stringify(creds));
+        } catch (e) { /* storage full */ }
+    }
+    function getClientCredentials(slug) {
+        try {
+            return JSON.parse(localStorage.getItem('client_creds_' + slug) || 'null');
+        } catch (e) { return null; }
+    }
+    function fillAdminForm(slug) {
+        const creds = getClientCredentials(slug);
+        if (!creds) return;
+        const client = clientList.find(c => c.slug === slug);
+        document.getElementById('admin-client-name').value = client ? client.name : (creds.name || '');
+        document.getElementById('admin-client-slug').value = slug;
+        if (creds.dataset_id) document.getElementById('admin-dataset-id').value = creds.dataset_id;
+        if (creds.api_token) document.getElementById('admin-api-token').value = creds.api_token;
+        // Highlight the selected client
+        document.querySelectorAll('.client-item').forEach(el => {
+            el.classList.toggle('client-item-active', el.dataset.slug === slug);
+        });
+    }
+
     async function loadClientList() {
         try {
             const resp = await fetch('clients/clients.json');
@@ -112,18 +137,29 @@
             container.innerHTML = `<p style="color:var(--text-muted);font-size:13px;">${isJa ? 'クライアントがありません' : '没有客户'}</p>`;
             return;
         }
-        container.innerHTML = visible.map(c => `
-            <div class="client-item">
-                <div class="client-item-info">
+        container.innerHTML = visible.map(c => {
+            const hasCreds = !!getClientCredentials(c.slug);
+            const selectHint = isJa ? '選択して入力' : '点击填入';
+            return `
+            <div class="client-item${hasCreds ? ' client-item-has-creds' : ''}" data-slug="${c.slug}">
+                <div class="client-item-info client-item-select" data-slug="${c.slug}" title="${selectHint}">
                     <span class="client-item-name">${c.name}</span>
                     <span class="client-item-slug">${c.slug}</span>
+                    ${hasCreds ? `<span class="client-item-cached">${isJa ? '保存済み' : '已缓存'}</span>` : ''}
                 </div>
                 <button class="btn btn-ghost btn-sm client-delete-btn" data-slug="${c.slug}" title="${isJa ? '削除' : '删除'}">✕</button>
             </div>
-        `).join('');
+        `}).join('');
+
+        container.querySelectorAll('.client-item-select').forEach(el => {
+            el.addEventListener('click', function() {
+                fillAdminForm(this.dataset.slug);
+            });
+        });
 
         container.querySelectorAll('.client-delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
                 const slug = this.dataset.slug;
                 const client = clientList.find(c => c.slug === slug);
                 const confirmMsg = isJa
@@ -457,11 +493,12 @@
             return;
         }
 
-        // Save credentials for convenience
-        localStorage.setItem('admin_client_name', clientName);
-        localStorage.setItem('admin_client_slug', clientSlug);
-        localStorage.setItem('admin_dataset_id', datasetId);
-        sessionStorage.setItem('admin_api_token', apiToken);
+        // Save credentials per client for quick reuse
+        saveClientCredentials(clientSlug, {
+            name: clientName,
+            dataset_id: datasetId,
+            api_token: apiToken,
+        });
         sessionStorage.setItem('admin_github_token', githubToken);
 
         showAdminStatus('loading', isJa
@@ -749,15 +786,21 @@
         // Period apply button
         document.getElementById('period-apply').addEventListener('click', updateDashboard);
 
-        // Restore saved admin credentials
-        const savedClientName = localStorage.getItem('admin_client_name');
-        if (savedClientName) document.getElementById('admin-client-name').value = savedClientName;
-        const savedClientSlug = localStorage.getItem('admin_client_slug');
-        if (savedClientSlug) document.getElementById('admin-client-slug').value = savedClientSlug;
-        const savedDatasetId = localStorage.getItem('admin_dataset_id');
-        if (savedDatasetId) document.getElementById('admin-dataset-id').value = savedDatasetId;
-        const savedApiToken = sessionStorage.getItem('admin_api_token');
-        if (savedApiToken) document.getElementById('admin-api-token').value = savedApiToken;
+        // Restore saved admin credentials — prefer per-client cache
+        const cachedCreds = getClientCredentials(currentSlug);
+        if (cachedCreds) {
+            fillAdminForm(currentSlug);
+        } else {
+            // Fallback: legacy flat keys
+            const savedClientName = localStorage.getItem('admin_client_name');
+            if (savedClientName) document.getElementById('admin-client-name').value = savedClientName;
+            const savedClientSlug = localStorage.getItem('admin_client_slug');
+            if (savedClientSlug) document.getElementById('admin-client-slug').value = savedClientSlug;
+            const savedDatasetId = localStorage.getItem('admin_dataset_id');
+            if (savedDatasetId) document.getElementById('admin-dataset-id').value = savedDatasetId;
+            const savedApiToken = sessionStorage.getItem('admin_api_token');
+            if (savedApiToken) document.getElementById('admin-api-token').value = savedApiToken;
+        }
         const savedGithubToken = sessionStorage.getItem('admin_github_token');
         if (savedGithubToken) document.getElementById('admin-github-token').value = savedGithubToken;
 
