@@ -737,7 +737,6 @@
         }
 
         // Update client name in client list if we have real data
-        const currentSlug = getClientSlug();
         const clientInList = clientList.find(c => c.slug === currentSlug);
         if (clientInList && clientInList.name === currentSlug && dashboardData.client) {
             clientInList.name = dashboardData.client;
