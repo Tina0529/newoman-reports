@@ -1020,6 +1020,48 @@
             </div>
         </section>
         
+        <!-- Source Analysis (API mode only - hidden when no data) -->
+        <section class="section" id="sourceAnalysisSection" style="{{SOURCE_SECTION_DISPLAY}}">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                        </svg>
+                    </span>
+                    <span data-ja="回答ソース分析" data-zh="回答来源分析">回答ソース分析</span>
+                </h2>
+            </div>
+
+            <div class="two-col">
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="回答ソース分布" data-zh="回答来源分布">回答ソース分布</div>
+                    <div class="chart-container" id="sourceChart"></div>
+                </div>
+                <div>
+                    <div class="chart-title" data-ja="ソース別詳細" data-zh="来源详情">ソース別詳細</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-ja="ソース" data-zh="来源">ソース</th>
+                                <th data-ja="件数" data-zh="件数">件数</th>
+                                <th data-ja="割合" data-zh="占比">割合</th>
+                                <th data-ja="平均回答長" data-zh="平均回答长度">平均回答長</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sourceTableBody">
+                            {{SOURCE_TABLE_ROWS}}
+                        </tbody>
+                    </table>
+                    <div style="margin-top: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+                            <span data-ja="RAG = ナレッジベースから検索・生成、FAQ = 事前設定の回答、その他 = 挨拶・誘導等" data-zh="RAG = 从知识库检索生成、FAQ = 预设回答、其他 = 寒暄/引导等">RAG = ナレッジベースから検索・生成、FAQ = 事前設定の回答、その他 = 挨拶・誘導等</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Bot Performance -->
         <section class="section">
             <div class="section-header">
@@ -1423,6 +1465,44 @@
                     }
                 }]
             });
+
+            // Source Analysis (only render if element exists)
+            var sourceChartEl = document.getElementById('sourceChart');
+            if (sourceChartEl && sourceChartEl.offsetParent !== null) {
+                var sourceLabels = currentLang === 'ja'
+                    ? ['RAG', 'FAQ', 'その他']
+                    : ['RAG', 'FAQ', '其他'];
+
+                var sourceData = {{SOURCE_CHART_DATA}};
+
+                var sourceChart = echarts.init(sourceChartEl);
+                sourceChart.setOption({
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                    legend: {
+                        orient: 'vertical',
+                        right: '5%',
+                        top: 'center',
+                        textStyle: { color: '#6B7280', fontSize: 12 }
+                    },
+                    series: [{
+                        type: 'pie',
+                        radius: ['50%', '75%'],
+                        center: ['35%', '50%'],
+                        label: {
+                            show: true,
+                            formatter: '{d}%',
+                            fontSize: 12,
+                            fontWeight: 600
+                        },
+                        emphasis: { label: { show: true, fontSize: 14, fontWeight: 700 } },
+                        data: [
+                            { value: sourceData[0], name: sourceLabels[0], itemStyle: { color: '#3B82F6' } },
+                            { value: sourceData[1], name: sourceLabels[1], itemStyle: { color: '#10B981' } },
+                            { value: sourceData[2], name: sourceLabels[2], itemStyle: { color: '#94A3B8' } }
+                        ]
+                    }]
+                });
+            }
         }
         
         // Initialize - wait for DOM and ECharts to be ready

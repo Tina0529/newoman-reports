@@ -425,13 +425,14 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
             "チャット ID": msg.get("session_id", ""),
             "ユーザー": msg.get("user_id", ""),
             "担当者に接続済み": transfer,
+            "回答来源": msg.get("comes_from", "unknown"),
         })
 
     df = pd.DataFrame(rows)
     return df
 
 
-def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_counts, feedback_rate):
+def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_counts, feedback_rate, source_stats=None):
     """Dashboard用のKPI統計を計算"""
     total = kpi["total_messages"]
     foreign_count = sum(int(language_counts.get(l, 0)) for l in ["英語", "中国語", "韓国語"])
@@ -450,7 +451,7 @@ def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_c
     weekday_counts = df['曜日'].value_counts().sort_index()
     weekday_data = [int(weekday_counts.get(i, 0)) for i in range(7)]
 
-    return {
+    result = {
         "period": period,
         "year_month": year_month,
         "total_messages": total,
@@ -464,6 +465,19 @@ def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_c
         "foreign_language_pct": round(foreign_pct, 1),
         "weekday_counts": weekday_data,
     }
+
+    # 回答来源分布（API モードのみ）
+    if source_stats:
+        result["source_distribution"] = {
+            "rag_count": source_stats["RAG"]["count"],
+            "rag_pct": source_stats["RAG"]["percent"],
+            "faq_count": source_stats["FAQ"]["count"],
+            "faq_pct": source_stats["FAQ"]["percent"],
+            "other_count": source_stats["その他"]["count"],
+            "other_pct": source_stats["その他"]["percent"],
+        }
+
+    return result
 
 
 def update_dashboard_json(site_dir, client_slug, client_name, month_stats,
@@ -667,6 +681,35 @@ def main():
     df['メディアタイプ'] = df['回答'].apply(detect_media_type)
     media_counts = df['メディアタイプ'].value_counts()
 
+    # 回答来源分析（API モードのみ: comes_from フィールド）
+    has_source_data = '回答来源' in df.columns and df['回答来源'].notna().any() and not (df['回答来源'] == 'unknown').all()
+
+    if has_source_data:
+        # 来源を3カテゴリに集約: RAG / FAQ / その他
+        source_map = {
+            'chunk': 'RAG',
+            'faq': 'FAQ',
+            'greetings': 'その他',
+            'agent_faq': 'その他',
+        }
+        df['来源カテゴリ'] = df['回答来源'].map(source_map).fillna('その他')
+
+        source_category_counts = df['来源カテゴリ'].value_counts()
+        source_stats = {}
+        for cat in ['RAG', 'FAQ', 'その他']:
+            count = int(source_category_counts.get(cat, 0))
+            pct = count / total_messages * 100 if total_messages > 0 else 0
+            # 平均回答長さ
+            cat_answers = df[df['来源カテゴリ'] == cat]['回答'].dropna().astype(str)
+            avg_len = cat_answers.str.len().mean() if len(cat_answers) > 0 else 0
+            source_stats[cat] = {"count": count, "percent": round(pct, 1), "avg_len": round(avg_len, 0)}
+
+        print(f"\n📌 回答来源分析:")
+        for cat, st in source_stats.items():
+            print(f"  {cat}: {st['count']}件 ({st['percent']}%) 平均{st['avg_len']:.0f}文字")
+    else:
+        source_stats = None
+
     # エラーパターン
     unanswered_df = df[df['未回答フラグ'] == True].copy()
     if len(unanswered_df) > 0:
@@ -784,6 +827,36 @@ def main():
     # Media
     media_values = [int(media_counts.get(m, 0)) for m in ["リンク含む", "画像含む", "テーブル含む", "テキストのみ"]]
     main_html = re.sub(r"data: \[269, 83, 179, 639\]", f"data: {media_values}", main_html)
+
+    # Source Analysis
+    if source_stats:
+        main_html = main_html.replace("{{SOURCE_SECTION_DISPLAY}}", "")
+        source_chart_values = [
+            source_stats["RAG"]["count"],
+            source_stats["FAQ"]["count"],
+            source_stats["その他"]["count"],
+        ]
+        main_html = main_html.replace("{{SOURCE_CHART_DATA}}", json.dumps(source_chart_values))
+
+        source_badge_colors = {"RAG": "badge-blue", "FAQ": "badge-green", "その他": "badge-gray"}
+        source_table_html = ""
+        for cat_name in ["RAG", "FAQ", "その他"]:
+            st = source_stats[cat_name]
+            badge = source_badge_colors[cat_name]
+            cat_label_zh = {"RAG": "RAG", "FAQ": "FAQ", "その他": "其他"}.get(cat_name, cat_name)
+            source_table_html += f'''
+                            <tr>
+                                <td><span class="badge {badge}" data-ja="{cat_name}" data-zh="{cat_label_zh}">{cat_name}</span></td>
+                                <td class="number">{st["count"]}</td>
+                                <td class="number">{st["percent"]}%</td>
+                                <td class="number">{st["avg_len"]:.0f}<span style="font-size:0.75rem;color:var(--text-muted);" data-ja="文字" data-zh="字"> 文字</span></td>
+                            </tr>'''
+        main_html = main_html.replace("{{SOURCE_TABLE_ROWS}}", source_table_html)
+    else:
+        # CSV mode or no source data: hide the section
+        main_html = main_html.replace("{{SOURCE_SECTION_DISPLAY}}", "display:none")
+        main_html = main_html.replace("{{SOURCE_CHART_DATA}}", "[0, 0, 0]")
+        main_html = main_html.replace("{{SOURCE_TABLE_ROWS}}", "")
 
     # Unanswered CTA
     main_html = re.sub(r'<div class="cta-value">104</div>', f'<div class="cta-value">{kpi["unanswered_count"]}</div>', main_html)
@@ -1017,7 +1090,8 @@ def main():
 
         # KPI統計を計算
         month_stats = compute_kpi_for_dashboard(
-            df, kpi, period, year_month, avg_daily, language_counts, feedback_rate
+            df, kpi, period, year_month, avg_daily, language_counts, feedback_rate,
+            source_stats=source_stats
         )
 
         # dashboard-data.json を更新
