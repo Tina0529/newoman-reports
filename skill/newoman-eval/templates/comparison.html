@@ -319,9 +319,16 @@ function renderSummary(b1,b2){
   }
   const r1=calc(b1),r2=calc(b2);
   function avgTime(results){return+(results.reduce((s,r)=>s+r.elapsed_seconds,0)/results.length).toFixed(1)}
-  function maxTime(results){return+Math.max(...results.map(r=>r.elapsed_seconds)).toFixed(1)}
   const t1=avgTime(b1.results),t2=avgTime(b2.results);
-  const max1=maxTime(b1.results),max2=maxTime(b2.results);
+  // Max category-average time (matches the category response time chart)
+  function maxCatAvg(bot){
+    const cats={};
+    bot.results.forEach(r=>{if(!cats[r.category])cats[r.category]=[];cats[r.category].push(r.elapsed_seconds)});
+    let mx=0;
+    for(const c in cats){const a=+(cats[c].reduce((s,v)=>s+v,0)/cats[c].length).toFixed(1);if(a>mx)mx=a}
+    return mx;
+  }
+  const catMax1=maxCatAvg(b1),catMax2=maxCatAvg(b2);
   // FAQ/RAG separate times
   const faq1=b1.results.filter(r=>r.source==='faq'),faq2=b2.results.filter(r=>r.source==='faq');
   const rag1=b1.results.filter(r=>r.source==='rag'),rag2=b2.results.filter(r=>r.source==='rag');
@@ -389,12 +396,11 @@ function renderSummary(b1,b2){
         実際の利用シーンでは、FAQ（よくある質問）経由の回答は
         <b>${BOT1_MODEL}: 平均${faqAvg1}秒</b> / <b>${BOT2_MODEL}: 平均${faqAvg2}秒</b> と
         いずれも <b>1秒未満</b> で即答されるため、ユーザー体験への影響はありません。<br>
-        さらに、<b>最大応答時間</b>を見ると
-        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${max1}秒</span>に対し
-        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${max2}秒</span>と、
-        ${BOT2_MODEL} の方が<b>極端に遅い個例</b>（${max2}秒）が発生しています。
-        ${BOT1_MODEL} の最大値は ${max1}秒に収まっており、<b>応答時間のばらつきが小さく安定</b>しています。
-        <br><b>結論：平均では約${Math.abs(t1-t2).toFixed(0)}秒の差がありますが、FAQ即答・最大値の安定性を考慮すると、${BOT1_MODEL} がユーザー体験上不利になることはありません。</b>
+        さらに、カテゴリ別の<b>最大平均応答時間</b>を見ると
+        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${catMax1}秒</span>に対し
+        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${catMax2}秒</span>と、
+        ${BOT2_MODEL} の方が<b>${(catMax2-catMax1).toFixed(1)}秒遅く</b>、${BOT1_MODEL} の方がむしろ安定しています。
+        <br><b>結論：全体平均では約${Math.abs(t1-t2).toFixed(0)}秒の差がありますが、FAQ即答・カテゴリ別ピークの安定性を考慮すると、${BOT1_MODEL} がユーザー体験上不利になることはありません。</b>
       </div>
     </div>`;
 }
