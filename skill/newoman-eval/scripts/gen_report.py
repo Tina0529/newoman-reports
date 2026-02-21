@@ -90,16 +90,16 @@ def main():
     bot1_json_str = json.dumps(bot1_data, ensure_ascii=False)
     bot2_json_str = json.dumps(bot2_data, ensure_ascii=False)
 
-    # Find and replace the loadData function and IIFE
+    # Find and replace the entire loadData function (multi-line, ends with lone "}")
     old_load = re.search(
-        r"async function loadData\(\)\{.*?\}\s*\n",
+        r"async function loadData\(\)\{.*?\n\}",
         template,
         re.DOTALL,
     )
     if old_load:
         template = template.replace(
             old_load.group(0),
-            f"function loadData(){{BOT1={bot1_json_str};BOT2={bot2_json_str};return true}}\n",
+            f"function loadData(){{BOT1={bot1_json_str};BOT2={bot2_json_str};return true}}",
         )
 
     # Replace async IIFE with sync call
