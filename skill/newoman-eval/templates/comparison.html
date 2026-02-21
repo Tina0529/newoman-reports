@@ -339,6 +339,15 @@ function renderSummary(b1,b2){
   const testDate=b1.meta.timestamp.slice(0,10);
 
   const el=document.getElementById('exec-summary');
+
+  // Stability diff direction
+  const stabDiff=(r1.rate-r2.rate).toFixed(1);
+  const stabBetter=parseFloat(stabDiff)>0?BOT1_MODEL:BOT2_MODEL;
+  // Time diff
+  const timeDiff=(t1-t2).toFixed(1);
+  const slower=parseFloat(timeDiff)>0?BOT1_MODEL:BOT2_MODEL;
+  const catDiff=(catMax2-catMax1).toFixed(1);
+
   el.innerHTML=`
     <div class="summary-title">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
@@ -348,59 +357,60 @@ function renderSummary(b1,b2){
     <div class="summary-section">
       <div class="summary-section-head">
         <span class="sec-icon" style="background:#64748B">1</span>
-        テストの概要
+        テストの背景
       </div>
       <div class="summary-section-body">
-        ${testDate} に、NEWoMan高輪チャットボットの<b>モデル切り替え検証</b>として、
-        <span class="summary-stat stat-cyan">${BOT1_SHORT}（${BOT1_MODEL}）</span>と
-        <span class="summary-stat stat-purple">${BOT2_SHORT}（${BOT2_MODEL}）</span>の2つの環境に対し、
-        同一の <b>${b1.meta.total_questions}件</b> のテスト質問を送信して比較しました。
-        テスト質問は営業時間・アクセス・店舗情報・イベント・施設案内など実際のユーザーが聞く内容を網羅しています。
-        <br>本テストの目的は、<b>モデルを ${BOT2_MODEL} から ${BOT1_MODEL} に変更した場合、RAG処理の安定性がどの程度向上するか</b>を検証することです。
+        現在本番環境で稼働中の <span class="summary-stat stat-purple">${BOT2_MODEL}</span> から
+        <span class="summary-stat stat-cyan">${BOT1_MODEL}</span> への切り替えを検討するにあたり、
+        ${testDate} に同一条件での比較テストを実施しました。<br>
+        テスト対象は
+        <b>${BOT1_SHORT}（${BOT1_MODEL}）</b>と<b>${BOT2_SHORT}（${BOT2_MODEL}）</b>の2環境で、
+        営業時間・アクセス・店舗情報・イベント・施設案内など実際の利用シーンを想定した
+        <b>${b1.meta.total_questions}件</b>の質問を、両環境に同一条件で送信しています。
       </div>
     </div>
 
     <div class="summary-section">
       <div class="summary-section-head">
         <span class="sec-icon" style="background:var(--green)">2</span>
-        回答の安定性 &mdash; ${BOT1_MODEL} が大幅に改善
+        検証①：回答の安定性に差はあるか
       </div>
       <div class="summary-section-body">
-        RAGパイプライン（情報検索→回答生成）が<b>正常に完了した割合</b>を比較すると、
-        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${r1.rate}%</span>に対し
-        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${r2.rate}%</span>です。<br>
-        <b>${BOT1_MODEL}</b> は処理失敗（応答なし・定型文のみ・エラー）が
-        <span class="summary-stat stat-green">${r1.fail}件</span>と${r1.fail===0?'<b>ゼロ</b>であり':'極めて少なく'}、
-        全${r1.total}件すべてでRAG処理が正常に完了しました。
-        一方、<b>${BOT2_MODEL}</b> は処理失敗が
-        <span class="summary-stat stat-orange">${r2.fail}件</span>
-        ${r2.filler>0?`（定型文のみ: ${r2.filler}件）`:''} 発生しています。<br>
-        また、回答を返せた件数も <b>${BOT1_MODEL}: ${r1.answered}件</b> vs <b>${BOT2_MODEL}: ${r2.answered}件</b> と
-        <b>${r1.answered-r2.answered}件の差</b>があり、
-        ${BOT1_MODEL} はより多くの質問に対して有効な情報を検索・回答できています。
-        <br><b>結論：${BOT1_MODEL} への切り替えにより、RAG処理の安定性は明確に向上しています。</b>
+        RAGパイプライン（情報検索→回答生成）が正常に完了した割合を比較します。<br>
+        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${r1.rate}%</span>（${r1.ok}件正常 / ${r1.total}件中）<br>
+        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${r2.rate}%</span>（${r2.ok}件正常 / ${r2.total}件中）<br>
+        処理失敗（応答なし・定型文のみ・エラー）の内訳は、
+        ${BOT1_MODEL} が <b>${r1.fail}件</b>（応答なし: ${r1.empty}、定型文: ${r1.filler}、エラー: ${r1.error}）、
+        ${BOT2_MODEL} が <b>${r2.fail}件</b>（応答なし: ${r2.empty}、定型文: ${r2.filler}、エラー: ${r2.error}）です。<br>
+        また、有効な回答を返せた件数は ${BOT1_MODEL} が <b>${r1.answered}件</b>、${BOT2_MODEL} が <b>${r2.answered}件</b> で、
+        <b>${Math.abs(r1.answered-r2.answered)}件の差</b>が見られます。<br>
+        以上のデータから、${BOT1_MODEL} はRAGパイプラインの処理完了率・回答件数ともに ${BOT2_MODEL} を上回っており、
+        <b>回答の安定性は ${BOT1_MODEL} の方が高い</b>と判断できます。
       </div>
     </div>
 
     <div class="summary-section">
       <div class="summary-section-head">
         <span class="sec-icon" style="background:var(--cyan)">3</span>
-        応答速度 &mdash; 体感上の差はほぼなし
+        検証②：応答速度に差はあるか
       </div>
       <div class="summary-section-body">
-        全体の平均応答時間は
+        全体の平均応答時間を比較します。<br>
         <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${t1}秒</span>
-        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${t2}秒</span>
-        で、${BOT1_MODEL} が約 <b>${Math.abs(t1-t2).toFixed(1)}秒</b> 遅い結果です。
-        ただし、この数値はバックエンドの<b>RAG情報検索を含むエンドツーエンドの処理時間</b>です。<br>
-        実際の利用シーンでは、FAQ（よくある質問）経由の回答は
-        <b>${BOT1_MODEL}: 平均${faqAvg1}秒</b> / <b>${BOT2_MODEL}: 平均${faqAvg2}秒</b> と
-        いずれも <b>1秒未満</b> で即答されるため、ユーザー体験への影響はありません。<br>
-        さらに、カテゴリ別の<b>最大平均応答時間</b>を見ると
-        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${catMax1}秒</span>に対し
+        <span class="summary-stat stat-purple">${BOT2_MODEL}: ${t2}秒</span><br>
+        全体平均では ${BOT1_MODEL} が約 <b>${Math.abs(parseFloat(timeDiff))}秒遅い</b> 結果です。
+        ただし、この数値はバックエンドのRAG情報検索を含む<b>エンドツーエンドの処理時間</b>であり、
+        実際のユーザー体感とは異なります。<br>
+        <b>FAQ経由の回答</b>（よくある質問への即答）に限ると、
+        ${BOT1_MODEL}: 平均 <b>${faqAvg1}秒</b> / ${BOT2_MODEL}: 平均 <b>${faqAvg2}秒</b> と、
+        いずれも1秒未満で処理されており、体感上の差はありません。<br>
+        また、カテゴリ別の最大平均応答時間では
+        <span class="summary-stat stat-cyan">${BOT1_MODEL}: ${catMax1}秒</span>
         <span class="summary-stat stat-purple">${BOT2_MODEL}: ${catMax2}秒</span>と、
-        ${BOT2_MODEL} の方が<b>${(catMax2-catMax1).toFixed(1)}秒遅く</b>、${BOT1_MODEL} の方がむしろ安定しています。
-        <br><b>結論：全体平均では約${Math.abs(t1-t2).toFixed(0)}秒の差がありますが、FAQ即答・カテゴリ別ピークの安定性を考慮すると、${BOT1_MODEL} がユーザー体験上不利になることはありません。</b>
+        ${BOT2_MODEL} の方が <b>${catDiff}秒長く</b>なっています。<br>
+        以上を総合すると、全体平均では ${BOT1_MODEL} が約${Math.abs(parseFloat(timeDiff)).toFixed(0)}秒遅いものの、
+        FAQ即答の速さやカテゴリ別ピークの安定性を考慮すると、
+        <b>ユーザー体験に大きな影響を与える差ではない</b>と考えられます。
       </div>
     </div>`;
 }
