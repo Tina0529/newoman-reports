@@ -63,7 +63,7 @@ jobs:
 
           echo "Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
 
-          python3 skill/scripts/analyze.py \
+          python3 skill/chatbot-message-analyzer/scripts/analyze.py \
             --dataset-id "${{ inputs.dataset_id }}" \
             --token "${{ inputs.api_token }}" \
             --start-date "$START_DATE" \
