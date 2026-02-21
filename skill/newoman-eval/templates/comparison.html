@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEWoMan高輪 Bot 回答率比較レポート</title>
+<title>NEWoMan高輪 Bot 比較レポート</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
@@ -47,9 +47,20 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 .bot-label .dot{width:8px;height:8px;border-radius:50%}
 .bot1 .bot-label{color:var(--cyan)}.bot1 .dot{background:var(--cyan);box-shadow:0 0 6px var(--cyan-glow)}
 .bot2 .bot-label{color:var(--purple)}.bot2 .dot{background:var(--purple);box-shadow:0 0 6px var(--purple-glow)}
-.bot-name{font-size:18px;font-weight:700;margin-bottom:4px}
-.bot-model{font-size:13px;color:var(--text-muted);margin-bottom:4px}
-.bot-id{font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.3px}
+.bot-name{font-size:18px;font-weight:700;margin-bottom:8px}
+.bot-model-tag{display:inline-block;padding:4px 14px;border-radius:6px;font-size:14px;font-weight:700;letter-spacing:.3px}
+.bot1 .bot-model-tag{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(8,145,178,0.2)}
+.bot2 .bot-model-tag{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(124,58,237,0.2)}
+.bot-id{font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.3px;margin-top:8px}
+
+/* Summary box */
+.summary-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.summary-box .summary-title{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.summary-box .summary-text{font-size:14px;line-height:1.8;color:var(--text-muted)}
+.summary-box .summary-text b{color:var(--text);font-weight:600}
+.summary-box .highlight-good{color:var(--green);font-weight:700}
+.summary-box .highlight-warn{color:var(--orange);font-weight:700}
+.summary-box .highlight-bad{color:var(--red);font-weight:700}
 
 /* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px}
@@ -135,7 +146,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 
   <!-- ===== HEADER ===== -->
   <div class="header">
-    <h1>NEWoMan高輪 Bot 回答率比較レポート</h1>
+    <h1>NEWoMan高輪 Bot 比較レポート</h1>
     <p class="subtitle" id="report-subtitle"></p>
   </div>
 
@@ -144,26 +155,29 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
     <div class="bot-card bot1 animate-in">
       <div class="bot-label"><span class="dot"></span>Bot 1 &mdash; 検証環境</div>
       <div class="bot-name">NEWoMan高輪 検証環境</div>
-      <div class="bot-model">Model: Claude Sonnet 4.5</div>
+      <div class="bot-model-tag">Claude Sonnet 4.5</div>
       <div class="bot-id">ID: fa228b57-59e1-447b-87e2-02c494195961</div>
     </div>
     <div class="bot-card bot2 animate-in">
-      <div class="bot-label"><span class="dot"></span>Bot 2 &mdash; 正式環境</div>
-      <div class="bot-name">NEWoMan高輪 正式環境</div>
-      <div class="bot-model">Model: Gemini 2.5 Flash</div>
+      <div class="bot-label"><span class="dot"></span>Bot 2 &mdash; 本番環境</div>
+      <div class="bot-name">NEWoMan高輪 本番環境</div>
+      <div class="bot-model-tag">Gemini 2.5 Flash</div>
       <div class="bot-id">ID: b50d5b21-262a-4802-a8c4-512af224c72f</div>
     </div>
   </div>
+
+  <!-- ===== EXECUTIVE SUMMARY ===== -->
+  <div class="summary-box animate-in" id="exec-summary"></div>
 
   <!-- ===== RAG EXECUTION ANALYSIS ===== -->
   <div class="card" style="margin-bottom:20px">
     <div class="card-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
-      RAG 実行分析 &mdash; パイプラインが正常に完了したかどうか
+      回答処理の分析
     </div>
     <p style="font-size:12px;color:var(--text-dim);margin:-8px 0 16px;line-height:1.6">
-      <b style="color:var(--green)">正常実行</b> = 回答あり + 情報なし（RAGを実行し結果を返した）&emsp;
-      <b style="color:var(--red)">実行失敗</b> = 空応答 + 定型句のみ + エラー（RAGパイプラインが途中で停止）
+      <b style="color:var(--green)">正常処理</b> = 回答を返した + 該当情報なし&emsp;
+      <b style="color:var(--red)">処理失敗</b> = 応答なし + 定型文のみ + エラー
     </p>
     <div class="kpi-grid" id="rag-kpi-row" style="margin-bottom:20px"></div>
     <div class="grid-2" style="margin-bottom:0">
@@ -177,14 +191,14 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
     <div class="card">
       <div class="card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        カテゴリ別 RAG実行率
+        カテゴリ別の正常回答率
       </div>
       <div class="chart-box-lg" id="chart-category"></div>
     </div>
     <div class="card">
       <div class="card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
-        回答ソース分布 (RAG / FAQ)
+        回答ソースの内訳 (RAG / FAQ)
       </div>
       <div class="chart-box-lg" id="chart-source"></div>
     </div>
@@ -195,7 +209,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
   <div class="card" style="margin-bottom:20px">
     <div class="card-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      平均応答時間（秒）&mdash; リクエスト送信〜ストリーミング完了
+      平均応答時間（秒）
     </div>
     <div class="kpi-grid" id="time-kpi-row" style="margin-bottom:20px;grid-template-columns:repeat(3,1fr)"></div>
     <div class="chart-box" id="chart-time"></div>
@@ -205,20 +219,20 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
   <div class="card" style="margin-bottom:20px">
     <div class="card-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      全質問一覧 (<span id="visible-count">300</span> / 300)
+      全質問の一覧 (<span id="visible-count">300</span> / 300)
     </div>
 
     <div class="filter-row">
       <label>カテゴリ:</label>
       <select id="filter-cat"><option value="">すべて</option></select>
-      <label>RAG実行:</label>
+      <label>処理結果:</label>
       <select id="filter-result">
         <option value="">すべて</option>
-        <option value="both-ok">両方正常実行</option>
-        <option value="both-fail">両方実行失敗</option>
+        <option value="both-ok">両方とも正常</option>
+        <option value="both-fail">両方とも失敗</option>
         <option value="bot1-ok-only">検証のみ正常</option>
-        <option value="bot2-ok-only">正式のみ正常</option>
-        <option value="any-fail">実行失敗あり</option>
+        <option value="bot2-ok-only">本番のみ正常</option>
+        <option value="any-fail">失敗あり</option>
       </select>
       <label>検索:</label>
       <input type="text" id="filter-search" placeholder="質問を検索...">
@@ -228,8 +242,8 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
       <table class="glass-table">
         <thead><tr>
           <th>#</th><th>カテゴリ</th><th>質問</th>
-          <th>検証環境<br><span style="font-weight:400;opacity:.6">Sonnet4.5</span></th>
-          <th>正式環境<br><span style="font-weight:400;opacity:.6">Gemini2.5Flash</span></th>
+          <th>検証環境<br><span style="font-weight:400;opacity:.6">Sonnet 4.5</span></th>
+          <th>本番環境<br><span style="font-weight:400;opacity:.6">Gemini 2.5 Flash</span></th>
           <th>詳細</th>
         </tr></thead>
         <tbody id="tbody-all"></tbody>
@@ -237,11 +251,12 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
     </div>
   </div>
 
-  <div class="footer">Generated by bot_eval.py comparison tool</div>
+  <div class="footer">Generated by newoman-eval</div>
 </div>
 
 <script>
-const BOT1_SHORT='検証環境',BOT2_SHORT='正式環境';
+const BOT1_SHORT='検証環境',BOT2_SHORT='本番環境';
+const BOT1_MODEL='Sonnet 4.5',BOT2_MODEL='Gemini 2.5 Flash';
 const C1='#0891B2',C1L='#22D3EE',C2='#7C3AED',C2L='#A78BFA';
 const TX='#718096',LN='#E2E8F0';
 
@@ -262,8 +277,9 @@ function init(){
   const b1=BOT1,b2=BOT2,s1=b1.summary,s2=b2.summary;
 
   document.getElementById('report-subtitle').textContent=
-    `テスト日: ${b1.meta.timestamp.slice(0,10)} \u2502 質問数: ${b1.meta.total_questions} \u2502 評価基準: RAGパイプラインの実行完了率（正確性は問わない）`;
+    `テスト日: ${b1.meta.timestamp.slice(0,10)} \u2502 質問数: ${b1.meta.total_questions}`;
 
+  renderSummary(b1,b2);
   renderRagAnalysis(b1,b2);
   renderCategoryChart(b1,b2);renderSourceChart(s1,s2);renderTimeChart(b1,b2);
   renderTable(b1,b2);
@@ -275,6 +291,64 @@ function init(){
   ['filter-cat','filter-result','filter-search'].forEach(id=>{
     document.getElementById(id).addEventListener(id==='filter-search'?'input':'change',()=>applyFilters(b1,b2));
   });
+}
+
+// --- Executive summary ---
+function renderSummary(b1,b2){
+  const FAIL=['empty','filler_only','error'];
+  function calc(bot){
+    const t=bot.results.length;
+    const f=bot.results.filter(r=>FAIL.includes(r.reason)).length;
+    return{total:t,ok:t-f,fail:f,rate:+((t-f)/t*100).toFixed(1)};
+  }
+  const r1=calc(b1),r2=calc(b2);
+  const diff=(r1.rate-r2.rate).toFixed(1);
+  function avgTime(results){return+(results.reduce((s,r)=>s+r.elapsed_seconds,0)/results.length).toFixed(1)}
+  const t1=avgTime(b1.results),t2=avgTime(b2.results);
+
+  // Count divergent questions
+  let divergent=0;
+  for(let i=0;i<b1.results.length;i++){
+    const f1i=FAIL.includes(b1.results[i].reason);
+    const f2i=FAIL.includes(b2.results[i].reason);
+    if(f1i!==f2i) divergent++;
+  }
+
+  const el=document.getElementById('exec-summary');
+  const rateWin=r1.rate>=r2.rate?BOT1_MODEL:BOT2_MODEL;
+  const rateWinVal=Math.max(r1.rate,r2.rate);
+  const rateLoseVal=Math.min(r1.rate,r2.rate);
+  const timeWin=t1<=t2?BOT1_MODEL:BOT2_MODEL;
+  const timeWinVal=Math.min(t1,t2);
+  const timeLoseVal=Math.max(t1,t2);
+
+  let lines=[];
+  lines.push(`${b1.meta.total_questions}件の質問でテストした結果、`);
+  // Rate comparison
+  if(Math.abs(parseFloat(diff))<=1.0){
+    lines.push(`両モデルの正常回答率はほぼ同水準です（<b>${BOT1_MODEL}: ${r1.rate}%</b>、<b>${BOT2_MODEL}: ${r2.rate}%</b>）。`);
+  } else {
+    const cls=rateWinVal>=95?'highlight-good':'highlight-warn';
+    lines.push(`正常回答率は <b>${rateWin}</b> が <span class="${cls}">${rateWinVal}%</span> で、${rateLoseVal}%の相手より <b>${Math.abs(parseFloat(diff))}ポイント高い</b>結果です。`);
+  }
+  // Time comparison
+  const timeDiffAbs=Math.abs(t1-t2).toFixed(1);
+  if(parseFloat(timeDiffAbs)<1.0){
+    lines.push(`応答速度は両モデルともほぼ同等（約${timeWinVal}秒）です。`);
+  } else {
+    lines.push(`応答速度は <b>${timeWin}</b> が平均 <b>${timeWinVal}秒</b> で、${timeLoseVal}秒の相手より <b>${timeDiffAbs}秒速い</b>です。`);
+  }
+  // Divergent
+  if(divergent>0){
+    lines.push(`<br>なお、${divergent}件の質問で両モデルの回答可否が異なりました（一方は回答できたが他方はできなかった）。下の表で「失敗あり」フィルタを使うと確認できます。`);
+  }
+
+  el.innerHTML=`
+    <div class="summary-title">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+      テスト結果の概要
+    </div>
+    <div class="summary-text">${lines.join('')}</div>`;
 }
 
 // --- Chart helpers ---
@@ -294,17 +368,16 @@ function renderRagAnalysis(b1,b2){
   }
   const r1=calc(b1),r2=calc(b2);
   const diff=(r1.rate-r2.rate).toFixed(1);
-  // Average response time
   function avgAll(results){return+(results.reduce((s,r)=>s+r.elapsed_seconds,0)/results.length).toFixed(1)}
   const t1=avgAll(b1.results),t2=avgAll(b2.results);
 
   // KPI
   const kpiRow=document.getElementById('rag-kpi-row');
   const kpis=[
-    {label:`${BOT1_SHORT} RAG実行率`,value:`${r1.rate}%`,sub:`${r1.ok} / ${r1.total} 正常`,cls:'kpi-cyan'},
-    {label:`${BOT2_SHORT} RAG実行率`,value:`${r2.rate}%`,sub:`${r2.ok} / ${r2.total} 正常`,cls:'kpi-purple'},
-    {label:'実行率差分',value:`${diff>0?'+':''}${diff}%`,sub:'検証 − 正式',cls:parseFloat(diff)>=0?'kpi-green':'kpi-red'},
-    {label:'実行失敗差異',value:Math.abs(r1.fail-r2.fail),sub:`検証${r1.fail}件 / 正式${r2.fail}件`,cls:'kpi-orange'},
+    {label:`${BOT1_SHORT} 正常回答率`,value:`${r1.rate}%`,sub:`${r1.ok} / ${r1.total} 正常`,cls:'kpi-cyan'},
+    {label:`${BOT2_SHORT} 正常回答率`,value:`${r2.rate}%`,sub:`${r2.ok} / ${r2.total} 正常`,cls:'kpi-purple'},
+    {label:'回答率の差',value:`${diff>0?'+':''}${diff}%`,sub:'検証 − 本番',cls:parseFloat(diff)>=0?'kpi-green':'kpi-red'},
+    {label:'失敗数の差',value:Math.abs(r1.fail-r2.fail),sub:`検証${r1.fail}件 / 本番${r2.fail}件`,cls:'kpi-orange'},
     {label:`${BOT1_SHORT} 平均応答`,value:`${t1}s`,sub:'全質問平均',cls:'kpi-cyan'},
     {label:`${BOT2_SHORT} 平均応答`,value:`${t2}s`,sub:'全質問平均',cls:'kpi-purple'},
   ];
@@ -325,12 +398,12 @@ function renderRagAnalysis(b1,b2){
     }},
     legend:{bottom:0,textStyle:{color:TX}},
     grid:{top:30,bottom:50,left:50,right:20},
-    xAxis:{type:'category',data:[BOT1_SHORT,BOT2_SHORT],axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX,fontWeight:600}},
+    xAxis:{type:'category',data:[`${BOT1_SHORT}\n(${BOT1_MODEL})`,`${BOT2_SHORT}\n(${BOT2_MODEL})`],axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX,fontWeight:600}},
     yAxis:{type:'value',max:r1.total,splitLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
     series:[
-      {name:'正常実行',type:'bar',stack:'a',data:[r1.ok,r2.ok],itemStyle:{color:'#059669',borderRadius:[0,0,0,0]},barWidth:'40%',
+      {name:'正常処理',type:'bar',stack:'a',data:[r1.ok,r2.ok],itemStyle:{color:'#059669',borderRadius:[0,0,0,0]},barWidth:'40%',
         label:{show:true,position:'inside',color:'#fff',fontWeight:600,fontSize:13}},
-      {name:'実行失敗',type:'bar',stack:'a',data:[r1.fail,r2.fail],itemStyle:{color:'#E11D48',borderRadius:[6,6,0,0]},barWidth:'40%',
+      {name:'処理失敗',type:'bar',stack:'a',data:[r1.fail,r2.fail],itemStyle:{color:'#E11D48',borderRadius:[6,6,0,0]},barWidth:'40%',
         label:{show:true,position:'inside',color:'#fff',fontWeight:600,fontSize:13,formatter:p=>p.value>0?p.value:''}},
     ]
   });
@@ -342,12 +415,12 @@ function renderRagAnalysis(b1,b2){
     tooltip:{trigger:'axis',...tipStyle()},
     legend:{bottom:0,textStyle:{color:TX}},
     grid:{top:30,bottom:50,left:50,right:20},
-    xAxis:{type:'category',data:['空応答','定型句のみ','エラー'],axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
+    xAxis:{type:'category',data:['応答なし','定型文のみ','エラー'],axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
     yAxis:{type:'value',splitLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
     series:[
-      {name:BOT1_SHORT,type:'bar',data:[r1.empty,r1.filler,r1.err],itemStyle:{color:barGrad(C1,C1L),borderRadius:[6,6,0,0]},barWidth:'26%',
+      {name:`${BOT1_SHORT}(${BOT1_MODEL})`,type:'bar',data:[r1.empty,r1.filler,r1.err],itemStyle:{color:barGrad(C1,C1L),borderRadius:[6,6,0,0]},barWidth:'26%',
         label:{show:true,position:'top',color:C1,fontWeight:600}},
-      {name:BOT2_SHORT,type:'bar',data:[r2.empty,r2.filler,r2.err],itemStyle:{color:barGrad(C2,C2L),borderRadius:[6,6,0,0]},barWidth:'26%',
+      {name:`${BOT2_SHORT}(${BOT2_MODEL})`,type:'bar',data:[r2.empty,r2.filler,r2.err],itemStyle:{color:barGrad(C2,C2L),borderRadius:[6,6,0,0]},barWidth:'26%',
         label:{show:true,position:'top',color:C2,fontWeight:600}},
     ]
   });
@@ -371,8 +444,8 @@ function renderCategoryChart(b1,b2){
     yAxis:{type:'category',data:cats,axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
     xAxis:{type:'value',max:100,axisLabel:{formatter:'{value}%',color:TX},splitLine:{lineStyle:{color:LN}}},
     series:[
-      {name:BOT1_SHORT,type:'bar',data:cats.map(c=>ragRate(b1.results,c)),itemStyle:{color:C1,borderRadius:[0,4,4,0]},label:{show:true,position:'right',formatter:'{c}%',color:C1,fontSize:11}},
-      {name:BOT2_SHORT,type:'bar',data:cats.map(c=>ragRate(b2.results,c)),itemStyle:{color:C2,borderRadius:[0,4,4,0]},label:{show:true,position:'right',formatter:'{c}%',color:C2,fontSize:11}},
+      {name:`${BOT1_SHORT}(${BOT1_MODEL})`,type:'bar',data:cats.map(c=>ragRate(b1.results,c)),itemStyle:{color:C1,borderRadius:[0,4,4,0]},label:{show:true,position:'right',formatter:'{c}%',color:C1,fontSize:11}},
+      {name:`${BOT2_SHORT}(${BOT2_MODEL})`,type:'bar',data:cats.map(c=>ragRate(b2.results,c)),itemStyle:{color:C2,borderRadius:[0,4,4,0]},label:{show:true,position:'right',formatter:'{c}%',color:C2,fontSize:11}},
     ]
   });
   window.addEventListener('resize',()=>c.resize());
@@ -384,33 +457,34 @@ function renderSourceChart(s1,s2){
   c.setOption({
     tooltip:{trigger:'item',...tipStyle()},
     series:[
-      {name:BOT1_SHORT,type:'pie',radius:['38%','60%'],center:['28%','52%'],
+      {name:`${BOT1_SHORT}(${BOT1_MODEL})`,type:'pie',radius:['30%','52%'],center:['28%','55%'],
         data:[{name:'RAG',value:ss1.rag||0,itemStyle:{color:C1}},{name:'FAQ',value:ss1.faq||0,itemStyle:{color:C1L}}],
-        label:{formatter:'{b}: {c}',color:TX,fontSize:12},
+        label:{formatter:'{b}\n{c}件 ({d}%)',color:TX,fontSize:11,lineHeight:16},
+        labelLine:{length:12,length2:8},
         emphasis:{itemStyle:{shadowBlur:12,shadowColor:'rgba(8,145,178,0.15)'}}},
-      {name:BOT2_SHORT,type:'pie',radius:['38%','60%'],center:['72%','52%'],
+      {name:`${BOT2_SHORT}(${BOT2_MODEL})`,type:'pie',radius:['30%','52%'],center:['72%','55%'],
         data:[{name:'RAG',value:ss2.rag||0,itemStyle:{color:C2}},{name:'FAQ',value:ss2.faq||0,itemStyle:{color:C2L}}],
-        label:{formatter:'{b}: {c}',color:TX,fontSize:12},
+        label:{formatter:'{b}\n{c}件 ({d}%)',color:TX,fontSize:11,lineHeight:16},
+        labelLine:{length:12,length2:8},
         emphasis:{itemStyle:{shadowBlur:12,shadowColor:'rgba(124,58,237,0.15)'}}},
     ],
     title:[
-      {text:BOT1_SHORT,left:'20%',top:'6%',textStyle:{fontSize:13,color:C1,fontWeight:600},textAlign:'center'},
-      {text:BOT2_SHORT,left:'64%',top:'6%',textStyle:{fontSize:13,color:C2,fontWeight:600},textAlign:'center'},
+      {text:`${BOT1_SHORT}\n(${BOT1_MODEL})`,left:'28%',top:'8%',textStyle:{fontSize:12,color:C1,fontWeight:600,lineHeight:16},textAlign:'center'},
+      {text:`${BOT2_SHORT}\n(${BOT2_MODEL})`,left:'72%',top:'8%',textStyle:{fontSize:12,color:C2,fontWeight:600,lineHeight:16},textAlign:'center'},
     ]
   });
   window.addEventListener('resize',()=>c.resize());
 }
 
 function renderTimeChart(b1,b2){
-  // Overall average (all 300 questions)
   function avgAll(results){if(!results.length)return 0;return+(results.reduce((s,r)=>s+r.elapsed_seconds,0)/results.length).toFixed(1)}
   const avg1=avgAll(b1.results),avg2=avgAll(b2.results);
   const timeDiff=(avg1-avg2).toFixed(1);
   const tkpi=document.getElementById('time-kpi-row');
   const tkpis=[
-    {label:`${BOT1_SHORT} 全体平均`,value:`${avg1}s`,sub:`${b1.results.length}件`,cls:'kpi-cyan'},
-    {label:`${BOT2_SHORT} 全体平均`,value:`${avg2}s`,sub:`${b2.results.length}件`,cls:'kpi-purple'},
-    {label:'差分',value:`${timeDiff>0?'+':''}${timeDiff}s`,sub:'検証 − 正式',cls:parseFloat(timeDiff)<=0?'kpi-green':'kpi-red'},
+    {label:`${BOT1_SHORT} (${BOT1_MODEL})`,value:`${avg1}s`,sub:`${b1.results.length}件の平均`,cls:'kpi-cyan'},
+    {label:`${BOT2_SHORT} (${BOT2_MODEL})`,value:`${avg2}s`,sub:`${b2.results.length}件の平均`,cls:'kpi-purple'},
+    {label:'差分',value:`${timeDiff>0?'+':''}${timeDiff}s`,sub:'検証 − 本番',cls:parseFloat(timeDiff)<=0?'kpi-green':'kpi-red'},
   ];
   tkpi.innerHTML=tkpis.map((k,i)=>`
     <div class="kpi ${k.cls} animate-in" style="animation-delay:${i*.06}s">
@@ -419,7 +493,6 @@ function renderTimeChart(b1,b2){
       <div class="kpi-sub">${k.sub}</div>
     </div>`).join('');
 
-  // Category breakdown chart
   const c=echarts.init(document.getElementById('chart-time'));
   const cats=[...new Set(b1.results.map(r=>r.category))].sort();
   function avg(results,cat){const it=results.filter(r=>r.category===cat);if(!it.length)return 0;return+(it.reduce((s,r)=>s+r.elapsed_seconds,0)/it.length).toFixed(1)}
@@ -430,8 +503,8 @@ function renderTimeChart(b1,b2){
     xAxis:{type:'category',data:cats,axisLine:{lineStyle:{color:LN}},axisLabel:{color:TX,fontSize:11}},
     yAxis:{type:'value',name:'秒',nameTextStyle:{color:TX},splitLine:{lineStyle:{color:LN}},axisLabel:{color:TX}},
     series:[
-      {name:BOT1_SHORT,type:'bar',data:cats.map(c=>avg(b1.results,c)),itemStyle:{color:barGrad(C1,C1L),borderRadius:[6,6,0,0]},barWidth:'26%',label:{show:true,position:'top',formatter:'{c}s',color:C1,fontSize:10}},
-      {name:BOT2_SHORT,type:'bar',data:cats.map(c=>avg(b2.results,c)),itemStyle:{color:barGrad(C2,C2L),borderRadius:[6,6,0,0]},barWidth:'26%',label:{show:true,position:'top',formatter:'{c}s',color:C2,fontSize:10}},
+      {name:`${BOT1_SHORT}(${BOT1_MODEL})`,type:'bar',data:cats.map(c=>avg(b1.results,c)),itemStyle:{color:barGrad(C1,C1L),borderRadius:[6,6,0,0]},barWidth:'26%',label:{show:true,position:'top',formatter:'{c}s',color:C1,fontSize:10}},
+      {name:`${BOT2_SHORT}(${BOT2_MODEL})`,type:'bar',data:cats.map(c=>avg(b2.results,c)),itemStyle:{color:barGrad(C2,C2L),borderRadius:[6,6,0,0]},barWidth:'26%',label:{show:true,position:'top',formatter:'{c}s',color:C2,fontSize:10}},
     ]
   });
   window.addEventListener('resize',()=>c.resize());
@@ -442,11 +515,11 @@ const RAG_FAIL=['empty','filler_only','error'];
 function isRagFail(r){return RAG_FAIL.includes(r.reason)}
 function statusBadge(r){
   if(!isRagFail(r)){
-    if(r.reason==='not_found') return `<span class="badge badge-answered" style="background:var(--orange-dim);color:var(--orange)">情報なし</span>`;
+    if(r.reason==='not_found') return `<span class="badge badge-answered" style="background:var(--orange-dim);color:var(--orange)">該当なし</span>`;
     const src=r.source==='faq'?' FAQ':'';
     return `<span class="badge badge-answered">回答${src}</span>`;
   }
-  const lb={empty:'空応答',error:'エラー',filler_only:'定型句'};
+  const lb={empty:'応答なし',error:'エラー',filler_only:'定型文'};
   return `<span class="badge badge-unanswered">${lb[r.reason]||r.reason}</span>`;
 }
 
@@ -473,15 +546,15 @@ function renderTable(b1,b2){
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <div>
             <div style="font-size:12px;font-weight:600;color:${C1};margin-bottom:4px;display:flex;align-items:center;gap:6px">
-              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${C1}"></span>${BOT1_SHORT}
+              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${C1}"></span>${BOT1_SHORT} (${BOT1_MODEL})
             </div>
-            <div class="answer-preview">${escHtml(row.r1.answer||'(空)')}</div>
+            <div class="answer-preview">${escHtml(row.r1.answer||'(応答なし)')}</div>
           </div>
           <div>
             <div style="font-size:12px;font-weight:600;color:${C2};margin-bottom:4px;display:flex;align-items:center;gap:6px">
-              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${C2}"></span>${BOT2_SHORT}
+              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${C2}"></span>${BOT2_SHORT} (${BOT2_MODEL})
             </div>
-            <div class="answer-preview">${escHtml(row.r2.answer||'(空)')}</div>
+            <div class="answer-preview">${escHtml(row.r2.answer||'(応答なし)')}</div>
           </div>
         </div>
       </td>
@@ -533,7 +606,7 @@ function applyFilters(){
         <div>
           <div style="font-size:40px;margin-bottom:16px">&#x26A0;</div>
           <h2 style="font-size:18px;color:var(--text);margin-bottom:8px">データファイルが見つかりません</h2>
-          <p style="font-size:13px;color:var(--text-dim)">comparison.html と同じフォルダに eval-*.json ファイルを配置してください。</p>
+          <p style="font-size:13px;color:var(--text-dim)">HTMLファイルと同じフォルダに eval-*.json ファイルを配置してください。</p>
         </div>
       </div>`;
     return;

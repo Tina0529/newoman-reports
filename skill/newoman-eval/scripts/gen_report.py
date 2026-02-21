@@ -29,9 +29,9 @@ def main():
     p.add_argument("--bot1-name", default="NEWoMan高輪 検証環境")
     p.add_argument("--bot1-model", default="Claude Sonnet 4.5")
     p.add_argument("--bot1-short", default="検証環境")
-    p.add_argument("--bot2-name", default="NEWoMan高輪 正式環境")
+    p.add_argument("--bot2-name", default="NEWoMan高輪 本番環境")
     p.add_argument("--bot2-model", default="Gemini 2.5 Flash")
-    p.add_argument("--bot2-short", default="正式環境")
+    p.add_argument("--bot2-short", default="本番環境")
     p.add_argument("--output", default=None, help="Output HTML path (default: stdout)")
     args = p.parse_args()
 
@@ -51,38 +51,46 @@ def main():
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
 
     # === Inject bot metadata ===
-    # Replace bot card contents
+    # Replace bot card contents (bot-model-tag style, no "Model:" prefix)
     template = template.replace(
         "NEWoMan高輪 検証環境</div>\n"
-        '      <div class="bot-model">Model: Claude Sonnet 4.5</div>\n'
-        f'      <div class="bot-id">ID: fa228b57-59e1-447b-87e2-02c494195961</div>',
+        '      <div class="bot-model-tag">Claude Sonnet 4.5</div>\n'
+        '      <div class="bot-id">ID: fa228b57-59e1-447b-87e2-02c494195961</div>',
         f"{args.bot1_name}</div>\n"
-        f'      <div class="bot-model">Model: {args.bot1_model}</div>\n'
+        f'      <div class="bot-model-tag">{args.bot1_model}</div>\n'
         f'      <div class="bot-id">ID: {bot1_id}</div>',
     )
     template = template.replace(
-        "NEWoMan高輪 正式環境</div>\n"
-        '      <div class="bot-model">Model: Gemini 2.5 Flash</div>\n'
-        f'      <div class="bot-id">ID: b50d5b21-262a-4802-a8c4-512af224c72f</div>',
+        "NEWoMan高輪 本番環境</div>\n"
+        '      <div class="bot-model-tag">Gemini 2.5 Flash</div>\n'
+        '      <div class="bot-id">ID: b50d5b21-262a-4802-a8c4-512af224c72f</div>',
         f"{args.bot2_name}</div>\n"
-        f'      <div class="bot-model">Model: {args.bot2_model}</div>\n'
+        f'      <div class="bot-model-tag">{args.bot2_model}</div>\n'
         f'      <div class="bot-id">ID: {bot2_id}</div>',
     )
 
-    # Replace short names in JS
+    # Replace short names and model names in JS
     template = template.replace(
-        "const BOT1_SHORT='検証環境',BOT2_SHORT='正式環境';",
+        "const BOT1_SHORT='検証環境',BOT2_SHORT='本番環境';",
         f"const BOT1_SHORT='{args.bot1_short}',BOT2_SHORT='{args.bot2_short}';",
+    )
+
+    # Derive short model names for JS constants
+    bot1_model_short = args.bot1_model.replace("Claude ", "")
+    bot2_model_short = args.bot2_model
+    template = template.replace(
+        "const BOT1_MODEL='Sonnet 4.5',BOT2_MODEL='Gemini 2.5 Flash';",
+        f"const BOT1_MODEL='{bot1_model_short}',BOT2_MODEL='{bot2_model_short}';",
     )
 
     # Replace table header short names
     template = template.replace(
-        '<th>検証環境<br><span style="font-weight:400;opacity:.6">Sonnet4.5</span></th>',
-        f'<th>{args.bot1_short}<br><span style="font-weight:400;opacity:.6">{args.bot1_model}</span></th>',
+        '<th>検証環境<br><span style="font-weight:400;opacity:.6">Sonnet 4.5</span></th>',
+        f'<th>{args.bot1_short}<br><span style="font-weight:400;opacity:.6">{bot1_model_short}</span></th>',
     )
     template = template.replace(
-        '<th>正式環境<br><span style="font-weight:400;opacity:.6">Gemini2.5Flash</span></th>',
-        f'<th>{args.bot2_short}<br><span style="font-weight:400;opacity:.6">{args.bot2_model}</span></th>',
+        '<th>本番環境<br><span style="font-weight:400;opacity:.6">Gemini 2.5 Flash</span></th>',
+        f'<th>{args.bot2_short}<br><span style="font-weight:400;opacity:.6">{bot2_model_short}</span></th>',
     )
 
     # === Inject data inline ===

@@ -31,7 +31,7 @@ python3 skill/newoman-eval/scripts/bot_eval.py \
   --cases skill/newoman-eval/cases/newoman-takanawa.yaml \
   --output tests/results/eval-fa228b57-YYYYMMDD-HHMMSS.json
 
-# 正式環境Bot (Gemini 2.5 Flash)
+# 本番環境Bot (Gemini 2.5 Flash)
 python3 skill/newoman-eval/scripts/bot_eval.py \
   --bot-id b50d5b21-262a-4802-a8c4-512af224c72f \
   --cases skill/newoman-eval/cases/newoman-takanawa.yaml \
@@ -60,9 +60,9 @@ python3 skill/newoman-eval/scripts/gen_report.py \
   --bot1-name "NEWoMan高輪 検証環境" \
   --bot1-model "Claude Sonnet 4.5" \
   --bot1-short "検証環境" \
-  --bot2-name "NEWoMan高輪 正式環境" \
+  --bot2-name "NEWoMan高輪 本番環境" \
   --bot2-model "Gemini 2.5 Flash" \
-  --bot2-short "正式環境" \
+  --bot2-short "本番環境" \
   --output docs/bot-eval/index.html
 ```
 
