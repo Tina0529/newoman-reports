@@ -51,23 +51,60 @@ python3 skill/newoman-eval/scripts/bot_eval.py \
 
 ### Step 2: 比較レポートを生成
 
-2つのeval JSONから比較HTMLレポートを生成する。
+2つのeval JSONから比較HTMLレポートを生成する。単回と複数回の2つのモードがある。
+
+#### 単回モード（1回分のテスト結果）
 
 ```bash
 python3 skill/newoman-eval/scripts/gen_report.py \
   --bot1-json tests/results/eval-fa228b57-YYYYMMDD-HHMMSS.json \
   --bot2-json tests/results/eval-b50d5b21-YYYYMMDD-HHMMSS.json \
-  --bot1-name "NEWoMan高輪 検証環境" \
-  --bot1-model "Claude Sonnet 4.5" \
-  --bot1-short "検証環境" \
-  --bot2-name "NEWoMan高輪 本番環境" \
-  --bot2-model "Gemini 2.5 Flash" \
-  --bot2-short "本番環境" \
   --output docs/bot-eval/index.html
 ```
 
+#### 複数回モード（複数回のテスト結果を1レポートに統合）
+
+`--round` オプションを繰り返し指定する。形式: `ラベル:日付:bot1json:bot2json`
+
+```bash
+python3 skill/newoman-eval/scripts/gen_report.py \
+  --round "第1回:2026-02-20:tests/results/eval-fa228b57-R1.json:tests/results/eval-b50d5b21-R1.json" \
+  --round "第2回:2026-02-28:tests/results/eval-fa228b57-R2.json:tests/results/eval-b50d5b21-R2.json" \
+  --round "第3回:2026-03-07:tests/results/eval-fa228b57-R3.json:tests/results/eval-b50d5b21-R3.json" \
+  --output docs/bot-eval/index.html
+```
+
+複数回モードでは、タブ切り替えで各回の詳細と「総合」タブ（全回トレンド）を確認できる。
+
+#### 共通オプション
+
+| オプション | デフォルト | 説明 |
+|-----------|----------|------|
+| `--round` | (なし) | 複数回指定: `ラベル:日付:bot1json:bot2json` |
+| `--bot1-json` | (なし) | Bot 1 eval JSON（単回モード用） |
+| `--bot2-json` | (なし) | Bot 2 eval JSON（単回モード用） |
+| `--bot1-name` | NEWoMan高輪 検証環境 | Bot 1 表示名 |
+| `--bot1-model` | Claude Sonnet 4.5 | Bot 1 モデル名 |
+| `--bot1-short` | 検証環境 | Bot 1 略称 |
+| `--bot2-name` | NEWoMan高輪 本番環境 | Bot 2 表示名 |
+| `--bot2-model` | Gemini 2.5 Flash | Bot 2 モデル名 |
+| `--bot2-short` | 本番環境 | Bot 2 略称 |
+| `--output` | stdout | 出力先HTMLパス |
+
 生成されたHTMLは自己完結型（JSONデータ埋め込み）で、
 GitHub Pages経由で直接アクセスできる。
+
+#### 増分ワークフロー（テスト追加時）
+
+新しいテスト回が完了したら、全回分のJSONを `--round` で指定して再生成するだけでよい。
+
+```bash
+# 第2回テスト完了後
+python3 skill/newoman-eval/scripts/gen_report.py \
+  --round "第1回:2026-02-20:tests/results/eval-fa228b57-R1.json:tests/results/eval-b50d5b21-R1.json" \
+  --round "第2回:2026-02-28:tests/results/eval-fa228b57-R2.json:tests/results/eval-b50d5b21-R2.json" \
+  --output docs/bot-eval/index.html
+```
 
 ### Step 3: GitHub Pagesにデプロイ
 
@@ -109,9 +146,18 @@ pip install httpx pyyaml
 
 ## レポート機能
 
+### 各回の詳細
 - Bot情報カード（名前・モデル・ID）
+- テスト結果の概要（目的駆動型の分析サマリー）
 - RAG実行分析（実行率KPI、成功/失敗内訳、失敗理由詳細）
 - カテゴリ別RAG実行率（横棒グラフ）
 - 回答ソース分布（RAG/FAQドーナツ）
 - 応答時間分析（全体平均KPI + カテゴリ別棒グラフ）
 - 全質問一覧テーブル（フィルタ・検索・回答プレビュー展開）
+
+### 総合タブ（複数回モードのみ）
+- 全回テスト総合サマリー（各回の結果概要と変化量）
+- 正常回答率の推移（折れ線グラフ）
+- 平均応答時間の推移（面グラフ付き折れ線）
+- カテゴリ別全回比較（グループ棒グラフ）
+- 回答ステータスの変化テーブル（改善/悪化した質問の一覧）
