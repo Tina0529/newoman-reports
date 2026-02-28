@@ -785,7 +785,11 @@ def main():
     main_html = re.sub(r'<div class="kpi-sublabel">99/909</div>', f'<div class="kpi-sublabel">{kpi["unanswered_count"]}/{kpi["total_messages"]}</div>', main_html)
     main_html = re.sub(r'<div class="kpi-value">70\.0%</div>', f'<div class="kpi-value">{kpi["good_rate"]:.1f}%</div>', main_html)
     main_html = re.sub(r'<div class="kpi-value">2\.2%</div>', f'<div class="kpi-value">{kpi["feedback_rate"]:.1f}%</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-sublabel">20/909</div>', f'<div class="kpi-sublabel">評価あり {kpi["feedback_count"]}件中</div>', main_html)
+    main_html = main_html.replace(
+        'data-ja="評価あり 20件中" data-zh="有评价 20件中">評価あり 20件中</div>',
+        f'data-ja="評価あり {kpi["feedback_count"]}件中" data-zh="有评价 {kpi["feedback_count"]}件中">評価あり {kpi["feedback_count"]}件中</div>'
+    )
+    main_html = re.sub(r'<div class="kpi-sublabel">20/909</div>', f'<div class="kpi-sublabel">{kpi["feedback_count"]}/{kpi["total_messages"]}</div>', main_html)
 
     # Stats
     main_html = re.sub(r'<div class="stat-value">29\.3</div>', f'<div class="stat-value">{avg_daily:.1f}</div>', main_html)
