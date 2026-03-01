@@ -116,7 +116,7 @@ def detect_language(text):
 
 
 def is_unanswered(answer):
-    """未回答かどうかを判定"""
+    """未回答かどうかを判定（ルールベース・フォールバック用）"""
     if pd.isna(answer) or not isinstance(answer, str):
         return True, "情報なし"
 
@@ -144,6 +144,87 @@ def is_unanswered(answer):
         return True, "再確認"
 
     return False, None
+
+
+def classify_answers_llm(questions, answers, api_key, batch_size=30):
+    """
+    Claude Haiku を使って回答の有効性を語義判断する。
+    Returns: list of (is_unanswered: bool, type: str)
+    """
+    try:
+        import anthropic
+    except ImportError:
+        print("⚠️  anthropic パッケージが見つかりません。pip install anthropic を実行してください。")
+        return None
+
+    client = anthropic.Anthropic(api_key=api_key)
+    results = []
+    total = len(answers)
+
+    print(f"\n🤖 LLM語義判断: {total}件を{batch_size}件ずつ処理中...")
+
+    for i in range(0, total, batch_size):
+        batch_q = questions[i:i + batch_size]
+        batch_a = answers[i:i + batch_size]
+        n = len(batch_q)
+
+        items_text = ""
+        for j in range(n):
+            q = str(batch_q[j])[:120] if not pd.isna(batch_q[j]) else ""
+            a = str(batch_a[j])[:300] if not pd.isna(batch_a[j]) else ""
+            items_text += f"\n[{j+1}] Q: {q}\n    A: {a}"
+
+        prompt = f"""あなたはショッピングモール（NEWoMan高輪）のチャットボット品質評価専門家です。
+以下の質問・回答ペアを評価し、各回答がユーザーに対して**有効な情報を提供できているか**を判断してください。
+
+【有効な回答 "answered" の例】
+- 具体的な店舗名・場所・営業時間などの情報を提供している
+- 「〜はありません」「〜には対応していません」など明確なNo回答
+- 短くても質問に直接答えている（例：「3階です」「10時からです」）
+- 案内メニューの選択肢を提示している
+
+【無効な回答 "unanswered" の例】
+- 「情報が見つかりませんでした」「一致する情報はありませんでした」
+- 「確認いたします」「少々お待ちください」のみで実質情報がない
+- 空白・エラーメッセージ
+- 「お問い合わせください」だけで案内先情報もない
+
+評価対象:{items_text}
+
+以下のJSON形式のみで回答してください（説明不要）:
+{{"results": [{{"id": 1, "status": "answered", "type": null}}, ...]}}
+
+statusは "answered" または "unanswered"
+typeは unanswered の場合のみ: "情報なし"（情報不足）/ "再確認"（内容不明確）/ "検索失敗"（検索エラー）、answered の場合は null"""
+
+        try:
+            response = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=800,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            raw = response.content[0].text.strip()
+            # JSON部分を抽出
+            json_match = re.search(r'\{.*\}', raw, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                batch_results = data.get("results", [])
+                for item in batch_results:
+                    status = item.get("status", "answered")
+                    utype = item.get("type", None)
+                    results.append((status == "unanswered", utype if status == "unanswered" else None))
+            else:
+                raise ValueError("JSONが見つかりません")
+
+        except Exception as e:
+            print(f"  ⚠️  バッチ {i//batch_size + 1} でエラー: {e}。ルールベースにフォールバック")
+            for j in range(n):
+                results.append(is_unanswered(batch_a[j]))
+
+        done = min(i + batch_size, total)
+        print(f"  進捗: {done}/{total} ({done/total*100:.0f}%)")
+
+    return results
 
 
 def classify_question(question):
@@ -377,7 +458,7 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
                 "size": size,
                 "include_test": "false",
             },
-            timeout=60,
+            timeout=120,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -551,6 +632,10 @@ def main():
     parser.add_argument('--site-dir', default=None, help='Path to docs/ directory for dashboard site integration')
     parser.add_argument('--client-slug', default=None, help='URL-safe client identifier (e.g. newoman-takanawa)')
 
+    # LLM evaluation mode
+    parser.add_argument('--use-llm', action='store_true', help='Use Claude Haiku for semantic unanswered judgment (more accurate)')
+    parser.add_argument('--anthropic-key', default=None, help='Anthropic API key (or set ANTHROPIC_API_KEY env var)')
+
     args = parser.parse_args()
 
     client_name = args.client
@@ -606,9 +691,30 @@ def main():
     # KPI計算
     total_messages = len(df)
 
-    unanswered_results = df['回答'].apply(is_unanswered)
-    df['未回答フラグ'] = unanswered_results.apply(lambda x: x[0])
-    df['未回答タイプ'] = unanswered_results.apply(lambda x: x[1] if x[0] else None)
+    # 未回答判定: LLMモード or ルールベース
+    if args.use_llm:
+        anthropic_key = args.anthropic_key or __import__('os').environ.get('ANTHROPIC_API_KEY')
+        if not anthropic_key:
+            print("⚠️  --anthropic-key または ANTHROPIC_API_KEY が未設定。ルールベースにフォールバック")
+            unanswered_results = df['回答'].apply(is_unanswered)
+            df['未回答フラグ'] = unanswered_results.apply(lambda x: x[0])
+            df['未回答タイプ'] = unanswered_results.apply(lambda x: x[1] if x[0] else None)
+        else:
+            llm_results = classify_answers_llm(
+                df['質問'].tolist(), df['回答'].tolist(), anthropic_key
+            )
+            if llm_results is None:
+                # anthropicパッケージ未インストール → フォールバック
+                unanswered_results = df['回答'].apply(is_unanswered)
+                df['未回答フラグ'] = unanswered_results.apply(lambda x: x[0])
+                df['未回答タイプ'] = unanswered_results.apply(lambda x: x[1] if x[0] else None)
+            else:
+                df['未回答フラグ'] = [r[0] for r in llm_results]
+                df['未回答タイプ'] = [r[1] for r in llm_results]
+    else:
+        unanswered_results = df['回答'].apply(is_unanswered)
+        df['未回答フラグ'] = unanswered_results.apply(lambda x: x[0])
+        df['未回答タイプ'] = unanswered_results.apply(lambda x: x[1] if x[0] else None)
 
     unanswered_count = df['未回答フラグ'].sum()
     answered_count = total_messages - unanswered_count
