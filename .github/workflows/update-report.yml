@@ -39,9 +39,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pandas requests
+        run: pip install pandas requests anthropic
 
       - name: Run analysis
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           YEAR=$(echo "${{ inputs.month }}" | cut -d'-' -f1)
           MONTH_NUM=$(echo "${{ inputs.month }}" | cut -d'-' -f2)
@@ -63,6 +65,15 @@ jobs:
 
           echo "Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
 
+          # LLM判定: ANTHROPIC_API_KEY が設定されている場合は --use-llm を有効化
+          LLM_ARGS=""
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            LLM_ARGS="--use-llm --anthropic-key $ANTHROPIC_API_KEY"
+            echo "LLM semantic judgment: enabled"
+          else
+            echo "LLM semantic judgment: disabled (rule-based only)"
+          fi
+
           python3 skill/chatbot-message-analyzer/scripts/analyze.py \
             --dataset-id "${{ inputs.dataset_id }}" \
             --token "${{ inputs.api_token }}" \
@@ -72,7 +83,8 @@ jobs:
             --period "$PERIOD" \
             --output /tmp \
             --site-dir docs \
-            --client-slug "${{ inputs.client_slug }}"
+            --client-slug "${{ inputs.client_slug }}" \
+            $LLM_ARGS
 
       - name: Commit and push
         run: |
