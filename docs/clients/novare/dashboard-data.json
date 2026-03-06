@@ -1,0 +1,39 @@
+{
+  "client": "novare",
+  "client_slug": "novare",
+  "updated_at": "2026-03-06T07:31:32.140547",
+  "months": [
+    {
+      "period": "2026年2月",
+      "year_month": "2026-02",
+      "total_messages": 676,
+      "normal_answer_rate": 92.3,
+      "unanswered_rate": 7.7,
+      "good_rating_rate": 100.0,
+      "feedback_rate": 0.1,
+      "daily_average": 39.8,
+      "unique_users": 3,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 24.0,
+      "weekday_counts": [
+        28,
+        14,
+        218,
+        312,
+        95,
+        9,
+        0
+      ],
+      "source_distribution": {
+        "rag_count": 0,
+        "rag_pct": 0.0,
+        "faq_count": 0,
+        "faq_pct": 0.0,
+        "other_count": 676,
+        "other_pct": 100.0
+      },
+      "report_file": "reports/2026-02.html",
+      "unanswered_file": "reports/2026-02_unanswered.html"
+    }
+  ]
+}

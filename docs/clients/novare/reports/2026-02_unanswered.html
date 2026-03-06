@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未回答質問一覧 - novare 2026年2月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-400: #9CA3AF;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--danger); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--danger-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--danger); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .data-table th:first-child { border-radius: var(--radius-md) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-md) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background var(--transition); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .number { text-align: center; width: 50px; font-family: var(--font-mono); color: var(--gray-400); }
+        .data-table .timestamp { width: 140px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .question-cell { width: 30%; }
+        .data-table .answer-cell { width: 40%; font-size: 0.8125rem; color: var(--text-muted); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                <span data-ja="未回答質問一覧" data-zh="未回答问题列表">未回答質問一覧</span>
+            </h1>
+            <div class="header-actions">
+                <a href="novare_2026年2月_分析レポート.html" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">52</span><span class="summary-label" data-ja="件の未回答" data-zh="条未回答">件の未回答</span></div>
+            <div class="summary-item"><span class="badge badge-red">情報なし</span><span class="summary-label">2件 (3%)</span></div>
+            <div class="summary-item"><span class="badge badge-yellow">検索失敗</span><span class="summary-label">0件 (0%)</span></div>
+            <div class="summary-item"><span class="badge badge-gray">再確認</span><span class="summary-label">50件 (96%)</span></div>
+        </div>
+        <div class="section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTable('all')" data-ja="すべて" data-zh="全部">すべて</button>
+                <button class="filter-btn" onclick="filterTable('情報なし')">情報なし</button>
+                <button class="filter-btn" onclick="filterTable('検索失敗')">検索失敗</button>
+                <button class="filter-btn" onclick="filterTable('再確認')">再確認</button>
+            </div>
+            <table class="data-table" id="unansweredTable">
+                <thead><tr><th>#</th><th data-ja="日時" data-zh="时间">日時</th><th data-ja="タイプ" data-zh="类型">タイプ</th><th data-ja="質問内容" data-zh="问题内容">質問内容</th><th data-ja="Bot回答" data-zh="Bot回答">Bot回答</th></tr></thead>
+                <tbody>
+<tr>
+    <td class="number">1</td>
+    <td class="timestamp">2026-02-26 13:55:04</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> නමය අවසරයේ</td>
+    <td class="answer-cell">私は、清水建設の NOVAREのスマートビル管理</td>
+</tr>
+<tr>
+    <td class="number">2</td>
+    <td class="timestamp">2026-02-26 13:54:54</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> こんにちは 。</td>
+    <td class="answer-cell">こんにちは！NOVAREへようこそいらっしゃいました。何かお手伝いできることは</td>
+</tr>
+<tr>
+    <td class="number">3</td>
+    <td class="timestamp">2026-02-26 13:53:56</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> &lt;noise&gt; 空間氣啊。</td>
+    <td class="answer-cell">少々お待ちくださいね。</td>
+</tr>
+<tr>
+    <td class="number">4</td>
+    <td class="timestamp">2026-02-26 13:30:47</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> うん 。 感じ で トゲトゲ から 過去 に な 増やし さ れ て 。</td>
+    <td class="answer-cell">ノバーレ</td>
+</tr>
+<tr>
+    <td class="number">5</td>
+    <td class="timestamp">2026-02-26 13:19:26</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> こんにちは 。</td>
+    <td class="answer-cell">こんにちは！温故</td>
+</tr>
+<tr>
+    <td class="number">6</td>
+    <td class="timestamp">2026-02-26 13:15:43</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 浜田 さん は どこ に い ます か ?</td>
+    <td class="answer-cell">少々お待ちくださいね。申し訳ございません。人員検索システムが引き続き一時的に利用できない状態です。しばらくお待ちいただいてから、再度お試しください。</td>
+</tr>
+<tr>
+    <td class="number">7</td>
+    <td class="timestamp">2026-02-26 13:15:14</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> イカ さ んっ て どこ に い ます か ?</td>
+    <td class="answer-cell">少々お待ちくださいね。申し訳ございません。現在、人員検索システムが一時的に利用できない状態です。少々お待ちいただいてから、もう一度お試しいただけますか?</td>
+</tr>
+<tr>
+    <td class="number">8</td>
+    <td class="timestamp">2026-02-26 09:46:13</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 肉302都有哪些燈光設備,他們的狀態是怎麼樣的。</td>
+    <td class="answer-cell">好的, 我马上查询</td>
+</tr>
+<tr>
+    <td class="number">9</td>
+    <td class="timestamp">2026-02-26 09:42:20</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 思考 中</td>
+    <td class="answer-cell">思考中</td>
+</tr>
+<tr>
+    <td class="number">10</td>
+    <td class="timestamp">2026-02-26 09:41:34</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> いや 、 いや いや 。</td>
+    <td class="answer-cell">思考中</td>
+</tr>
+<tr>
+    <td class="number">11</td>
+    <td class="timestamp">2026-02-26 08:45:52</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> はい 、 お 願い し ます 。</td>
+    <td class="answer-cell">かしこまりました。設定を変更いたしました。Define Room1</td>
+</tr>
+<tr>
+    <td class="number">12</td>
+    <td class="timestamp">2026-02-26 00:40:03</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 하마다 성화 또</td>
+    <td class="answer-cell">承知いたしました。少々お待ちください。</td>
+</tr>
+<tr>
+    <td class="number">13</td>
+    <td class="timestamp">2026-02-26 00:21:36</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> お お</td>
+    <td class="answer-cell">少々お待ちください。</td>
+</tr>
+<tr>
+    <td class="number">14</td>
+    <td class="timestamp">2026-02-20 13:30:38</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 我就說他後續,他後台是用4.1,不是用前台電2.5。</td>
+    <td class="answer-cell">あの、重</td>
+</tr>
+<tr>
+    <td class="number">15</td>
+    <td class="timestamp">2026-02-19 16:05:00</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 我剛才的消息沒發出去。</td>
+    <td class="answer-cell">あ、そうなんですね。少々お待ちください。</td>
+</tr>
+<tr>
+    <td class="number">16</td>
+    <td class="timestamp">2026-02-19 14:40:28</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 今 の 場所 を 教え て ください 。</td>
+    <td class="answer-cell">少々お待ちくださいね。</td>
+</tr>
+<tr>
+    <td class="number">17</td>
+    <td class="timestamp">2026-02-19 14:03:28</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 操作 は し ない で いい です 。</td>
+    <td class="answer-cell">そうなんですね。何か</td>
+</tr>
+<tr>
+    <td class="number">18</td>
+    <td class="timestamp">2026-02-19 14:02:42</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ラッパー ゲート 付近 の</td>
+    <td class="answer-cell">少々お待ちください。</td>
+</tr>
+<tr>
+    <td class="number">19</td>
+    <td class="timestamp">2026-02-19 13:59:44</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ตี้
+ テスト の 内容 と し て は 私 の 位置 を 教え て ください 。 私 の 位置 を 浜田 さん に 伝え て くださ いっ て 言っ て 。</td>
+    <td class="answer-cell">なる</td>
+</tr>
+<tr>
+    <td class="number">20</td>
+    <td class="timestamp">2026-02-19 13:31:35</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> はまた 中心 に さ</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">21</td>
+    <td class="timestamp">2026-02-19 13:14:01</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> あれ 、 消え て ない の ?</td>
+    <td class="answer-cell">あれ、失礼しました。念のため、もう一度照明の状態を確認しますね。</td>
+</tr>
+<tr>
+    <td class="number">22</td>
+    <td class="timestamp">2026-02-18 22:36:11</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 這你也應該說,</td>
+    <td class="answer-cell">はい、そう</td>
+</tr>
+<tr>
+    <td class="number">23</td>
+    <td class="timestamp">2026-02-18 22:35:47</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> Bạn
+ 是日語晚安。</td>
+    <td class="answer-cell">そうですね、</td>
+</tr>
+<tr>
+    <td class="number">24</td>
+    <td class="timestamp">2026-02-18 11:04:19</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 浜田 さん さ んっ て 調べ て くれ てる ?</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">25</td>
+    <td class="timestamp">2026-02-18 11:04:00</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> じゃあ さ 、 うち の 浜田 さ んっ て 今 ノバーレ の どこ に いる かって 調べ られる</td>
+    <td class="answer-cell">少々お待ちくださいね。浜田さ</td>
+</tr>
+<tr>
+    <td class="number">26</td>
+    <td class="timestamp">2026-02-18 11:03:30</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell">うん 、 あなた は どんな こと が でき ます か ?</td>
+    <td class="answer-cell">そうですね、NOVAREのスマートビル管理AIコンシェルジュとして、空調や照明の設</td>
+</tr>
+<tr>
+    <td class="number">27</td>
+    <td class="timestamp">2026-02-18 11:02:59</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> &lt;noise&gt;</td>
+    <td class="answer-cell">本当に寒い日が続きますよね。暖</td>
+</tr>
+<tr>
+    <td class="number">28</td>
+    <td class="timestamp">2026-02-18 11:01:49</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> &lt;noise&gt;
+ こっち側 から 出 て こ ない な 。</td>
+    <td class="answer-cell">少々お待ちくださいね。</td>
+</tr>
+<tr>
+    <td class="number">29</td>
+    <td class="timestamp">2026-02-18 09:09:23</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> おはよう 。</td>
+    <td class="answer-cell">おはようございます！今日も</td>
+</tr>
+<tr>
+    <td class="number">30</td>
+    <td class="timestamp">2026-02-17 16:37:05</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> えっ 、 じゃんじ さん も 見つから ない 。</td>
+    <td class="answer-cell">あ、はい。少々お待ち</td>
+</tr>
+<tr>
+    <td class="number">31</td>
+    <td class="timestamp">2026-02-13 13:51:17</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> こんにちは 。</td>
+    <td class="answer-cell">こんにちは！清水建設 NOVARE AIコンシェルジュ</td>
+</tr>
+<tr>
+    <td class="number">32</td>
+    <td class="timestamp">2026-02-13 13:48:29</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> に つい て 教え て い ます 。</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">33</td>
+    <td class="timestamp">2026-02-13 13:48:28</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ディファイン エリア ゲート も 付近</td>
+    <td class="answer-cell">承知いたしました。では、Define</td>
+</tr>
+<tr>
+    <td class="number">34</td>
+    <td class="timestamp">2026-02-12 22:32:00</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ここ の 証明 状況 を 教え て</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">35</td>
+    <td class="timestamp">2026-02-12 15:33:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">930846的状态</td>
+    <td class="answer-cell">[ANSWER]
+我将为您查询设备930846的状态。[TOOL_CALL] dxcore_get_device_status
+{&quot;sensor_id&quot;: 930846}[TOOL_RESPONSE] dxcore_get_device_status
+{&quot;success&quot;:false,&quot;error&quot;...</td>
+</tr>
+<tr>
+    <td class="number">36</td>
+    <td class="timestamp">2026-02-12 10:27:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell"> うん 、 ちょっと 探し て み て 。 うん 。</td>
+    <td class="answer-cell">承知いたしました。少々お待ちください。すみません、社内のデータベースでは「WingArc First」に関する情報が見つかりませんでした。インターネットで検索してみましょうか?</td>
+</tr>
+<tr>
+    <td class="number">37</td>
+    <td class="timestamp">2026-02-12 10:27:15</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ウィンガー ク ファースト 様 って 知っ てる ?</td>
+    <td class="answer-cell">申し訳ありません、清水建設の知識ベースでは情報を見つけることができかねます。もしよければ、改めて検索してみますか?</td>
+</tr>
+<tr>
+    <td class="number">38</td>
+    <td class="timestamp">2026-02-12 10:24:54</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> いや 、 まだまだ 寒い ね 。 あ 、 調べ なく て いい や 。</td>
+    <td class="answer-cell">そうですね、まだ肌寒い日が続いていますね。atmosphere Tokyoの天気、調べて</td>
+</tr>
+<tr>
+    <td class="number">39</td>
+    <td class="timestamp">2026-02-09 15:08:06</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ちょっと うーん 、 ちょっと リファイン ルーム 4 の 電気 が 消え た まま に なっ て ます 。 調べ て 。</td>
+    <td class="answer-cell">あ、そうなんですね。少々お待ちくださいね。</td>
+</tr>
+<tr>
+    <td class="number">40</td>
+    <td class="timestamp">2026-02-05 15:24:34</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> テーブル 付近 で お 願い し ます 。</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">41</td>
+    <td class="timestamp">2026-02-04 17:31:31</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 第一個</td>
+    <td class="answer-cell">かしこまりました。少々お待ちください。</td>
+</tr>
+<tr>
+    <td class="number">42</td>
+    <td class="timestamp">2026-02-04 17:30:38</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 자, 시간에</td>
+    <td class="answer-cell">少々お待ちください。現在の時刻は2026</td>
+</tr>
+<tr>
+    <td class="number">43</td>
+    <td class="timestamp">2026-02-04 16:49:10</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> &lt;noise&gt; یک &lt;noise&gt;
+ 我這裡的燈光狀態</td>
+    <td class="answer-cell">少々</td>
+</tr>
+<tr>
+    <td class="number">44</td>
+    <td class="timestamp">2026-02-04 16:49:07</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 我所在位置的燈光狀態。 那還是有這種問題,這個沒辦法,這個只能換無。</td>
+    <td class="answer-cell">確認しますね。申し訳ありません。お客様の現在地が確認</td>
+</tr>
+<tr>
+    <td class="number">45</td>
+    <td class="timestamp">2026-02-04 16:01:29</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 為什麼告訴你是當年的天氣,而不是</td>
+    <td class="answer-cell">承知</td>
+</tr>
+<tr>
+    <td class="number">46</td>
+    <td class="timestamp">2026-02-04 15:57:32</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 清水太郎 さん は どこ です か ?</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">47</td>
+    <td class="timestamp">2026-02-04 15:51:11</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> ハンマー の 11 さん 。</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr>
+<tr>
+    <td class="number">48</td>
+    <td class="timestamp">2026-02-04 15:45:55</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell">room302</td>
+    <td class="answer-cell">[ANSWER]
+好的，让我查询room302的空调设备和当前温度状态。[TOOL_CALL] find_device_by_area
+{&quot;description&quot;: &quot;room302&quot;, &quot;device_type&quot;: &quot;dcu&quot;}[TOOL_RESPONSE] find_device_by_are...</td>
+</tr>
+<tr>
+    <td class="number">49</td>
+    <td class="timestamp">2026-02-04 15:45:40</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell">302的空调温度调高一点</td>
+    <td class="answer-cell">[ANSWER]
+我来帮您调整302房间的空调温度。
+
+首先让我查询一下302房间的空调设备和当前状态。[TOOL_CALL] find_device_by_area
+{&quot;description&quot;: &quot;302&quot;, &quot;device_type&quot;: &quot;dcu&quot;}[TOOL_RESPONSE] find_d...</td>
+</tr>
+<tr>
+    <td class="number">50</td>
+    <td class="timestamp">2026-02-04 15:41:47</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 查一下田中花子。
+ こいつ 。</td>
+    <td class="answer-cell">正在查询，</td>
+</tr>
+<tr>
+    <td class="number">51</td>
+    <td class="timestamp">2026-02-04 15:37:46</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 查一下清水班。</td>
+    <td class="answer-cell">正在查询， 请稍候。 souffle</td>
+</tr>
+<tr>
+    <td class="number">52</td>
+    <td class="timestamp">2026-02-03 15:48:20</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell"> 、 本間 2 回 プロジェクト ルーム 4 お 願い し ます 。</td>
+    <td class="answer-cell">&lt;ctrl46&gt;&lt;ctrl46&gt;</td>
+</tr></tbody>
+            </table>
+        </div>
+        <footer class="footer"><span data-ja="novare 2026年2月 メッセージ履歴分析" data-zh="novare 2026年2月 消息履历分析">novare 2026年2月 メッセージ履歴分析</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#unansweredTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { const badge = row.querySelector('.badge'); row.style.display = (badge && badge.getAttribute('data-ja') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>
