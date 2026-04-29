@@ -204,6 +204,11 @@ def detect_mixed_language(answer, primary_lang='ja',
     if primary_lang != 'ja':
         return False, []
 
+    # システムメッセージのJSONは LLM 回答ではないので除外
+    answer_stripped = answer.strip()
+    if answer_stripped.startswith('{') and ('"message_id"' in answer_stripped or '"message_type"' in answer_stripped):
+        return False, []
+
     cleaned = _strip_whitelist(answer, extra_brands=extra_brand_whitelist)
     chunks = re.split(r'[。\n]+|(?<=[a-z])\.\s+', cleaned)
 
