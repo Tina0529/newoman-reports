@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-04-29T15:51:20.465647",
+  "updated_at": "2026-04-29T15:57:13.169107",
   "months": [
     {
       "period": "2025年9月",
@@ -191,8 +191,8 @@
       "period": "2026年4月",
       "year_month": "2026-04",
       "total_messages": 1073,
-      "normal_answer_rate": 97.2,
-      "unanswered_rate": 2.8,
+      "normal_answer_rate": 97.7,
+      "unanswered_rate": 2.3,
       "good_rating_rate": 0,
       "feedback_rate": 0.0,
       "daily_average": 37.0,
@@ -217,8 +217,8 @@
         "other_pct": 7.1
       },
       "language_mixing": {
-        "count": 38,
-        "rate": 3.54,
+        "count": 16,
+        "rate": 1.49,
         "samples": [
           {
             "timestamp": "2026-04-29 15:06:20",
@@ -236,39 +236,39 @@
             "answer_excerpt": "I apologize, but     does not have currency exchange services available within the facility"
           },
           {
-            "timestamp": "2026-04-27 19:03:42",
-            "question": "28F/29F への行き方（LUFTBAUM）",
-            "answer_excerpt": "{\"message_id\": \"536a0bc2-3ddb- -8976-17a16bd796b5\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-24 15:11:37",
+            "question": "足湯はどこ",
+            "answer_excerpt": "##  MoN  : The Museum of Narrativesについて"
           },
           {
-            "timestamp": "2026-04-27 15:17:09",
-            "question": "NEWoMan高輪のフロアガイドを見たいです",
-            "answer_excerpt": "{\"message_id\": \"bd7b2f3d-edbe-4a3a-8ecd-f2eefb2f1105\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-19 17:11:16",
+            "question": "The Museum of Narrativesはどこ？",
+            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
           },
           {
-            "timestamp": "2026-04-27 11:23:26",
-            "question": "ミムレ(MIMURE)への行き方",
-            "answer_excerpt": "{\"message_id\": \"3bf2be8f-a3df-4621-aef5-6b65f3a2c01f\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-19 16:41:47",
+            "question": "足湯",
+            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
           },
           {
-            "timestamp": "2026-04-27 07:48:08",
-            "question": "カフェ・レストランを探したい",
-            "answer_excerpt": "{\"message_id\": \"b1a3add2-5d0b-4c5a-95a0-46be29c732ed\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-18 17:29:47",
+            "question": "足湯への行き方",
+            "answer_excerpt": "##  MoN  : The Museum of Narrativesについて"
           },
           {
-            "timestamp": "2026-04-26 19:33:25",
-            "question": "営業時間",
-            "answer_excerpt": "{\"message_id\": \"c30872cb-024a-4824-a4a1-13f5b88599fb\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-18 15:53:08",
+            "question": "ミュージアムに行きたい",
+            "answer_excerpt": "## MoN  : The Museum of Narratives"
           },
           {
-            "timestamp": "2026-04-26 15:23:30",
-            "question": "NEWoMan高輪のフロアガイドを見たいです",
-            "answer_excerpt": "{\"message_id\": \"159a5b99-c0f5-42b8- -b118916182f1\", \"message_type\": \"LLM_CAN_ANSWER\", \"content\": \"true\", \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-17 13:56:40",
+            "question": "足湯ができるとこはどこ",
+            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
           },
           {
-            "timestamp": "2026-04-26 13:52:24",
-            "question": "28F/29F への行き方（LUFTBAUM）",
-            "answer_excerpt": "{\"message_id\": \"13a0d994-0a94-4717-aa6a-b8a1c2f0de75\", \"message_type\": \"REFERENCE_LIST\", \"content\": null, \"use_faq\": true, \"tokens\": 0}"
+            "timestamp": "2026-04-14 19:35:12",
+            "question": "mimureってなに？",
+            "answer_excerpt": "階:  OGAWA COFFEE LABORATORY、AGRIKO×  BOTANICAL Lab、Dialog in the Dark 5-1＝∞ Lab"
           }
         ]
       },
