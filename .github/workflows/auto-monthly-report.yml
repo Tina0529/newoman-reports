@@ -1,0 +1,114 @@
+name: Auto Monthly Report
+
+# 月末日 22:00 JST に当月分の月次レポートを自動生成
+# - cron は UTC で動くため 13:00 UTC = 22:00 JST
+# - 28-31 日に発火し、スクリプトで「明日が翌月」かを確認(=月末)
+# - 月末でなければ no-op で終了
+
+on:
+  schedule:
+    - cron: '0 13 28-31 * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '日付チェックをスキップして強制実行(テスト用)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  auto-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check if today is the last day of month
+        id: date_check
+        run: |
+          # JST(UTC+9)で「今日」と「明日」を計算
+          TODAY_JST=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
+          TOMORROW_JST=$(TZ='Asia/Tokyo' date -d 'tomorrow' +%Y-%m-%d)
+          THIS_MONTH=$(echo "$TODAY_JST" | cut -d'-' -f2)
+          NEXT_DAY_MONTH=$(echo "$TOMORROW_JST" | cut -d'-' -f2)
+          echo "today_jst=$TODAY_JST" >> $GITHUB_OUTPUT
+          echo "month=$THIS_MONTH" >> $GITHUB_OUTPUT
+
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "🔧 Force run (workflow_dispatch with force=true)"
+            echo "is_last_day=true" >> $GITHUB_OUTPUT
+          elif [ "$THIS_MONTH" != "$NEXT_DAY_MONTH" ]; then
+            echo "✅ Today ($TODAY_JST) is the last day of month $THIS_MONTH"
+            echo "is_last_day=true" >> $GITHUB_OUTPUT
+          else
+            echo "⏭️  Today ($TODAY_JST) is NOT the last day. Tomorrow is $TOMORROW_JST. Skipping."
+            echo "is_last_day=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.date_check.outputs.is_last_day == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.date_check.outputs.is_last_day == 'true'
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.date_check.outputs.is_last_day == 'true'
+        run: pip install pandas requests anthropic
+
+      - name: Run analysis for current month
+        if: steps.date_check.outputs.is_last_day == 'true'
+        env:
+          GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
+          GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$GBASE_DATASET_ID" ] || [ -z "$GBASE_API_TOKEN" ]; then
+            echo "❌ GBASE_DATASET_ID または GBASE_API_TOKEN が未設定です。"
+            echo "   GitHub Settings > Secrets and variables > Actions で設定してください。"
+            exit 1
+          fi
+
+          # 当月の年月を JST で取得
+          YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+          YEAR=$(echo "$YEAR_MONTH" | cut -d'-' -f1)
+          MONTH_NUM=$(echo "$YEAR_MONTH" | cut -d'-' -f2)
+          MONTH_INT=$((10#$MONTH_NUM))
+          START_DATE="${YEAR_MONTH}-01"
+          END_DATE=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
+          PERIOD="${YEAR}年${MONTH_INT}月"
+
+          echo "📊 Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
+
+          LLM_ARGS=""
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            LLM_ARGS="--use-llm --anthropic-key $ANTHROPIC_API_KEY"
+            echo "LLM semantic judgment: enabled"
+          fi
+
+          python3 skill/chatbot-message-analyzer/scripts/analyze.py \
+            --dataset-id "$GBASE_DATASET_ID" \
+            --token "$GBASE_API_TOKEN" \
+            --start-date "$START_DATE" \
+            --end-date "$END_DATE" \
+            --client "NEWoMan高輪" \
+            --period "$PERIOD" \
+            --output /tmp \
+            --site-dir docs \
+            --client-slug "newoman-takanawa" \
+            $LLM_ARGS
+
+      - name: Commit and push
+        if: steps.date_check.outputs.is_last_day == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/clients/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+            git commit -m "Auto-update monthly report: $YEAR_MONTH (scheduled)"
+            git push
+          fi

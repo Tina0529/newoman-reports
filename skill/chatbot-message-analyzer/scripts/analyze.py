@@ -124,6 +124,142 @@ def detect_language(text):
     return "その他"
 
 
+# ===== 言語混在検出（Language Mixing Detection）=====
+# 4/11 NEWoMan高輪事象（日本語UI設定なのに英語で回答）の再発検知用
+# 規則ベース + 白名单で判定（成本/再現性のためLLMは使わない）
+
+LANG_MIX_WHITELIST_PATTERNS = [
+    # Markdown リンク全体(リンクテキストはブランド名/施設名/イベント名であることが多い)
+    r'\[[^\]]+\]\([^\)]*\)?',
+    r'\[[^\]]+\]\([^\)]*$',  # 改行で切れた途中のリンク
+    # 残った markdown 記号
+    r'\*\*|\*|`|~~|^\s*\|',
+    r'https?://\S+',
+    r'\d{2,4}-\d{2,4}-\d{4}',
+    r'\d{1,2}:\d{2}\s*[~〜]\s*\d{1,2}:\d{2}',
+    r'\d{1,2}:\d{2}',
+    r'[¥$€]\s*[\d,]+',
+    r'\b\d+F\b',
+    r'\b(?:North|South|East|West)\b',
+    r'\b(?:Wi-?Fi|ATM|QR|PC|CD|DVD|AI|JR|NG|OK|FAQ|VIP|RAG)\b',
+    r'\bSCD\d+\b',
+    # テーブル区切り文字
+    r'\|',
+    r'^[\-=]{2,}',
+]
+
+LANG_MIX_BRAND_WHITELIST = [
+    'NEWoMan', 'LUMINE', 'MIMURE', 'LUFTBAUM', 'LE PHIL',
+    'Gateway Park', 'Gateway City', 'Takanawa Gateway', 'Takanawa',
+    'JRE POINT', 'ONELUMINE',
+]
+
+
+def _strip_whitelist(text, extra_brands=None):
+    cleaned = text
+    for pat in LANG_MIX_WHITELIST_PATTERNS:
+        cleaned = re.sub(pat, ' ', cleaned, flags=re.IGNORECASE)
+    brands = list(LANG_MIX_BRAND_WHITELIST)
+    if extra_brands:
+        brands.extend(extra_brands)
+    for brand in sorted(brands, key=len, reverse=True):
+        cleaned = re.sub(re.escape(brand), ' ', cleaned, flags=re.IGNORECASE)
+    return cleaned
+
+
+def _japanese_char_ratio(text):
+    if not text:
+        return 0.0
+    jp_chars = re.findall(r'[぀-ゟ゠-ヿ一-鿿]', text)
+    meaningful = re.findall(r'[^\s\d\W_]', text)
+    if not meaningful:
+        return 1.0
+    return len(jp_chars) / len(meaningful)
+
+
+def detect_mixed_language(answer, primary_lang='ja',
+                          chunk_min_len=30, jp_ratio_threshold=0.3,
+                          ja_chunk_threshold=0.5,
+                          extra_brand_whitelist=None):
+    """
+    回答内に「日本語段落と非日本語段落が混在している」事象を検出する。
+
+    判定ロジック(4/11 ニュウマン高輪事象の特徴を捉える):
+    - 回答を段落/文単位に分割
+    - 日本語為主の段落(jp_ratio >= ja_chunk_threshold)が **少なくとも1つ** 存在し、
+      かつ 非日本語為主の段落(jp_ratio < jp_ratio_threshold)も **少なくとも1つ** 存在する
+      → 「混在」と判定
+
+    これにより:
+    - 4/11 BUG (冒頭日本語+本文英語) → ✅ 検出
+    - 英語ユーザーへの英語回答(全段落英語)   → ❌ 検出しない(正常)
+    - 日本語ユーザーへの日本語回答(全段落日本語) → ❌ 検出しない(正常)
+
+    Returns:
+        (is_mixed: bool, anomaly_chunks: list[str])
+        anomaly_chunks は「非日本語為主」と判定された段落のみ
+    """
+    if not isinstance(answer, str) or not answer.strip():
+        return False, []
+    if primary_lang != 'ja':
+        return False, []
+
+    cleaned = _strip_whitelist(answer, extra_brands=extra_brand_whitelist)
+    chunks = re.split(r'[。\n]+|(?<=[a-z])\.\s+', cleaned)
+
+    # 「日本語が一定量含まれる」かを回答全体で判定(短いラベルが分断されても拾える)
+    total_jp_chars = len(re.findall(r'[぀-ゟ゠-ヿ一-鿿]', cleaned))
+    has_japanese_content = total_jp_chars >= 10
+
+    # 「英語の文法的特徴(stopwords)を持つ完整な段落」を検出
+    # ブランド名のみの羅列(「AFURI / Sanity / SPICE THEATER」等)は除外する
+    EN_STOPWORDS = {
+        'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+        'a', 'an', 'of', 'to', 'for', 'with', 'on', 'in', 'at',
+        'by', 'from', 'this', 'that', 'these', 'those',
+        'you', 'your', 'we', 'our', 'us', 'i', 'my', 'me',
+        'please', 'can', 'will', 'would', 'should', 'have', 'has', 'had',
+        'here', 'there', 'about', 'and', 'or', 'but', 'if',
+        'as', 'so', 'not', 'no', 'yes', 'do', 'does', 'did',
+    }
+
+    non_japanese_chunks = []
+    for chunk in chunks:
+        chunk = chunk.strip()
+        chunk = re.sub(r'^[\-・\*\d\.\)]+\s*', '', chunk)
+        if len(chunk) < chunk_min_len:
+            continue
+        ratio = _japanese_char_ratio(chunk)
+        if ratio >= jp_ratio_threshold:
+            continue
+        # 英単語を抽出して stopwords をカウント
+        words = re.findall(r"[A-Za-z']+", chunk)
+        stopword_count = sum(1 for w in words if w.lower() in EN_STOPWORDS)
+        # 英語の文法的特徴が一定以上 → 真の英語段落と判定
+        if stopword_count >= 2 and len(words) >= 5:
+            non_japanese_chunks.append(chunk[:200])
+
+    is_mixed = has_japanese_content and len(non_japanese_chunks) > 0
+    return (is_mixed, non_japanese_chunks if is_mixed else [])
+
+
+def load_brand_whitelist(client_slug):
+    """クライアント別のブランド/店舗名白名单を読み込む(混在誤判定防止用)"""
+    if not client_slug:
+        return []
+    base = Path(__file__).resolve().parent.parent / 'references' / 'lang-mix-whitelist'
+    candidate = base / f'{client_slug}-shops.txt'
+    if not candidate.exists():
+        return []
+    brands = []
+    with open(candidate, 'r', encoding='utf-8') as f:
+        for line in f:
+            name = line.strip()
+            if name and not name.startswith('#'):
+                brands.append(name)
+    return brands
+
+
 def is_unanswered(answer):
     """未回答かどうかを判定（ルールベース・フォールバック用）
 
@@ -533,7 +669,7 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
     return df
 
 
-def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_counts, feedback_rate, source_stats=None):
+def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_counts, feedback_rate, source_stats=None, mixed_language_stats=None):
     """Dashboard用のKPI統計を計算"""
     total = kpi["total_messages"]
     foreign_count = sum(int(language_counts.get(l, 0)) for l in ["英語", "中国語", "韓国語"])
@@ -576,6 +712,14 @@ def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_c
             "faq_pct": source_stats["FAQ"]["percent"],
             "other_count": source_stats["その他"]["count"],
             "other_pct": source_stats["その他"]["percent"],
+        }
+
+    # 言語混在検出(4/11事象再発監視)
+    if mixed_language_stats is not None:
+        result["language_mixing"] = {
+            "count": mixed_language_stats.get("count", 0),
+            "rate": round(mixed_language_stats.get("rate", 0), 2),
+            "samples": mixed_language_stats.get("samples", []),
         }
 
     return result
@@ -803,6 +947,23 @@ def main():
     df['言語'] = df['質問'].apply(detect_language)
     language_counts = df['言語'].value_counts()
 
+    # 言語混在検出(回答内に主言語以外の段落が含まれるか)
+    # 4/11 NEWoMan高輪事象(日本語UI設定なのに英語回答)の継続監視用
+    brand_whitelist = load_brand_whitelist(args.client_slug) if getattr(args, 'client_slug', None) else []
+    mixing_results = df['回答'].apply(
+        lambda a: detect_mixed_language(a, primary_lang='ja', extra_brand_whitelist=brand_whitelist)
+    )
+    df['言語混在'] = mixing_results.apply(lambda r: r[0])
+    df['混在異常段落'] = mixing_results.apply(lambda r: r[1])
+    mixed_language_count = int(df['言語混在'].sum())
+    mixed_language_rate = (mixed_language_count / total_messages * 100) if total_messages > 0 else 0
+    print(f"\n📌 言語混在検出: {mixed_language_count}件 ({mixed_language_rate:.2f}%)")
+    if mixed_language_count > 0:
+        print(f"   ※ 混在事例(最大3件):")
+        for _, row in df[df['言語混在']].head(3).iterrows():
+            q = str(row.get('質問', ''))[:60]
+            print(f"      Q: {q}")
+
     # メディア
     df['メディアタイプ'] = df['回答'].apply(detect_media_type)
     media_counts = df['メディアタイプ'].value_counts()
@@ -987,6 +1148,31 @@ def main():
         main_html = main_html.replace("{{SOURCE_SECTION_DISPLAY}}", "display:none")
         main_html = main_html.replace("{{SOURCE_CHART_DATA}}", "[0, 0, 0]")
         main_html = main_html.replace("{{SOURCE_TABLE_ROWS}}", "")
+
+    # Language Mixing (4/11事象再発監視) — 常に表示
+    main_html = main_html.replace("{{LANG_MIX_SECTION_DISPLAY}}", "")
+    main_html = main_html.replace("{{LANG_MIX_COUNT}}", str(mixed_language_count))
+    main_html = main_html.replace("{{LANG_MIX_RATE}}", f"{mixed_language_rate:.2f}")
+    main_html = main_html.replace("{{TOTAL_MESSAGES_FOR_LANG}}", str(total_messages))
+
+    if mixed_language_count > 0:
+        main_html = main_html.replace("{{LANG_MIX_SAMPLES_DISPLAY}}", "")
+        sample_rows_html = ""
+        for _, row in df[df['言語混在']].head(10).iterrows():
+            ts = row['質問時間'].strftime('%m/%d %H:%M') if pd.notna(row.get('質問時間')) else '-'
+            q = escape_html(str(row.get('質問', ''))[:80])
+            ans_chunks = row.get('混在異常段落', []) or ['']
+            excerpt = escape_html(ans_chunks[0][:150] if ans_chunks else '')
+            sample_rows_html += f'''
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;">{ts}</td>
+                            <td style="font-size:0.85rem;">{q}</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);">{excerpt}</td>
+                        </tr>'''
+        main_html = main_html.replace("{{LANG_MIX_SAMPLE_ROWS}}", sample_rows_html)
+    else:
+        main_html = main_html.replace("{{LANG_MIX_SAMPLES_DISPLAY}}", "display:none")
+        main_html = main_html.replace("{{LANG_MIX_SAMPLE_ROWS}}", "")
 
     # Unanswered CTA
     main_html = re.sub(r'<div class="cta-value">104</div>', f'<div class="cta-value">{kpi["unanswered_count"]}</div>', main_html)
@@ -1218,10 +1404,26 @@ def main():
         else:
             year_month = df['質問時間'].iloc[0].strftime('%Y-%m')
 
+        # 言語混在の異常事例(レポート/ダッシュボード掲載用、最大10件)
+        mixed_samples = []
+        if mixed_language_count > 0:
+            for _, row in df[df['言語混在']].head(10).iterrows():
+                mixed_samples.append({
+                    "timestamp": row['質問時間'].strftime('%Y-%m-%d %H:%M:%S') if pd.notna(row.get('質問時間')) else '',
+                    "question": str(row.get('質問', ''))[:120],
+                    "answer_excerpt": (row.get('混在異常段落', []) or [''])[0][:200],
+                })
+        mixed_language_stats = {
+            "count": mixed_language_count,
+            "rate": mixed_language_rate,
+            "samples": mixed_samples,
+        }
+
         # KPI統計を計算
         month_stats = compute_kpi_for_dashboard(
             df, kpi, period, year_month, avg_daily, language_counts, feedback_rate,
-            source_stats=source_stats
+            source_stats=source_stats,
+            mixed_language_stats=mixed_language_stats,
         )
 
         # dashboard-data.json を更新

@@ -1,2 +1,6 @@
 .DS_Store
 docs/NEWoMan*
+
+__pycache__/
+*.pyc
+.DS_Store

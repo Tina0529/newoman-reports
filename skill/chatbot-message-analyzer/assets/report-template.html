@@ -1103,7 +1103,56 @@
                 </div>
             </div>
         </section>
-        
+
+        <!-- Language Consistency Monitoring (4/11事象再発監視) -->
+        <section class="section" id="languageMixingSection" style="{{LANG_MIX_SECTION_DISPLAY}}">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </span>
+                    <span data-ja="言語一致性監視" data-zh="语言一致性监控">言語一致性監視</span>
+                </h2>
+            </div>
+
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="言語混在件数" data-zh="语言混在件数">言語混在件数</div>
+                    <div class="kpi-value">{{LANG_MIX_COUNT}}</div>
+                    <div class="kpi-sub" data-ja="件 / 全{{TOTAL_MESSAGES_FOR_LANG}}件" data-zh="件 / 共{{TOTAL_MESSAGES_FOR_LANG}}件">件 / 全{{TOTAL_MESSAGES_FOR_LANG}}件</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="混在率" data-zh="混在率">混在率</div>
+                    <div class="kpi-value">{{LANG_MIX_RATE}}%</div>
+                    <div class="kpi-sub" data-ja="目標: 0.00%" data-zh="目标: 0.00%">目標: 0.00%</div>
+                </div>
+            </div>
+
+            <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100); margin-bottom: var(--space-4);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+                    <span data-ja="※ 「言語混在」とは、UI設定言語(日本語)で動作している会話に対して、回答内に日本語以外の段落が含まれる事象を指します。2026/4/11に発生した『日本語質問に英語回答』事象の再発監視のため導入。" data-zh="※「语言混在」指UI设置为日语的会话中，回答里出现非日语段落的现象。为监控2026/4/11『日语提问英语回答』事象的再发而导入。">※ 「言語混在」とは、UI設定言語(日本語)で動作している会話に対して、回答内に日本語以外の段落が含まれる事象を指します。2026/4/11に発生した『日本語質問に英語回答』事象の再発監視のため導入。</span>
+                </div>
+            </div>
+
+            <div id="langMixSamplesContainer" style="{{LANG_MIX_SAMPLES_DISPLAY}}">
+                <div class="chart-title" data-ja="混在事例一覧（最大10件）" data-zh="混在事例一览（最多10件）">混在事例一覧（最大10件）</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-ja="日時" data-zh="时间">日時</th>
+                            <th data-ja="質問" data-zh="问题">質問</th>
+                            <th data-ja="異常段落抜粋" data-zh="异常段落摘录">異常段落抜粋</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{LANG_MIX_SAMPLE_ROWS}}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Error Analysis -->
         <section class="section">
             <div class="section-header">
