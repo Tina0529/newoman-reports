@@ -214,7 +214,7 @@ def detect_mixed_language(answer, primary_lang='ja',
 
     # 「日本語が一定量含まれる」かを回答全体で判定(短いラベルが分断されても拾える)
     total_jp_chars = len(re.findall(r'[぀-ゟ゠-ヿ一-鿿]', cleaned))
-    has_japanese_content = total_jp_chars >= 10
+    has_japanese_content = total_jp_chars >= 5
 
     # 「英語の文法的特徴(stopwords)を持つ完整な段落」を検出
     # ブランド名のみの羅列(「AFURI / Sanity / SPICE THEATER」等)は除外する
