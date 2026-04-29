@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-04-29T15:57:13.169107",
+  "updated_at": "2026-04-29T16:03:24.980288",
   "months": [
     {
       "period": "2025年9月",
@@ -191,8 +191,8 @@
       "period": "2026年4月",
       "year_month": "2026-04",
       "total_messages": 1073,
-      "normal_answer_rate": 97.7,
-      "unanswered_rate": 2.3,
+      "normal_answer_rate": 98.7,
+      "unanswered_rate": 1.3,
       "good_rating_rate": 0,
       "feedback_rate": 0.0,
       "daily_average": 37.0,
@@ -217,14 +217,9 @@
         "other_pct": 7.1
       },
       "language_mixing": {
-        "count": 16,
-        "rate": 1.49,
+        "count": 10,
+        "rate": 0.93,
         "samples": [
-          {
-            "timestamp": "2026-04-29 15:06:20",
-            "question": "足湯",
-            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
-          },
           {
             "timestamp": "2026-04-29 11:46:04",
             "question": "空いてるカフェある？",
@@ -236,39 +231,44 @@
             "answer_excerpt": "I apologize, but     does not have currency exchange services available within the facility"
           },
           {
-            "timestamp": "2026-04-24 15:11:37",
-            "question": "足湯はどこ",
-            "answer_excerpt": "##  MoN  : The Museum of Narrativesについて"
+            "timestamp": "2026-04-21 10:28:37",
+            "question": "Women boutiques",
+            "answer_excerpt": "I'll help you find information about women's boutiques at    .I've found information about women's boutiques at    . Here are some of the women's fashion shops available:"
           },
           {
-            "timestamp": "2026-04-19 17:11:16",
-            "question": "The Museum of Narrativesはどこ？",
-            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
+            "timestamp": "2026-04-15 18:18:18",
+            "question": "Where we can get the plates for present",
+            "answer_excerpt": "Based on the information from    , here are the recommended shops where you can find plates and tableware suitable for presents:"
           },
           {
-            "timestamp": "2026-04-19 16:41:47",
-            "question": "足湯",
-            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
+            "timestamp": "2026-04-13 00:42:57",
+            "question": "Starbucksの電話番号を教えて",
+            "answer_excerpt": "Let me check the information about   at     for you.Based on the information retrieved, here are the details for   at    :"
           },
           {
-            "timestamp": "2026-04-18 17:29:47",
-            "question": "足湯への行き方",
-            "answer_excerpt": "##  MoN  : The Museum of Narrativesについて"
+            "timestamp": "2026-04-12 15:01:01",
+            "question": "Where is cosme?",
+            "answer_excerpt": "I'll help you find cosmetics shops at    .Based on the information from    , here are the cosmetics shops available:"
           },
           {
-            "timestamp": "2026-04-18 15:53:08",
-            "question": "ミュージアムに行きたい",
-            "answer_excerpt": "## MoN  : The Museum of Narratives"
+            "timestamp": "2026-04-11 19:32:50",
+            "question": "今3階　LE PHILにいます。ゲートウェイパークにいくには？",
+            "answer_excerpt": "Based on the information retrieved,   is located on the 2nd floor near     Station"
           },
           {
-            "timestamp": "2026-04-17 13:56:40",
-            "question": "足湯ができるとこはどこ",
-            "answer_excerpt": "## MoN  : The Museum of Narrativesについて"
+            "timestamp": "2026-04-10 11:57:20",
+            "question": "How about mens shoe",
+            "answer_excerpt": "Let me check what men's shoe options are available at     for you.I've found information about men's shoes available at    . Here are the stores that carry men's footwear:"
           },
           {
-            "timestamp": "2026-04-14 19:35:12",
-            "question": "mimureってなに？",
-            "answer_excerpt": "階:  OGAWA COFFEE LABORATORY、AGRIKO×  BOTANICAL Lab、Dialog in the Dark 5-1＝∞ Lab"
+            "timestamp": "2026-04-05 12:26:43",
+            "question": "Where is asics shop",
+            "answer_excerpt": "I'll help you find the ASICS shop at    .Based on the search results from    , I was unable to find an ASICS shop at this location"
+          },
+          {
+            "timestamp": "2026-04-04 16:17:08",
+            "question": "A bunch of coffeeはどこ？",
+            "answer_excerpt": "Based on the search results, I found information about Johnny Depp's art exhibition \"A Bunch Of Stuff\" at    ."
           }
         ]
       },
