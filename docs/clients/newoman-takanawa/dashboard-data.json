@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-04-30T00:59:07.304596",
+  "updated_at": "2026-04-30T13:36:34.263512",
   "months": [
     {
       "period": "2025年9月",
@@ -190,36 +190,46 @@
     {
       "period": "2026年4月",
       "year_month": "2026-04",
-      "total_messages": 1073,
-      "normal_answer_rate": 97.7,
-      "unanswered_rate": 2.3,
+      "total_messages": 1086,
+      "normal_answer_rate": 97.3,
+      "unanswered_rate": 2.7,
       "good_rating_rate": 0,
       "feedback_rate": 0.0,
-      "daily_average": 37.0,
+      "daily_average": 36.2,
       "unique_users": 3,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.0,
+      "foreign_language_pct": 10.2,
       "weekday_counts": [
         57,
         76,
         468,
-        104,
+        117,
         89,
         150,
         129
       ],
       "source_distribution": {
-        "rag_count": 565,
-        "rag_pct": 52.7,
-        "faq_count": 432,
-        "faq_pct": 40.3,
+        "rag_count": 575,
+        "rag_pct": 52.9,
+        "faq_count": 435,
+        "faq_pct": 40.1,
         "other_count": 76,
-        "other_pct": 7.1
+        "other_pct": 7.0
       },
       "language_mixing": {
-        "count": 10,
-        "rate": 0.93,
+        "count": 12,
+        "rate": 1.1,
         "samples": [
+          {
+            "timestamp": "2026-04-30 12:25:32",
+            "question": "Somewhere for lunch and is withing the 1,000 yen to 1,500 yen budget",
+            "answer_excerpt": "Let me search for lunch options within your budget at    !Based on the information found, here are the best lunch options within your   –  budget  at    :"
+          },
+          {
+            "timestamp": "2026-04-30 12:21:29",
+            "question": "I am near tokyo milk cheese factory, which restaurants are mear me",
+            "answer_excerpt": "Let me look up restaurants near Tokyo Milk Cheese Factory for you!Since  Tokyo Milk Cheese Factory is located on  ・  , here are the nearby restaurants and dining options on the same and adjacent floor"
+          },
           {
             "timestamp": "2026-04-29 11:46:04",
             "question": "空いてるカフェある？",
@@ -259,16 +269,6 @@
             "timestamp": "2026-04-10 11:57:20",
             "question": "How about mens shoe",
             "answer_excerpt": "Let me check what men's shoe options are available at     for you.I've found information about men's shoes available at    . Here are the stores that carry men's footwear:"
-          },
-          {
-            "timestamp": "2026-04-05 12:26:43",
-            "question": "Where is asics shop",
-            "answer_excerpt": "I'll help you find the ASICS shop at    .Based on the search results from    , I was unable to find an ASICS shop at this location"
-          },
-          {
-            "timestamp": "2026-04-04 16:17:08",
-            "question": "A bunch of coffeeはどこ？",
-            "answer_excerpt": "Based on the search results, I found information about Johnny Depp's art exhibition \"A Bunch Of Stuff\" at    ."
           }
         ]
       },
