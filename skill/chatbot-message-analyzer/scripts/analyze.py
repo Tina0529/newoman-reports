@@ -1110,7 +1110,8 @@ def main():
                                 <td class="number">{cat['count']}</td>
                                 <td class="number">{cat['percent']:.1f}%</td>
                             </tr>'''
-    main_html = re.sub(r'<tbody>.*?</tbody>', f'<tbody>{table_rows}</tbody>', main_html, flags=re.DOTALL)
+    # 「質問分類」の tbody のみを置換(言語混在 section の tbody を巻き込まないよう count=1)
+    main_html = re.sub(r'<tbody>.*?</tbody>', f'<tbody>{table_rows}</tbody>', main_html, flags=re.DOTALL, count=1)
 
     # Session depth
     depth_data = [int(session_depth[k]) for k in ["1回", "2回", "3回", "4回+"]]
