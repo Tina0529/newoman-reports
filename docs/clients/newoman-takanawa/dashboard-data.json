@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-04-30T13:36:34.263512",
+  "updated_at": "2026-05-01T09:48:56.680382",
   "months": [
     {
       "period": "2025年9月",
@@ -190,85 +190,55 @@
     {
       "period": "2026年4月",
       "year_month": "2026-04",
-      "total_messages": 1086,
-      "normal_answer_rate": 97.3,
-      "unanswered_rate": 2.7,
+      "total_messages": 706,
+      "normal_answer_rate": 96.5,
+      "unanswered_rate": 3.5,
       "good_rating_rate": 0,
       "feedback_rate": 0.0,
-      "daily_average": 36.2,
+      "daily_average": 23.5,
       "unique_users": 3,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.2,
+      "foreign_language_pct": 9.5,
       "weekday_counts": [
-        57,
-        76,
-        468,
+        53,
+        70,
+        101,
         117,
         89,
         150,
-        129
+        126
       ],
       "source_distribution": {
-        "rag_count": 575,
-        "rag_pct": 52.9,
-        "faq_count": 435,
-        "faq_pct": 40.1,
-        "other_count": 76,
-        "other_pct": 7.0
+        "rag_count": 355,
+        "rag_pct": 50.3,
+        "faq_count": 301,
+        "faq_pct": 42.6,
+        "other_count": 50,
+        "other_pct": 7.1
       },
       "language_mixing": {
-        "count": 12,
-        "rate": 1.1,
+        "count": 4,
+        "rate": 0.57,
         "samples": [
-          {
-            "timestamp": "2026-04-30 12:25:32",
-            "question": "Somewhere for lunch and is withing the 1,000 yen to 1,500 yen budget",
-            "answer_excerpt": "Let me search for lunch options within your budget at    !Based on the information found, here are the best lunch options within your   –  budget  at    :"
-          },
-          {
-            "timestamp": "2026-04-30 12:21:29",
-            "question": "I am near tokyo milk cheese factory, which restaurants are mear me",
-            "answer_excerpt": "Let me look up restaurants near Tokyo Milk Cheese Factory for you!Since  Tokyo Milk Cheese Factory is located on  ・  , here are the nearby restaurants and dining options on the same and adjacent floor"
-          },
           {
             "timestamp": "2026-04-29 11:46:04",
             "question": "空いてるカフェある？",
-            "answer_excerpt": "Based on the information I found, here are the cafes currently open at    :"
+            "answer": "ニュウマン高輪のカフェ情報をお調べいたします。Based on the information I found, here are the cafes currently open at NEWoMan Takanawa:\n\n## Currently Open Cafes (as of 11:46 AM)\n\n| Floor | Cafe Name | Hours |\n|-------|-----------|-------|\n| South・1F | [ZEROCORNER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002903) | 8:00～21:00 |\n| South・4F | [SOW COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003011) | 10:00～21:00 |\n| North・2F | [365日とCOFFEE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002914) | 9:00～19:00 |\n| North・5F | [STARBUCKS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003303) | 10:00～22:00 |\n| North・5F | [=CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003303) | 11:00～22:00 |\n\nAdditionally, many more cafes will open at 11:00 AM, including HARBS, MARGARET HOWELL SHOP & CAFE, and various cafes on the 28th floor of LUFTBAUM.\n\nFor detailed directions to any of these cafes, please use the digital floor guide at [Digital Floor Guide](https://platinumaps.jp/d/newoman-takanawa).\n\nFor more cafe options, please visit [Cafe Information](https://www.newoman.jp/takanawa/restaurant/?category=type02)."
           },
           {
             "timestamp": "2026-04-29 11:39:51",
             "question": "外貨かえる？",
-            "answer_excerpt": "I apologize, but     does not have currency exchange services available within the facility"
-          },
-          {
-            "timestamp": "2026-04-21 10:28:37",
-            "question": "Women boutiques",
-            "answer_excerpt": "I'll help you find information about women's boutiques at    .I've found information about women's boutiques at    . Here are some of the women's fashion shops available:"
-          },
-          {
-            "timestamp": "2026-04-15 18:18:18",
-            "question": "Where we can get the plates for present",
-            "answer_excerpt": "Based on the information from    , here are the recommended shops where you can find plates and tableware suitable for presents:"
-          },
-          {
-            "timestamp": "2026-04-13 00:42:57",
-            "question": "Starbucksの電話番号を教えて",
-            "answer_excerpt": "Let me check the information about   at     for you.Based on the information retrieved, here are the details for   at    :"
-          },
-          {
-            "timestamp": "2026-04-12 15:01:01",
-            "question": "Where is cosme?",
-            "answer_excerpt": "I'll help you find cosmetics shops at    .Based on the information from    , here are the cosmetics shops available:"
+            "answer": "ニュウマン高輪の外貨両替サービスについてお調べいたします。I apologize, but NEWoMan Takanawa does not have currency exchange services available within the facility.\n\nFor currency exchange needs, you may want to consider the following options:\n\n**Nearby Alternatives:**\n- Currency exchange services at major train stations\n- Banks or authorized money changers in the surrounding area\n- Airport currency exchange counters\n\n**ATM Services at NEWoMan Takanawa:**\nIf you need to withdraw cash, there is an ATM available at:\n- **Location:** North 2F, Mitsubishi UFJ Bank\n- **Hours:** Daily 11:00-20:00\n\nFor detailed directions, please use the digital floor guide at [Digital Floor Guide](https://platinumaps.jp/d/newoman-takanawa).\n\nIs there anything else I can help you with regarding NEWoMan Takanawa services?"
           },
           {
             "timestamp": "2026-04-11 19:32:50",
             "question": "今3階　LE PHILにいます。ゲートウェイパークにいくには？",
-            "answer_excerpt": "Based on the information retrieved,   is located on the 2nd floor near     Station"
+            "answer": "ニュウマン高輪の情報をお調べいたします。Based on the information retrieved, Gateway Park is located on the 2nd floor near JR Takanawa Gateway Station.\n\nSince you are currently on South 3F at LE PHIL, here's how to get to Gateway Park:\n\n**Route:**\n1. From South 3F, take the escalator or stairs down to 2F\n2. Head towards the North building direction\n3. Gateway Park is located on 2F near JR Takanawa Gateway Station, between NEWoMan North and the station\n\n**Location Details:**\n- **Gateway Park Position:** 2F, near JR Takanawa Gateway Station\n- **Your Current Location:** South・3F (LE PHIL)\n\nFor detailed directions with a visual map, please use the Digital Floor Guide: [Digital Floor Guide](https://platinumaps.jp/d/newoman-takanawa)"
           },
           {
-            "timestamp": "2026-04-10 11:57:20",
-            "question": "How about mens shoe",
-            "answer_excerpt": "Let me check what men's shoe options are available at     for you.I've found information about men's shoes available at    . Here are the stores that carry men's footwear:"
+            "timestamp": "2026-04-04 16:17:08",
+            "question": "A bunch of coffeeはどこ？",
+            "answer": "ニュウマン高輪の情報をお調べいたします。Based on the search results, I found information about Johnny Depp's art exhibition \"A Bunch Of Stuff\" at NEWoMan Takanawa.\n\n## Exhibition Information\n\n**Event Name:** [Johnny Depp: A Bunch Of Stuff](https://www.newoman.jp/takanawa/topics/detail/?cd=002550)\n\n**Location:** +Base 0, South 2F\n\nFor more details about the exhibition, please visit [here](https://www.newoman.jp/takanawa/topics/detail/?cd=002550).\n\nFor detailed directions to the location, please use the digital floor guide available [here](https://platinumaps.jp/d/newoman-takanawa)."
           }
         ]
       },
