@@ -16,6 +16,11 @@ on:
         default: 'false'
         type: choice
         options: ['false', 'true']
+      target_month:
+        description: '対象月 YYYY-MM（空欄なら当月）。過去月の再生成に使用'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   auto-update:
@@ -70,13 +75,34 @@ jobs:
             exit 1
           fi
 
-          # 当月の年月を JST で取得
-          YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+          # 対象月: target_month 入力があればそれを使う、なければ当月(JST)
+          INPUT_MONTH="${{ github.event.inputs.target_month }}"
+          if [ -n "$INPUT_MONTH" ]; then
+            YEAR_MONTH="$INPUT_MONTH"
+            echo "🎯 Target month override: $YEAR_MONTH"
+          else
+            YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+          fi
           YEAR=$(echo "$YEAR_MONTH" | cut -d'-' -f1)
           MONTH_NUM=$(echo "$YEAR_MONTH" | cut -d'-' -f2)
           MONTH_INT=$((10#$MONTH_NUM))
           START_DATE="${YEAR_MONTH}-01"
-          END_DATE=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
+
+          # END_DATE: 対象月が当月なら今日、過去月なら月末
+          CURRENT_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+          if [ "$YEAR_MONTH" = "$CURRENT_MONTH" ]; then
+            END_DATE=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
+          else
+            END_DATE=$(python3 -c "
+          from datetime import date, timedelta
+          y, m = $YEAR, $MONTH_INT
+          if m == 12:
+              last = date(y, 12, 31)
+          else:
+              last = date(y, m + 1, 1) - timedelta(days=1)
+          print(last.strftime('%Y-%m-%d'))
+          ")
+          fi
           PERIOD="${YEAR}年${MONTH_INT}月"
 
           echo "📊 Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
@@ -108,7 +134,14 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
-            git commit -m "Auto-update monthly report: $YEAR_MONTH (scheduled)"
+            INPUT_MONTH="${{ github.event.inputs.target_month }}"
+            if [ -n "$INPUT_MONTH" ]; then
+              YEAR_MONTH="$INPUT_MONTH"
+              COMMIT_MSG="Re-run monthly report: $YEAR_MONTH (manual)"
+            else
+              YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
+              COMMIT_MSG="Auto-update monthly report: $YEAR_MONTH (scheduled)"
+            fi
+            git commit -m "$COMMIT_MSG"
             git push
           fi
