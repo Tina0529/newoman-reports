@@ -61,6 +61,22 @@
             if (e.key === 'Enter') handleLogin();
         });
 
+        // Password visibility toggle
+        const toggleBtn = document.getElementById('auth-password-toggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                const input = document.getElementById('auth-password');
+                const eyeIcon = toggleBtn.querySelector('.icon-eye');
+                const eyeOffIcon = toggleBtn.querySelector('.icon-eye-off');
+                const showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                eyeIcon.style.display = showing ? '' : 'none';
+                eyeOffIcon.style.display = showing ? 'none' : '';
+                toggleBtn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                input.focus();
+            });
+        }
+
         // Admin panel toggle
         document.getElementById('admin-btn').addEventListener('click', function() {
             const panel = document.getElementById('admin-panel');

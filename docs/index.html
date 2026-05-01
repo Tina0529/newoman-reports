@@ -14,7 +14,13 @@
     <div id="auth-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
             <h2 data-ja="パスワードを入力してください" data-zh="请输入密码">パスワードを入力してください</h2>
-            <input type="password" id="auth-password" placeholder="Password" autocomplete="off">
+            <div class="password-input-wrapper">
+                <input type="password" id="auth-password" placeholder="Password" autocomplete="off">
+                <button type="button" id="auth-password-toggle" class="password-toggle-btn" aria-label="Show password" tabindex="-1">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display:none;"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                </button>
+            </div>
             <button id="auth-submit" data-ja="ログイン" data-zh="登录">ログイン</button>
             <p id="auth-error" class="error-text" style="display:none;" data-ja="パスワードが正しくありません" data-zh="密码不正确">パスワードが正しくありません</p>
         </div>
