@@ -216,14 +216,24 @@ def filter_new_shops(current: list[ClosedShop], state: dict[str, Any]) -> list[C
 # ─────────────────────────────────────────────────────────────────
 # GBase FAQ fetcher
 # ─────────────────────────────────────────────────────────────────
-def fetch_all_faqs(dataset_id: str, token: str, page_size: int = 200) -> list[dict[str, Any]]:
-    """Page through all FAQs in dataset."""
+def fetch_all_faqs(
+    dataset_id: str,
+    token: str,
+    page_size: int = 200,
+    language: str | None = None,
+) -> list[dict[str, Any]]:
+    """Page through all FAQs in dataset.
+
+    language: 'ja' などを指定すると GBase API の language フィルタを通す。
+    """
     headers = {"Authorization": f"Bearer {token}"}
     all_faqs: list[dict[str, Any]] = []
     page = 1
     while True:
         url = f"{GBASE_API_BASE}/datasets/{dataset_id}/faqs"
-        params = {"page": page, "size": page_size, "exclude_tree_nodes": "true"}
+        params: dict[str, Any] = {"page": page, "size": page_size, "exclude_tree_nodes": "true"}
+        if language:
+            params["language"] = language
         resp = requests.get(url, headers=headers, params=params, timeout=60)
         if resp.status_code != 200:
             sys.stderr.write(f"[FAQ fetch error page {page}] {resp.status_code} {resp.text[:200]}\n")
@@ -285,6 +295,7 @@ def search_faq_hits(
     aliases_dict: dict[str, list[str]],
     all_faqs: list[dict[str, Any]],
     token: str | None,
+    japanese_only: bool = True,
 ) -> list[FaqHit]:
     keywords = build_search_keywords(shop.name, aliases_dict)
     hits: list[FaqHit] = []
@@ -295,6 +306,11 @@ def search_faq_hits(
         if not faq_id or faq_id in seen_ids:
             continue
         q, a = faq_qa_text(faq, token=token)
+
+        # 日本語のみ対象(API フィルタが効かなかった場合の兜底)
+        if japanese_only and not (is_japanese_text(q) or is_japanese_text(a)):
+            continue
+
         haystack = f"{q}\n{a}".lower()
         matched = next((kw for kw in keywords if kw.lower() in haystack), None)
         if matched:
@@ -306,6 +322,16 @@ def search_faq_hits(
             ))
             seen_ids.add(faq_id)
     return hits
+
+
+_JP_CHAR_RE = re.compile(r"[぀-ヿ぀-ゟ゠-ヿ㐀-䶿一-鿿]")
+
+
+def is_japanese_text(text: str, min_chars: int = 3) -> bool:
+    """日本語(ひらがな・カタカナ・漢字)を min_chars 以上含む場合 True。"""
+    if not text:
+        return False
+    return len(_JP_CHAR_RE.findall(text)) >= min_chars
 
 
 def _excerpt_around(text: str, keyword: str, span: int = 80) -> str:
@@ -426,6 +452,8 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Skip Lark notify and state save")
     parser.add_argument("--force-notify-all", action="store_true",
                         help="Notify all currently closed shops (ignore state)")
+    parser.add_argument("--language", default="ja",
+                        help="FAQ 言語フィルタ(default: ja)。'all' で多言語対象")
     args = parser.parse_args()
 
     if not args.dataset_id or not args.token:
@@ -456,15 +484,18 @@ def main() -> int:
                 print(json.dumps(payload, ensure_ascii=False, indent=2))
             return 0
 
-        print("[3/5] Loading aliases & fetching FAQs ...", flush=True)
+        print(f"[3/5] Loading aliases & fetching FAQs (language={args.language}) ...", flush=True)
         aliases_dict = load_aliases(aliases_path)
-        all_faqs = fetch_all_faqs(args.dataset_id, args.token)
+        api_lang = None if args.language == "all" else args.language
+        all_faqs = fetch_all_faqs(args.dataset_id, args.token, language=api_lang)
         print(f"      → {len(all_faqs)} FAQs fetched, {len(aliases_dict)} alias entries loaded")
 
         print("[4/5] Matching FAQs locally ...", flush=True)
+        japanese_only = args.language == "ja"
         reports: list[ShopReport] = []
         for shop in new_shops:
-            hits = search_faq_hits(shop, aliases_dict, all_faqs, token=args.token)
+            hits = search_faq_hits(shop, aliases_dict, all_faqs,
+                                   token=args.token, japanese_only=japanese_only)
             reports.append(ShopReport(shop=shop, hits=hits))
             print(f"      • {shop.name}: {len(hits)} hit(s)")
 

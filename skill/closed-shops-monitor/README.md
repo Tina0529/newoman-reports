@@ -9,11 +9,20 @@ Lark に通知します。
 ```
 1. https://www.newoman.jp/takanawa/newshop/ をスクレイピング
 2. notified-shops.json と差分比較 → 新規閉店店舗のみ抽出
-3. GBase API で FAQ 全件取得
+3. GBase API で日本語 FAQ のみ取得 (language=ja, FAQ は 10 言語登録あるが日本語のみ監視)
 4. 店舗名 + 別名(shop-aliases.yaml)で question + answer を文字列マッチ
+   ※ 兜底:日本語文字を含まない FAQ は除外(API フィルタが効かない場合の保険)
 5. Lark Webhook へ結果通知
 6. notified-shops.json を更新してコミット
 ```
+
+## 言語フィルタ
+
+FAQ は 10 言語(日/英/中/韓/越/西/葡/印/泰/ヒンディー/etc.)で同一内容が登録されています。
+本監視は **日本語のみ** を対象にします。多言語版を含めると同じ問題が 10 倍に膨らみ、
+通知が読みづらくなるためです。日本語版を削除すれば、横展開で他言語版も削除運用してください。
+
+`--language all` を指定すると全言語対象に切り替わります(オプション)。
 
 ## ディレクトリ構成
 
