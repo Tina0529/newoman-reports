@@ -1,4 +1,66 @@
 {
-  "last_updated": null,
-  "notified_shops": []
+  "last_updated": "2026-05-13T21:05:03.658535+09:00",
+  "notified_shops": [
+    {
+      "name": "\"+Base 0\"　Johnny Depp: A Bunch Of Stuff",
+      "name_normalized": "base0johnnydeppabunchofstuff",
+      "closed_date": "2026-05-06",
+      "floor": "South・2F",
+      "first_notified_at": "2026-05-13T21:05:03.658535+09:00",
+      "faq_hit_count": 2,
+      "faq_ids_at_detection": [
+        "e129a794-28f0-48d7-bd73-3d536aecce1e",
+        "05f0f616-83e8-4dc4-97a2-c70b131fff31"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "hueLe Museum",
+      "name_normalized": "huelemuseum",
+      "closed_date": "2026-02-24",
+      "floor": "South・3F",
+      "first_notified_at": "2026-05-13T21:05:03.658535+09:00",
+      "faq_hit_count": 5,
+      "faq_ids_at_detection": [
+        "4b99de8f-d969-4002-93c2-e032e8d31d6d",
+        "bb39bbbc-485e-4924-9d08-e5ae4e7af800",
+        "356b0b27-e110-463a-a8ad-55c59d2aa9de",
+        "5b6b4dcd-d54f-4b66-9a2f-0caae1d74f9f",
+        "3396a419-ba5d-4aea-aae7-c85776eddd55"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "davines",
+      "name_normalized": "davines",
+      "closed_date": "2026-02-28",
+      "floor": "South・4F",
+      "first_notified_at": "2026-05-13T21:05:03.658535+09:00",
+      "faq_hit_count": 1,
+      "faq_ids_at_detection": [
+        "5a0ca948-598e-49e5-af8f-af35041d738c"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "THE MATCHA TOKYO",
+      "name_normalized": "thematchatokyo",
+      "closed_date": "2026-02-15",
+      "floor": "North・1F",
+      "first_notified_at": "2026-05-13T21:05:03.658535+09:00",
+      "faq_hit_count": 0,
+      "faq_ids_at_detection": [],
+      "status": "no_action_needed"
+    },
+    {
+      "name": "ZENB STORE ＆ SANDWICH",
+      "name_normalized": "zenbstoresandwich",
+      "closed_date": "2026-04-26",
+      "floor": "North・1F",
+      "first_notified_at": "2026-05-13T21:05:03.658535+09:00",
+      "faq_hit_count": 0,
+      "faq_ids_at_detection": [],
+      "status": "no_action_needed"
+    }
+  ]
 }
