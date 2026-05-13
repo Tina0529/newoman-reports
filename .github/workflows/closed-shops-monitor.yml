@@ -1,0 +1,84 @@
+name: Closed Shops Monitor
+
+# 毎週 月曜・金曜 21:00 JST に NEWoMan高輪 公式サイトの「クローズショップ」を監視
+# - cron は UTC で動くため 12:00 UTC = 21:00 JST
+# - 新規閉店店舗を検出したら FAQ 残存を確認 → Lark に通知
+# - 通知済み店舗は notified-shops.json で管理(重複通知防止)
+
+on:
+  schedule:
+    - cron: '0 12 * * 1,5'   # JST Mon/Fri 21:00
+  workflow_dispatch:
+    inputs:
+      force_notify_all:
+        description: '通知済み判定を無視して全閉店店舗に対して通知(初回テスト/再通知用)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      dry_run:
+        description: 'Lark 送信を行わず JSON プレビューのみ(動作確認用)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 pyyaml
+
+      - name: Validate secrets
+        env:
+          GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
+          GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+        run: |
+          missing=()
+          [ -z "$GBASE_DATASET_ID" ] && missing+=("GBASE_DATASET_ID")
+          [ -z "$GBASE_API_TOKEN" ] && missing+=("GBASE_API_TOKEN")
+          [ -z "$LARK_WEBHOOK_URL" ] && missing+=("LARK_WEBHOOK_URL")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "❌ Missing secrets: ${missing[*]}"
+            echo "   GitHub Settings > Secrets and variables > Actions で設定してください。"
+            exit 1
+          fi
+
+      - name: Run closed-shops monitor
+        env:
+          GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
+          GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.force_notify_all }}" = "true" ]; then
+            ARGS="$ARGS --force-notify-all"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python skill/closed-shops-monitor/scripts/monitor.py $ARGS
+
+      - name: Commit updated state
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add skill/closed-shops-monitor/data/notified-shops.json
+          if git diff --staged --quiet; then
+            echo "No state changes to commit"
+          else
+            RUN_AT=$(TZ='Asia/Tokyo' date +'%Y-%m-%d %H:%M JST')
+            git commit -m "chore: closed-shops monitor state update ($RUN_AT)"
+            git push
+          fi
