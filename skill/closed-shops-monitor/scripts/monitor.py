@@ -394,9 +394,7 @@ def card_detection(reports: list[ShopReport], run_at: str, dataset_id: str) -> d
         else:
             lines.append(f"   └ FAQ ヒット: **{len(rep.hits)} 件**")
             for h in rep.hits[:5]:
-                lines.append(
-                    f"      • `{h.faq_id}` Q: {h.question}  〔matched: {h.matched_alias}〕"
-                )
+                lines.append(f"      • Q: {h.question}  〔matched: {h.matched_alias}〕")
             if len(rep.hits) > 5:
                 lines.append(f"      …他 {len(rep.hits) - 5} 件")
         lines.append("")
