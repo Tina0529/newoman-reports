@@ -307,9 +307,17 @@ def search_faq_hits(
             continue
         q, a = faq_qa_text(faq, token=token)
 
-        # 日本語のみ対象(API フィルタが効かなかった場合の兜底)
-        if japanese_only and not (is_japanese_text(q) or is_japanese_text(a)):
-            continue
+        # 日本語のみ対象 - 方案 B:
+        # API に language タグがあれば 100% 信頼(中身が英語でも ja タグなら通す)
+        # language タグが無い場合のみ文字種で兜底判定
+        if japanese_only:
+            api_lang = faq_language_tag(faq)
+            if api_lang is not None:
+                if not api_lang.startswith("ja"):
+                    continue
+            else:
+                if not (is_japanese_text(q) or is_japanese_text(a)):
+                    continue
 
         haystack = f"{q}\n{a}".lower()
         matched = next((kw for kw in keywords if kw.lower() in haystack), None)
@@ -325,6 +333,7 @@ def search_faq_hits(
 
 
 _JP_CHAR_RE = re.compile(r"[぀-ヿ぀-ゟ゠-ヿ㐀-䶿一-鿿]")
+_LANG_FIELD_KEYS = ("language", "lang", "language_code", "languageCode", "locale")
 
 
 def is_japanese_text(text: str, min_chars: int = 3) -> bool:
@@ -332,6 +341,15 @@ def is_japanese_text(text: str, min_chars: int = 3) -> bool:
     if not text:
         return False
     return len(_JP_CHAR_RE.findall(text)) >= min_chars
+
+
+def faq_language_tag(faq: dict[str, Any]) -> str | None:
+    """API レスポンスの language タグを返す(無ければ None)。"""
+    for key in _LANG_FIELD_KEYS:
+        v = faq.get(key)
+        if v:
+            return str(v).strip().lower()
+    return None
 
 
 def _excerpt_around(text: str, keyword: str, span: int = 80) -> str:
