@@ -1,0 +1,36 @@
+name: Inspect FAQ (Manual)
+
+# 個別 FAQ の検出漏れ原因を調査する手動ワークフロー
+# workflow_dispatch のみで起動
+
+on:
+  workflow_dispatch:
+    inputs:
+      faq_id:
+        description: '調査対象の FAQ UUID'
+        required: true
+        type: string
+      shop_name:
+        description: '期待した店舗名(キーワードマッチ診断用)'
+        required: false
+        default: '"+Base 0"　Johnny Depp: A Bunch Of Stuff'
+        type: string
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests pyyaml
+
+      - name: Run inspect-faq
+        env:
+          GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
+          GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
+        run: |
+          python skill/closed-shops-monitor/scripts/inspect-faq.py \
+            "${{ github.event.inputs.faq_id }}" \
+            --shop-name "${{ github.event.inputs.shop_name }}"
