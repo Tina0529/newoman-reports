@@ -30,7 +30,9 @@ jobs:
         env:
           GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
           GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
+          INSPECT_FAQ_ID: ${{ github.event.inputs.faq_id }}
+          INSPECT_SHOP_NAME: ${{ github.event.inputs.shop_name }}
         run: |
           python skill/closed-shops-monitor/scripts/inspect-faq.py \
-            "${{ github.event.inputs.faq_id }}" \
-            --shop-name "${{ github.event.inputs.shop_name }}"
+            "$INSPECT_FAQ_ID" \
+            --shop-name "$INSPECT_SHOP_NAME"
