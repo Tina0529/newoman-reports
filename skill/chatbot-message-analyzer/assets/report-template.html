@@ -1375,7 +1375,7 @@
                 tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
                 xAxis: {
                     type: 'category',
-                    data: ['0-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24'],
+                    data: ['0-7', '7-11', '11-15', '15-18', '18-20', '20-24'],
                     axisLine: { lineStyle: { color: palette.border } },
                     axisLabel: { color: '#6B7280' },
                     axisTick: { show: false }
@@ -1387,7 +1387,7 @@
                     axisLabel: { color: '#6B7280' }
                 },
                 series: [{
-                    data: [4, 4, 151, 344, 259, 129, 18],
+                    data: [0, 0, 0, 0, 0, 0] /* hour_data placeholder */,
                     type: 'bar',
                     barWidth: '55%',
                     itemStyle: {

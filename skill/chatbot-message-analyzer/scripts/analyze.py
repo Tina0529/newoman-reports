@@ -1081,7 +1081,7 @@ def main():
     weekday_counts = df['曜日'].value_counts().sort_index()
     weekday_data = [int(weekday_counts.get(i, 0)) for i in range(7)]
 
-    hour_ranges = [(0, 6), (6, 9), (9, 12), (12, 15), (15, 18), (18, 21), (21, 24)]
+    hour_ranges = [(0, 7), (7, 11), (11, 15), (15, 18), (18, 20), (20, 24)]
     hour_data = [int(len(df[(df['時間'] >= s) & (df['時間'] < e)])) for s, e in hour_ranges]
 
     num_days = len(daily_counts)
@@ -1270,7 +1270,7 @@ def main():
     main_html = re.sub(r"data: \[19,24,33,33,21,47,44,22,17,19,30,34,37,65,33,24,36,22,84,42,45,20,30,8,9,6,17,27,27,13,21\]", f"data: {daily_data}", main_html)
     main_html = re.sub(r"__DAILY_LABELS__", f"{daily_labels}", main_html)
     main_html = re.sub(r"data: \[121, 108, 117, 94, 145, 143, 181\]", f"data: {weekday_data}", main_html)
-    main_html = re.sub(r"data: \[4, 4, 151, 344, 259, 129, 18\]", f"data: {hour_data}", main_html)
+    main_html = re.sub(r"data: \[0, 0, 0, 0, 0, 0\] /\* hour_data placeholder \*/", f"data: {hour_data}", main_html)
 
     # Category
     cat_values = [d["count"] for d in category_data]
@@ -1376,7 +1376,7 @@ def main():
 
     # 利用ピーク時間帯
     peak_hour_idx = hour_data.index(max(hour_data))
-    hour_range_labels = ["0〜6時", "6〜9時", "9〜12時", "12〜15時", "15〜18時", "18〜21時", "21〜24時"]
+    hour_range_labels = ["0〜7時", "7〜11時", "11〜15時", "15〜18時", "18〜20時", "20〜24時"]
     peak_hour_label = hour_range_labels[peak_hour_idx]
     peak_hour_pct = max(hour_data) / total_messages * 100 if total_messages > 0 else 0
 
