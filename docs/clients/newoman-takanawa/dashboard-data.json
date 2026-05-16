@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-16T09:29:58.668850",
+  "updated_at": "2026-05-16T09:33:08.963181",
   "months": [
     {
       "period": "2025年9月",
@@ -248,31 +248,47 @@
     {
       "period": "2026年3月",
       "year_month": "2026-03",
-      "total_messages": 669,
-      "normal_answer_rate": 97.6,
-      "unanswered_rate": 2.4,
+      "total_messages": 648,
+      "normal_answer_rate": 94.1,
+      "unanswered_rate": 5.9,
       "good_rating_rate": 100.0,
       "feedback_rate": 0.9,
-      "daily_average": 21.6,
-      "unique_users": 6,
+      "daily_average": 20.9,
+      "unique_users": 3,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 8.8,
+      "foreign_language_pct": 8.6,
       "weekday_counts": [
         100,
-        115,
-        73,
-        48,
-        90,
+        108,
+        70,
+        46,
+        87,
         106,
-        137
+        131
       ],
       "source_distribution": {
-        "rag_count": 347,
-        "rag_pct": 51.9,
-        "faq_count": 274,
-        "faq_pct": 41.0,
-        "other_count": 48,
-        "other_pct": 7.2
+        "rag_count": 335,
+        "rag_pct": 51.7,
+        "faq_count": 269,
+        "faq_pct": 41.5,
+        "other_count": 44,
+        "other_pct": 6.8
+      },
+      "language_mixing": {
+        "count": 2,
+        "rate": 0.31,
+        "samples": [
+          {
+            "timestamp": "2026-03-19 17:17:55",
+            "question": "買い物せずに楽しめる場所ある？",
+            "answer": "ニュウマン高輪で買い物以外でもお楽しみいただける場所をお調べいたします。Based on the information I found, Newoman Takanawa offers several places you can enjoy without shopping.\n\n## Scenic Observation Areas\n\n**LUFTBAUM (North 28F and 29F)**\nLocated approximately 150 meters above ground, LUFTBAUM features open-air gardens called \"Midori no Niwa\" (Green Garden) and \"Yamabuki no Niwa\" (Yellow Rose Garden) where you can enjoy spectacular views. You can access LUFTBAUM via the direct elevator from North 2F. The opening hours are 8:00 to 24:00.\n\n## Relaxation Lounges\n\n**Open Lounges**\n- **+Inn 1:** Located on South 4F\n- **+Inn 2:** Located on North 3F and 4F\n\nThese are free open lounges where you can relax and spend time freely.\n\n## Book Cafe\n\n**BUNKITSU TOKYO (South 5F)**\nA large bookstore spanning approximately 1,000 tsubo (about 3,300 square meters) with around 100,000 books. It features three types of cafe lounges including Panorama Lounge with great views, Cafe Ensemble for larger groups, and BOOK BIOTOP surrounded by books. Total seating capacity is 195 seats plus 5 meeting rooms.\n\nFor more detailed information about floors and facilities, please visit the [digital floor guide](https://platinumaps.jp/d/newoman-takanawa)."
+          },
+          {
+            "timestamp": "2026-03-07 16:40:39",
+            "question": "Flower shop",
+            "answer": "I will look up information about flower shops at NEWoMan Takanawa for you.Here is the information about the flower shops at NEWoMan Takanawa:\n\n階 | 店舗名 | 電話番号\n---|---|---\nNorth・1F | [bois de gui](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002894) | 03-6721-7568\nNorth・2F | [Nicolai Bergmann](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002919) | 03-6450-3608\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          }
+        ]
       },
       "report_file": "reports/2026-03.html",
       "unanswered_file": "reports/2026-03_unanswered.html"
