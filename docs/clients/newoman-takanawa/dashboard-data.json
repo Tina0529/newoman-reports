@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-01T09:48:56.680382",
+  "updated_at": "2026-05-16T09:23:15.641182",
   "months": [
     {
       "period": "2025年9月",
@@ -191,8 +191,8 @@
       "period": "2026年4月",
       "year_month": "2026-04",
       "total_messages": 706,
-      "normal_answer_rate": 96.5,
-      "unanswered_rate": 3.5,
+      "normal_answer_rate": 95.5,
+      "unanswered_rate": 4.5,
       "good_rating_rate": 0,
       "feedback_rate": 0.0,
       "daily_average": 23.5,
