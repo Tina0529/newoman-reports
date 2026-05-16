@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-16T09:23:15.641182",
+  "updated_at": "2026-05-16T09:29:12.223425",
   "months": [
     {
       "period": "2025年9月",
@@ -102,24 +102,58 @@
     {
       "period": "2026年1月",
       "year_month": "2026-01",
-      "total_messages": 670,
-      "normal_answer_rate": 83.9,
-      "unanswered_rate": 16.1,
+      "total_messages": 604,
+      "normal_answer_rate": 83.6,
+      "unanswered_rate": 16.4,
       "good_rating_rate": 76.5,
-      "feedback_rate": 2.5,
-      "daily_average": 23.1,
-      "unique_users": 8,
+      "feedback_rate": 2.8,
+      "daily_average": 20.8,
+      "unique_users": 7,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 7.2,
+      "foreign_language_pct": 6.3,
       "weekday_counts": [
-        108,
-        38,
-        93,
-        85,
-        87,
+        75,
+        35,
+        79,
+        75,
+        81,
         161,
         98
       ],
+      "source_distribution": {
+        "rag_count": 329,
+        "rag_pct": 54.5,
+        "faq_count": 243,
+        "faq_pct": 40.2,
+        "other_count": 32,
+        "other_pct": 5.3
+      },
+      "language_mixing": {
+        "count": 4,
+        "rate": 0.66,
+        "samples": [
+          {
+            "timestamp": "2026-01-17 16:41:05",
+            "question": "レディース　フォーマル",
+            "answer": "I will look up information about ladies' formal wear at NEWoMan Takanawa for you.Certainly, here are some stores at NEWoMan Takanawa that offer ladies' fashion which may include formal wear:\n\n階 | 店舗名 | 電話番号 |\n---|---|---|\nSouth・2F | [DRAWER (ドゥロワー)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002939) | 050-8894-7045 |\nSouth・3F | [martinique (マルティニーク)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6455-7188 |\nSouth・3F | [Whim Gazette (ウィム ガゼット)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-6447-7801 |\nSouth・3F | [ASSEMBLEESTANTION (アッセンブル エストネーション)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002964) | 03-6277-4155 |\nSouth・3F | [hueLe Museum (ヒューエルミュージアム)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002965) | 03-5860-2276 |\nNorth・4F | [DRESSTERIOR (ドレステリア)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002974) | 03-6277-2507 |\nNorth・4F | [1er Arrondissement (プルミエアロンディスモン)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002978) | 03-6277-1280 |\n\nOther ladies' fashion shops can be found by clicking [here](https://www.lumine.ne.jp/global_search/?store=nman03&category=type01#result-top)."
+          },
+          {
+            "timestamp": "2026-01-07 18:49:46",
+            "question": "I want to find super raw restaurant ",
+            "answer": "I will look up information about restaurants at Newoman Takanawa for you.Here is the information about SUPER RAW:\n\n店舗名: [SUPER RAW](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003020)\n店舗位置: North・5F\n営業時間: 11:00～23:00（L.O 22:00）\n電話番号: AFURI：03-6455-7377 ・Sanity：080-9435-4729 ・SPICE THEATER：03-6455-7655\nサービス: チャイルドチェア、車椅子、テイクアウト、アレルギー対応、ビーガン対応\n説明: AFURI＆Spice TheaterのTAPASとSANITYのクラフトビールは互いの価値をさらに高める。 いつでもだれでもきまぐれ自由な場所。ガッツリランチやちょっとTAPASをつまみながら楽しいおしゃべり、ディナー、飲み会、All day で利用が可能。商業施設内にありながら下町の一角にあるような世界観。お子様連れのファミリー、らーめん、カレー、クラフトビールギークから、日常使い、インバウンド、サウナ後のサ飯など幅広いニーズに対応。理想は、あらゆる人種が楽しめるフードホール。\n予算: ランチ：1,000円〜、ディナー：2,000円〜、テイクアウト：1,000円〜"
+          },
+          {
+            "timestamp": "2026-01-06 10:12:34",
+            "question": "Where is verve",
+            "answer": "ニュウマン高輪の情報をお調べいたします。VERVE COFFEE ROASTERS is located on South 1F.\n\n店舗名: [VERVE COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002906)\n店舗位置: South・1F\n営業時間: 7:00～22:00\n電話番号: 03-6721-6788\n公式サイト: https://vervecoffee.jp/\nサービス: テイクアウト、アレルギー対応 (from other chunks, but not explicitly stated for VERVE in the provided chunk)"
+          },
+          {
+            "timestamp": "2026-01-06 10:07:54",
+            "question": "Smoking room",
+            "answer": "ニュウマン高輪の情報をお調べいたします。\nNEWoMan Takanawa has smoking rooms available on South 1F, South 4F, North 5F, and LUFTBAUM 28F. Please note that the smoking room on LUFTBAUM 28F is exclusively for electronic and heated tobacco products. You can find more information about services at TAKANAWA GATEWAY CITY [here](https://www.takanawagateway-city.com/information/)."
+          }
+        ]
+      },
       "report_file": "reports/2026-01.html",
       "unanswered_file": "reports/2026-01_unanswered.html"
     },
