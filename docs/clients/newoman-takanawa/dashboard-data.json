@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-16T09:29:12.223425",
+  "updated_at": "2026-05-16T09:29:58.668850",
   "months": [
     {
       "period": "2025年9月",
@@ -160,31 +160,87 @@
     {
       "period": "2026年2月",
       "year_month": "2026-02",
-      "total_messages": 721,
-      "normal_answer_rate": 93.2,
-      "unanswered_rate": 6.8,
+      "total_messages": 708,
+      "normal_answer_rate": 91.4,
+      "unanswered_rate": 8.6,
       "good_rating_rate": 41.7,
       "feedback_rate": 1.7,
-      "daily_average": 25.8,
-      "unique_users": 5,
+      "daily_average": 25.3,
+      "unique_users": 4,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.5,
+      "foreign_language_pct": 10.2,
       "weekday_counts": [
         85,
-        70,
+        64,
         100,
         96,
-        99,
-        126,
+        94,
+        124,
         145
       ],
       "source_distribution": {
-        "rag_count": 381,
-        "rag_pct": 52.8,
-        "faq_count": 289,
-        "faq_pct": 40.1,
+        "rag_count": 372,
+        "rag_pct": 52.5,
+        "faq_count": 285,
+        "faq_pct": 40.3,
         "other_count": 51,
-        "other_pct": 7.1
+        "other_pct": 7.2
+      },
+      "language_mixing": {
+        "count": 11,
+        "rate": 1.55,
+        "samples": [
+          {
+            "timestamp": "2026-02-28 18:21:02",
+            "question": "Where on 2F",
+            "answer": "ニュウマン高輪の情報をお調べいたします。ニュウマン高輪の情報をお調べいたします。MUJI is located on North 2F. For a detailed floor map to help you find its exact location, please refer to the [floor guide](https://www.newoman.jp/takanawa/floorguide/)."
+          },
+          {
+            "timestamp": "2026-02-28 18:18:48",
+            "question": "Where is muji",
+            "answer": "ニュウマン高輪の情報をお調べいたします。Here is the information for MUJI at NEWoMan Takanawa:\n\nStore name: [MUJI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002911)\nStore location: North・2F\nPhone number: 03-6447-7926"
+          },
+          {
+            "timestamp": "2026-02-28 18:16:10",
+            "question": "I’m looking for statipnary",
+            "answer": "ニュウマン高輪の情報をお調べいたします。Certainly, I can help you with that.\n\n店舗名: [HIGHTIDE STORE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003045)\n店舗位置: South・5F\n営業時間: 平日 11:00 ~ 20:00 / 土日祝 11:00 ~ 20:00\n電話番号: 03-6450-3039\n公式サイト: https://www.hightide.co.jp/store/\n\nHIGHTIDE STOREは、九州・福岡を拠点とした文具・雑貨メーカーHIGHTIDEの直営店で、オリジナル文房具と雑貨のセレクトショップです。文具や手帳も自分を表現するファッションの一部として捉え、そこにあるだけで勉強や仕事がちょっと楽しくなる、暮らしを満たすプロダクトを提案しています。オリジナルブランドの文房具、雑貨の他に、ここだけのオリジナル品や国内外からセレクトしたアイテムも取り扱っています。"
+          },
+          {
+            "timestamp": "2026-02-14 14:15:46",
+            "question": "本屋に行きたい",
+            "answer": "I will now search for information about bookstores at Newoman Takanawa.\nニュウマン高輪の情報をお調べいたします。\nBUNKITSU TOKYO is a bookstore located on the South 5th floor of NEWoMan Takanawa. It operates from 11:00 AM to 8:00 PM and can be reached at 03-5422-9951. The store has 195 seats and offers a wide selection of approximately 100,000 books, including new releases and rare titles, with a concept of \"a bookstore for encountering books.\" It also features a cafe lounge.\n\nYou can find more details about [BUNKITSU TOKYO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003042) here."
+          },
+          {
+            "timestamp": "2026-02-13 17:31:19",
+            "question": "28回の展望台にいきたい",
+            "answer": "ニュウマン高輪の情報をお調べいたします。\nAt NEWoMan Takanawa, the LUFTBAUM on the North 28th and 29th floors offers panoramic views from approximately 150 meters above ground, featuring the Midori-no-niwa and Yamabuki-no-niwa gardens. You can access LUFTBAUM directly by using the dedicated elevator on North 2F. For more detailed floor guides, please see [here](https://www.newoman.jp/takanawa/floorguide/)."
+          },
+          {
+            "timestamp": "2026-02-08 15:20:46",
+            "question": "Where is the best coffee shop at Newmont?",
+            "answer": "I will look for coffee shop information at NEWoMan Takanawa for you.It is difficult to say which coffee shop is the best, as taste is very subjective. However, NEWoMan Takanawa has several wonderful coffee shops you might enjoy. Here are some of them:\n\n階 | 店舗名 | 電話番号\n---|---|---\nSouth・1F | [VERVE COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002906) | 03-6721-6788\nSouth・2F | [BLUE BOTTLE COFFEE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002935) | 03-5422-9815\nNorth・2F | [365日とCOFFEE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002914) | 03-6450-2314\nSouth・4F | [SOW COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003011) | 03-6833-4004\nNorth・4F | [Bicerin](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002984) | 03-6721-6608\nNorth・5F | [SASUI ITOEN](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003027) | 03-6277-0387\nNorth・5F | [STARBUCKS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003028) | 03-6447-7653\n\nYou can find more information about restaurants and cafes [here](https://www.newoman.jp/takanawa/restaurant/)."
+          },
+          {
+            "timestamp": "2026-02-08 14:41:58",
+            "question": "How am I going to go to JW Marriott from here?",
+            "answer": "I will look for information about how to get to JW Marriott from NEWoMan Takanawa.JW Marriott Hotel Tokyo / Le Cres is located on the North 3rd floor of NEWoMan Takanawa.\n\n店舗名: [JWマリオット・ホテル東京 / Le Cres](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003244)\n店舗位置: North・3F\n電話番号: 03-3434-7070\nカテゴリ: スイーツ"
+          },
+          {
+            "timestamp": "2026-02-08 14:41:12",
+            "question": "Where is the most delicious coffee shop?",
+            "answer": "I will look for coffee shops at NEWoMan Takanawa for you.It is difficult to say which coffee shop is the most delicious, as taste is very subjective. However, NEWoMan Takanawa has several wonderful coffee shops you might enjoy. Here are some of them:\n\n階 | 店舗名 | 電話番号\n---|---|---\nSouth・1F | [VERVE COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002906) | 03-6721-6788\nSouth・2F | [BLUE BOTTLE COFFEE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002935) | 03-5422-9815\nSouth・3F | [HARBS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002958) | 03-6450-2314\nSouth・4F | [SOW COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003011) | 03-6833-4004\nSouth・5F | [Link cafe TOKYO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003029) | 03-6432-5310\nNorth・2F | [365日とCOFFEE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002914) | 03-6450-2314\nNorth・3F | [MARGARET HOWELL SHOP＆CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | wear：03-5860-2305　cafe：03-5860-2545\nNorth・4F | [Bicerin](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002984) | 03-6721-6608\nNorth・5F | [SASUI ITOEN](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003027) | 03-6277-0387\nNorth・5F | [STARBUCKS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003028) | 03-6447-7653\nNorth・5F | [THE CITY BAKERY](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003094) | 03-6450-2004\n\nYou can find more information about restaurants and cafes [here](https://www.newoman.jp/takanawa/restaurant/)."
+          },
+          {
+            "timestamp": "2026-02-08 13:06:43",
+            "question": "Souvenir shop",
+            "answer": "ニュウマン高輪の情報をお調べいたします。Certainly, here are some recommended shops for souvenirs at NEWoMan Takanawa:\n\n| Floor | Store Name | Phone Number |\n|---|---|---|\n| South・1F | [Shizuka Western Confectionery Natural Sweets Laboratory](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002909) | 03-6450-4708 |\n| North・1F | [Happoen Western Confectionery](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002897) | 0570-064-128 |\n| North・1F | [THE MATCHA TOKYO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002899) | 03-6450-3535 |\n| North・2F | [Tokyo Milk Cheese Factory](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002912) | 03-6447-7757 |\n| South・5F | [PRESENTERS ROOM](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003044) | 03-6277-1125 |\n\nYou can find more information about other sweets shops [here](https://www.newoman.jp/takanawa/restaurant/?category=type03)."
+          },
+          {
+            "timestamp": "2026-02-04 09:47:02",
+            "question": "We want to go matcha Tokyo.",
+            "answer": "ニュウマン高輪の情報をお調べいたします。THE MACHA TOKYO is located on North 1F."
+          }
+        ]
       },
       "report_file": "reports/2026-02.html",
       "unanswered_file": "reports/2026-02_unanswered.html"
