@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBaseSupport Message Analysis Report - NEWoMan高輪 2026年5月</title>
+    
+    <!-- Google Fonts - Inter + Noto Sans JP (Professional Modern) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    
+    <!-- Lucide Icons (SVG icons, not emoji) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <style>
+        /* ========================================
+           UI UX Pro Max Design System
+           Style: Minimalism & Swiss Style
+           Palette: Analytics Dashboard
+           ======================================== */
+        
+        :root {
+            /* Analytics Dashboard Palette */
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --secondary: #60A5FA;
+            --cta: #F97316;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            
+            /* Semantic Colors */
+            --success: #10B981;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            
+            /* Extended Grays */
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            
+            /* Typography */
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', Consolas, monospace;
+            
+            /* Spacing (8px grid) */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            /* Transitions (200-250ms as per Minimalism guideline) */
+            --transition: 200ms ease;
+        }
+        
+        /* ========================================
+           Reset & Base
+           ======================================== */
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* ========================================
+           Layout Container
+           ======================================== */
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+        
+        /* ========================================
+           Header
+           ======================================== */
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-5) var(--space-6);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.025em;
+        }
+        
+        .lang-switch {
+            display: flex;
+            gap: var(--space-1);
+            background: var(--gray-100);
+            padding: var(--space-1);
+            border-radius: var(--radius-md);
+        }
+        
+        .lang-btn {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all var(--transition);
+        }
+        
+        .lang-btn:hover {
+            color: var(--text);
+        }
+        
+        .lang-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* ========================================
+           Report Meta Grid
+           ======================================== */
+        
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+        
+        .meta-item {
+            background: var(--surface);
+            padding: var(--space-4) var(--space-5);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        
+        .meta-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .meta-label {
+            font-size: 0.6875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-1);
+        }
+        
+        .meta-value {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        /* ========================================
+           Section Cards
+           ======================================== */
+        
+        .section {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--space-6);
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .section-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* ========================================
+           KPI Grid
+           ======================================== */
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-4);
+        }
+        
+        .kpi-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            border: 1px solid var(--gray-100);
+            position: relative;
+            overflow: hidden;
+            transition: transform var(--transition), box-shadow var(--transition);
+            cursor: default;
+        }
+        
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gray-200);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .kpi-card.highlight {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            border-color: var(--primary-hover);
+        }
+        
+        .kpi-card.highlight::before {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .kpi-card.highlight .kpi-value,
+        .kpi-card.highlight .kpi-label,
+        .kpi-card.highlight .kpi-sublabel {
+            color: white;
+        }
+        
+        .kpi-card.success::before { background: var(--success); }
+        .kpi-card.warning::before { background: var(--warning); }
+        .kpi-card.danger::before { background: var(--danger); }
+        
+        .kpi-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
+            margin-bottom: var(--space-1);
+        }
+        
+        .kpi-card.success .kpi-value { color: var(--success); }
+        .kpi-card.warning .kpi-value { color: var(--warning); }
+        .kpi-card.danger .kpi-value { color: var(--danger); }
+        
+        .kpi-label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        
+        .kpi-sublabel {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: var(--space-1);
+            font-family: var(--font-mono);
+        }
+        
+        /* ========================================
+           Stats Row
+           ======================================== */
+        
+        .stats-row {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-5);
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4) var(--space-6);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .stat-card.primary {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%);
+            border-color: rgba(59,130,246,0.2);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        
+        .stat-card.primary .stat-value { color: var(--primary); }
+        .stat-card.success .stat-value { color: var(--success); }
+        .stat-card.warning .stat-value { color: var(--warning); }
+        
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-1);
+        }
+        
+        /* ========================================
+           Charts
+           ======================================== */
+        
+        .chart-container {
+            height: 300px;
+        }
+        
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-5);
+        }
+        
+        .chart-box {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            border: 1px solid var(--gray-100);
+        }
+        
+        .chart-title {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .chart-title::before {
+            content: "";
+            width: 3px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* ========================================
+           Tables
+           ======================================== */
+        
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
+        }
+        
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .data-table th:first-child {
+            border-radius: var(--radius-md) 0 0 0;
+        }
+        
+        .data-table th:last-child {
+            border-radius: 0 var(--radius-md) 0 0;
+        }
+        
+        .data-table td {
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr {
+            transition: background var(--transition);
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+        
+        .data-table .number {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+        
+        /* ========================================
+           Badges (Pill Style)
+           ======================================== */
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .badge-blue { background: rgba(59,130,246,0.1); color: var(--primary-hover); }
+        .badge-green { background: var(--success-bg); color: var(--success); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .badge-purple { background: #F3E8FF; color: #7C3AED; }
+        
+        /* ========================================
+           Error Cards
+           ======================================== */
+        
+        .error-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+        }
+        
+        .error-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            border: 1px solid var(--gray-100);
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        
+        .error-card:hover {
+            border-color: var(--danger);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .error-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--danger);
+            line-height: 1.2;
+        }
+        
+        .error-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: var(--space-2) 0;
+        }
+        
+        .error-percent {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--danger);
+            font-family: var(--font-mono);
+        }
+        
+        .error-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: var(--space-2);
+        }
+        
+        /* ========================================
+           CTA Card (Unanswered)
+           ======================================== */
+        
+        .cta-card {
+            background: linear-gradient(135deg, var(--danger-bg) 0%, #FEE2E2 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            text-align: center;
+            border: 1px solid #FECACA;
+        }
+        
+        .cta-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--danger);
+            line-height: 1;
+        }
+        
+        .cta-label {
+            font-size: 0.9375rem;
+            color: #991B1B;
+            margin: var(--space-2) 0 var(--space-5);
+        }
+        
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--danger);
+            color: white;
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+        }
+        
+        .cta-button:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+        }
+        
+        .cta-button svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            margin-top: var(--space-5);
+            font-size: 0.8125rem;
+        }
+        
+        /* ========================================
+           Summary Box
+           ======================================== */
+        
+        .summary-box {
+            background: linear-gradient(135deg, rgba(59,130,246,0.05) 0%, rgba(59,130,246,0.02) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            border: 1px solid rgba(59,130,246,0.15);
+            position: relative;
+        }
+        
+        .summary-box::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: var(--space-6);
+            bottom: var(--space-6);
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .summary-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--primary-hover);
+            margin-bottom: var(--space-4);
+            padding-left: var(--space-4);
+        }
+        
+        .summary-content {
+            font-size: 0.875rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+            padding-left: var(--space-4);
+        }
+        
+        .summary-content ul {
+            margin: var(--space-4) 0;
+            padding-left: var(--space-5);
+        }
+        
+        .summary-content li {
+            margin-bottom: var(--space-3);
+        }
+        
+        .highlight-text {
+            background: rgba(59,130,246,0.1);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            color: var(--primary-hover);
+        }
+        
+        /* ========================================
+           Suggestions
+           ======================================== */
+        
+        .suggestion-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+        
+        .suggestion-item {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            border-left: 4px solid var(--primary);
+            transition: box-shadow var(--transition), transform var(--transition);
+            cursor: default;
+        }
+        
+        .suggestion-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+        
+        .suggestion-item.priority-high {
+            border-left-color: var(--danger);
+            background: linear-gradient(90deg, rgba(239,68,68,0.05) 0%, var(--gray-50) 100%);
+        }
+        
+        .suggestion-item.priority-medium {
+            border-left-color: var(--warning);
+            background: linear-gradient(90deg, rgba(245,158,11,0.05) 0%, var(--gray-50) 100%);
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .suggestion-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        
+        /* ========================================
+           Two Column Layout
+           ======================================== */
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+        }
+        
+        /* ========================================
+           Footer
+           ======================================== */
+        
+        .footer {
+            text-align: center;
+            padding: var(--space-8);
+            color: var(--gray-400);
+            font-size: 0.8125rem;
+        }
+        
+        /* ========================================
+           Responsive
+           ======================================== */
+        
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: var(--space-4); }
+            
+            .header {
+                flex-direction: column;
+                gap: var(--space-4);
+                text-align: center;
+            }
+            
+            .report-meta,
+            .kpi-grid,
+            .chart-row,
+            .two-col,
+            .error-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-row {
+                flex-direction: column;
+            }
+        }
+        
+        /* ========================================
+           Print
+           ======================================== */
+        
+        @media print {
+            body { background: white; }
+            .container { max-width: 100%; padding: 0; }
+            .section { break-inside: avoid; box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+        
+        /* ========================================
+           Reduced Motion (Accessibility)
+           ======================================== */
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                </div>
+                <h1>
+                    <span data-ja="GBaseSupport メッセージ履歴分析レポート" data-zh="GBaseSupport 消息履历分析报告">GBaseSupport メッセージ履歴分析レポート</span>
+                </h1>
+            </div>
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+            </div>
+        </header>
+        
+        <!-- Report Meta -->
+        <div class="report-meta">
+            <div class="meta-item">
+                <div class="meta-label" data-ja="分析対象" data-zh="分析对象">分析対象</div>
+                <div class="meta-value">NEWoMan高輪</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label" data-ja="分析期間" data-zh="分析期间">分析期間</div>
+                <div class="meta-value">2026/05/01 - 2026/05/31</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label" data-ja="レポート種別" data-zh="报告类型">レポート種別</div>
+                <div class="meta-value" data-ja="月次レポート" data-zh="月报">月次レポート</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label" data-ja="生成日時" data-zh="生成日期">生成日時</div>
+                <div class="meta-value">2026/05/31</div>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                        </svg>
+                    </span>
+                    <span data-ja="サマリー" data-zh="概览">サマリー</span>
+                </h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card highlight">
+                    <div class="kpi-value">687</div>
+                    <div class="kpi-label" data-ja="総メッセージ数" data-zh="总消息数">総メッセージ数</div>
+                </div>
+                <div class="kpi-card success">
+                    <div class="kpi-value">92.6%</div>
+                    <div class="kpi-label" data-ja="正常回答率" data-zh="正常回答率">正常回答率</div>
+                    <div class="kpi-sublabel">636/687</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-value">7.4%</div>
+                    <div class="kpi-label" data-ja="未回答率" data-zh="未回答率">未回答率</div>
+                    <div class="kpi-sublabel">51/687</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-value">100.0%</div>
+                    <div class="kpi-label" data-ja="好評価率" data-zh="好评率">好評価率</div>
+                    <div class="kpi-sublabel" data-ja="評価あり 1件中" data-zh="有评价 1件中">評価あり 1件中</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">0.1%</div>
+                    <div class="kpi-label" data-ja="フィードバック率" data-zh="反馈率">フィードバック率</div>
+                    <div class="kpi-sublabel">1/687</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Time Analysis -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                    </span>
+                    <span data-ja="時間別分析" data-zh="时间维度分析">時間別分析</span>
+                </h2>
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat-card primary">
+                    <div class="stat-value">22.2</div>
+                    <div class="stat-label" data-ja="件/日（平均）" data-zh="条/日（平均）">件/日（平均）</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value">69</div>
+                    <div class="stat-label" data-ja="件（ピーク: 5/24）" data-zh="条（最多: 5/24）">件（ピーク: 5/24）</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label" data-ja="件（最少: 5/8）" data-zh="条（最少: 5/8）">件（最少: 5/8）</div>
+                </div>
+            </div>
+            
+            <div class="chart-box">
+                <div class="chart-title" data-ja="日別メッセージ推移" data-zh="日别消息趋势">日別メッセージ推移</div>
+                <div class="chart-container" id="dailyChart"></div>
+            </div>
+            
+            <div class="chart-row" style="margin-top: var(--space-5);">
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="曜日別分布" data-zh="曜日分布">曜日別分布</div>
+                    <div class="chart-container" id="weekdayChart"></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="時間帯別分布" data-zh="时段分布">時間帯別分布</div>
+                    <div class="chart-container" id="hourChart"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Question Categories -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                        </svg>
+                    </span>
+                    <span data-ja="質問分類分析" data-zh="问题分类分析">質問分類分析</span>
+                </h2>
+            </div>
+            
+            <div class="two-col">
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="カテゴリ分布" data-zh="分类分布">カテゴリ分布</div>
+                    <div class="chart-container" id="categoryChart"></div>
+                </div>
+                <div>
+                    <div class="chart-title" data-ja="カテゴリ詳細" data-zh="分类详情">カテゴリ詳細</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-ja="カテゴリ" data-zh="分类">カテゴリ</th>
+                                <th data-ja="件数" data-zh="件数">件数</th>
+                                <th data-ja="割合" data-zh="占比">割合</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-blue">位置・ナビゲーション</span></td>
+                                <td class="number">296</td>
+                                <td class="number">43.1%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-gray">雑談・その他</span></td>
+                                <td class="number">281</td>
+                                <td class="number">40.9%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green">店舗・商品照会</span></td>
+                                <td class="number">97</td>
+                                <td class="number">14.1%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-yellow">施設・サービス</span></td>
+                                <td class="number">10</td>
+                                <td class="number">1.5%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-purple">営業時間</span></td>
+                                <td class="number">1</td>
+                                <td class="number">0.1%</td>
+                            </tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- User Behavior -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </span>
+                    <span data-ja="ユーザー行動分析" data-zh="用户行为洞察">ユーザー行動分析</span>
+                </h2>
+            </div>
+            
+            <div class="chart-row">
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="会話深度分布" data-zh="会话深度分布">会話深度分布</div>
+                    <div class="chart-container" id="sessionDepthChart"></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="言語分布" data-zh="语言分布">言語分布</div>
+                    <div class="chart-container" id="languageChart"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Source Analysis (API mode only - hidden when no data) -->
+        <section class="section" id="sourceAnalysisSection" style="">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                        </svg>
+                    </span>
+                    <span data-ja="回答ソース分析" data-zh="回答来源分析">回答ソース分析</span>
+                </h2>
+            </div>
+
+            <div class="two-col">
+                <div class="chart-box">
+                    <div class="chart-title" data-ja="回答ソース分布" data-zh="回答来源分布">回答ソース分布</div>
+                    <div class="chart-container" id="sourceChart"></div>
+                </div>
+                <div>
+                    <div class="chart-title" data-ja="ソース別詳細" data-zh="来源详情">ソース別詳細</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-ja="ソース" data-zh="来源">ソース</th>
+                                <th data-ja="件数" data-zh="件数">件数</th>
+                                <th data-ja="割合" data-zh="占比">割合</th>
+                                <th data-ja="平均回答長" data-zh="平均回答长度">平均回答長</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sourceTableBody">
+                            
+                            <tr>
+                                <td><span class="badge badge-blue" data-ja="RAG" data-zh="RAG">RAG</span></td>
+                                <td class="number">386</td>
+                                <td class="number">56.2%</td>
+                                <td class="number">626<span style="font-size:0.75rem;color:var(--text-muted);" data-ja="文字" data-zh="字"> 文字</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green" data-ja="FAQ" data-zh="FAQ">FAQ</span></td>
+                                <td class="number">255</td>
+                                <td class="number">37.1%</td>
+                                <td class="number">453<span style="font-size:0.75rem;color:var(--text-muted);" data-ja="文字" data-zh="字"> 文字</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-gray" data-ja="その他" data-zh="其他">その他</span></td>
+                                <td class="number">46</td>
+                                <td class="number">6.7%</td>
+                                <td class="number">277<span style="font-size:0.75rem;color:var(--text-muted);" data-ja="文字" data-zh="字"> 文字</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+                            <span data-ja="RAG = ナレッジベースから検索・生成、FAQ = 事前設定の回答、その他 = 挨拶・誘導等" data-zh="RAG = 从知识库检索生成、FAQ = 预设回答、其他 = 寒暄/引导等">RAG = ナレッジベースから検索・生成、FAQ = 事前設定の回答、その他 = 挨拶・誘導等</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bot Performance -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </span>
+                    <span data-ja="Bot性能分析" data-zh="Bot性能分析">Bot性能分析</span>
+                </h2>
+            </div>
+            
+            <div class="two-col">
+                <div>
+                    <div class="chart-title" data-ja="未回答質問" data-zh="未回答问题">未回答質問</div>
+                    <div class="cta-card">
+                        <div class="cta-value">51</div>
+                        <div class="cta-label" data-ja="件の未回答質問" data-zh="条未回答问题">件の未回答質問</div>
+                        <a href="2026-05_unanswered.html" class="cta-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            <span data-ja="詳細一覧を見る" data-zh="查看详细列表">詳細一覧を見る</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </a>
+                        <div class="badge-row">
+                            <span><span class="badge badge-red">情報なし</span> 51件</span>
+                            <span><span class="badge badge-yellow">検索失敗</span> 0件</span>
+                            <span><span class="badge badge-gray">再確認</span> 0件</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-title" data-ja="リッチメディア使用状況" data-zh="富媒体使用情况">リッチメディア使用状況</div>
+                    <div class="chart-container" id="mediaChart"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Language Consistency Monitoring (4/11事象再発監視) -->
+        <section class="section" id="languageMixingSection" style="">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </span>
+                    <span data-ja="言語一致性監視" data-zh="语言一致性监控">言語一致性監視</span>
+                </h2>
+            </div>
+
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="言語混在件数" data-zh="语言混在件数">言語混在件数</div>
+                    <div class="kpi-value">7</div>
+                    <div class="kpi-sub" data-ja="件 / 全687件" data-zh="件 / 共687件">件 / 全687件</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="混在率" data-zh="混在率">混在率</div>
+                    <div class="kpi-value">1.02%</div>
+                    <div class="kpi-sub" data-ja="目標: 0.00%" data-zh="目标: 0.00%">目標: 0.00%</div>
+                </div>
+            </div>
+
+            <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100); margin-bottom: var(--space-4);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+                    <span data-ja="※ 「言語混在」とは、ひとつの回答内に複数の言語が段落・文レベルで混在している事象を指します（店舗名・ブランド名・固有名詞のみ英語の場合は除外）。ルールベースで候補を抽出後、LLM で語義的に再確認した結果を表示。" data-zh="※「语言混在」指同一回答内多种语言在段落或句子层级共存的现象（仅店铺名、品牌名、专有名词为英文的情况除外）。先用规则筛选候选，再由 LLM 进行语义二次确认后展示。">※ 「言語混在」とは、ひとつの回答内に複数の言語が段落・文レベルで混在している事象を指します（店舗名・ブランド名・固有名詞のみ英語の場合は除外）。ルールベースで候補を抽出後、LLM で語義的に再確認した結果を表示。</span>
+                </div>
+            </div>
+
+            <div id="langMixSamplesContainer" style="">
+                <div class="chart-title" data-ja="混在事例一覧（最大10件）" data-zh="混在事例一览（最多10件）">混在事例一覧（最大10件）</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-ja="日時" data-zh="时间" style="width:90px;">日時</th>
+                            <th data-ja="質問" data-zh="问题" style="width:25%;">質問</th>
+                            <th data-ja="回答内容" data-zh="回答内容">回答内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/23 18:26</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">Afuri </td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look up information about Afuri at NEWoMan Takanawa for you!AFURI is available at **SUPER RAW** on North 5F at NEWoMan Takanawa!
+
+店舗名: [SUPER RAW（スーパーロウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003020)
+店舗位置: North・5F
+営業時間: 11:00～23:00（L.O 22:00）
+電話番号: AFURI：0 3 - 6 4 5 5 - 7 3 7 7
+予算: Lunch: from ¥1,000 / Dinner: from ¥2,000 / Takeout: from ¥1,000
+サービス: Reservations, Child chair, Wheelchair accessible, Takeout, Delivery, Vegan-friendly
+
+SUPER RAW is a vibrant food hall where AFURI ramen, Spice Theater tapas, and SANITY craft beer come together. Whether you&#x27;re stopping by for a hearty lunch, casual tapas, or an evening drink, it&#x27;s open all day and welcomes everyone — families, ramen lovers, craft beer enthusiasts, and more!</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/22 15:41</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">Harbs</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look up information about Harbs at NEWoMan Takanawa for you!Here is the information for HARBS at NEWoMan Takanawa:
+
+店舗名: [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959)
+店舗位置: South・3F
+営業時間: 11:00～20:00（L.O 19:30）※テイクアウト20:00まで
+電話番号: 0 3 - 6 4 5 5 - 7 1 1 8
+予算: 1,500円～2,000円
+サービス: キッズメニュー（ドリンクのみ）、テイクアウト
+公式サイト: http://www.harbsjapan.com/
+
+HARBS is a fresh cake and café focused on handmade quality and freshness, where you can enjoy freshly ground original roast coffee, a rich selection of fine teas, and seasonal cakes crafted with care.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/20 14:09</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">How to get to New Balance </td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Here is the information for New Balance:
+
+店舗名: [ニューバランス](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951)
+店舗位置: North・3F
+電話番号: 03-5422-6663
+公式サイト: &lt;https://company.newbalance.jp/store/official-store/newomantakanawa&gt;
+
+ニューバランスでは、3Dスキャンによる無料の足のサイズ計測や、スタッフによるスニーカーフィッティングサービスをご体験いただけます。
+
+ニュウマン高輪へのアクセスは、JR「高輪ゲートウェイ駅」改札より徒歩1分、都営浅草線、京急本線「泉岳寺駅」A2出口より徒歩3分です。
+詳しいお越し方は[こちら](https://www.newoman.jp/takanawa/access/)をご覧ください。</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/03 16:37</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">ブルーボトルコーヒーはどこ？</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look that up for you right away!Here is the information on Blue Bottle Coffee at NEWoMan Takanawa!
+
+---
+
+## ☕ ブルーボトルコーヒー
+
+店舗名: [BLUE BOTTLE COFFEE（ブルーボトルコーヒー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002935)
+店舗位置: South・2F
+営業時間: 10:00～20:00
+電話番号: 03-5422-9815
+公式サイト: https://store.bluebottlecoffee.jp/
+
+**サービス:** キッズメニュー、テイクアウト、アレルギー対応
+
+---
+
+**おすすめポイント 🫶**
+アメリカ・カリフォルニア州オークランド発のスペシャルティコーヒー。ご注文を受けてから丁寧に淹れた一杯と、創業時からのアイコンメニュー「リエージュ ワッフル」もお楽しみいただけます！
+
+---
+
+詳しい館内の場所は、デジタルフロアガイドをご利用ください。
+[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/03 16:37</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">もっとわかりやすくして。あやまって。</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look up the directions to the 28th floor again for you!大変申し訳ございませんでした。わかりにくいご案内をしてしまい、失礼いたしました。
+
+改めて、28階（LUFTBAUM・ルフトバウム）へのアクセスをわかりやすくご案内いたします。
+
+---
+
+## 🏢 28階（LUFTBAUM）へのアクセス
+
+### ✅ 一番かんたんな行き方
+
+**① まず「North（ノース）2F」へ向かう**
+↓
+**② 28F・29F 専用エレベーターに乗る**
+↓
+**③ 28Fに到着！**
+
+---
+
+### ⏰ 28階の開放時間
+**8:00 ～ 24:00**
+※各ショップの営業時間はそれぞれ異なります
+
+---
+
+詳しい館内の場所は、デジタルフロアガイドをご利用ください。
+[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)
+
+他にご不明な点がございましたら、お気軽にお申し付けください😊</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/03 15:53</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">28階にはどうやっていく？わかりにくすぎ、</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look up the information about floor 28 at NEWoMan Takanawa for you!Based on the information retrieved, here is how to get to the 28th floor at NEWoMan Takanawa:
+
+---
+
+**LUFTBAUM（ルフトバウム）28F へのアクセス**
+
+**North 2F の直通エレベーター**をご利用ください。
+
+North 2F には、28F・29F への専用エレベーターがございます。エレベーターホールは、アコメヤ トウキョウやニコライ バーグマン付近にございます。
+
+---
+
+詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)
+
+フロアガイドの詳細は[こちら](https://www.newoman.jp/takanawa/floorguide/)もご参照いただけます。</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;font-size:0.85rem;vertical-align:top;">05/02 11:22</td>
+                            <td style="font-size:0.85rem;vertical-align:top;">ジョンすメドレー</td>
+                            <td style="font-size:0.85rem;color:var(--text-muted);vertical-align:top;">
+                                <div style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;line-height:1.5;padding:4px 0;">Let me look up information about John Smedley at NEWoMan Takanawa right away!Here is the information for JOHN SMEDLEY (ジョン スメドレー) at NEWoMan Takanawa:
+
+---
+
+店舗名: [JOHN SMEDLEY（ジョン スメドレー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002940)
+店舗位置: South・2F
+営業時間: 11:00～20:00
+電話番号: 03-5422-7898
+公式サイト: https://www.johnsmedley.jp/
+
+---
+
+**店舗について**
+
+JOHN SMEDLEY（ジョン スメドレー）は1784年創業の英国老舗ニットウェアブランドです。シーアイランドコットン・メリノウール・カシミヤ・シルクなどの最高級天然素材を使用し、240年以上にわたり世界中から高い評価を得ています。英国王室御用達の証「Royal Warrant」を取得しており、世界遺産にも登録された創業当時から続く世界最古の工場で、現在も世界最高峰のニットウェアを作り続けています。</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Error Analysis -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </span>
+                    <span data-ja="エラーパターン別分析" data-zh="错误模式分析">エラーパターン別分析</span>
+                </h2>
+            </div>
+            
+            <div class="error-grid">
+                <div class="error-card">
+                    <div class="error-value">51</div>
+                    <div class="error-label" data-ja="情報なしエラー" data-zh="信息缺失错误">情報なしエラー</div>
+                    <div class="error-percent">100%</div>
+                    <div class="error-desc" data-ja="データベースに情報が存在しない" data-zh="数据库中不存在相关信息">データベースに情報が存在しない</div>
+                </div>
+                <div class="error-card">
+                    <div class="error-value">0</div>
+                    <div class="error-label" data-ja="検索失敗" data-zh="检索失败">検索失敗</div>
+                    <div class="error-percent">0%</div>
+                    <div class="error-desc" data-ja="キーワードマッチングの不具合" data-zh="关键词匹配问题">キーワードマッチングの不具合</div>
+                </div>
+                <div class="error-card">
+                    <div class="error-value">0</div>
+                    <div class="error-label" data-ja="再確認依頼" data-zh="需重新确认">再確認依頼</div>
+                    <div class="error-percent">0%</div>
+                    <div class="error-desc" data-ja="質問の曖昧さ" data-zh="问题表述模糊">質問の曖昧さ</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Summary -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                    </span>
+                    <span data-ja="分析サマリー" data-zh="分析总结">分析サマリー</span>
+                </h2>
+            </div>
+            
+            <div class="summary-box">
+                <div class="summary-title" data-ja="主な洞察" data-zh="主要洞见">主な洞察</div>
+                <div class="summary-content">
+                    <ul>
+                        <li data-ja="<strong>利用状況</strong>：月間<span class='highlight-text'>687件</span>のメッセージを処理し、正常回答率は92.6%" data-zh="<strong>使用情况</strong>：月度处理<span class='highlight-text'>687条</span>消息，正常回答率92.6%"><strong>利用状況</strong>：月間<span class='highlight-text'>687件</span>のメッセージを処理し、正常回答率は92.6%</li>
+                        <li data-ja="<strong>質問傾向</strong>：最多カテゴリは<span class='highlight-text'>「位置・ナビゲーション」（43%）</span>" data-zh="<strong>问题趋势</strong>：最多类别为<span class='highlight-text'>「位置・ナビゲーション」（43%）</span>"><strong>質問傾向</strong>：最多カテゴリは<span class='highlight-text'>「位置・ナビゲーション」（43%）</span></li>
+                        <li data-ja="<strong>利用ピーク</strong>：<span class='highlight-text'>11〜15時（47%）</span>に集中、日曜日が最多" data-zh="<strong>使用高峰</strong>：集中在<span class='highlight-text'>11〜15時（47%）</span>，日曜日最多"><strong>利用ピーク</strong>：<span class='highlight-text'>11〜15時（47%）</span>に集中、日曜日が最多</li>
+                        <li data-ja="<strong>インバウンド</strong>：<span class='highlight-text'>約7%が外国語</span>での問い合わせ" data-zh="<strong>入境游</strong>：<span class='highlight-text'>约7%为外语</span>咨询"><strong>インバウンド</strong>：<span class='highlight-text'>約7%が外国語</span>での問い合わせ</li>
+                        <li data-ja="<strong>改善ポイント</strong>：未回答の<span class='highlight-text'>100%は情報なしエラー</span>でFAQ拡充で改善可能" data-zh="<strong>改善要点</strong>：<span class='highlight-text'>100%为信息缺失错误</span>，可通过完善FAQ改善"><strong>改善ポイント</strong>：未回答の<span class='highlight-text'>100%は情報なしエラー</span>でFAQ拡充で改善可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Suggestions -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </span>
+                    <span data-ja="改善提案" data-zh="改善建议">改善提案</span>
+                </h2>
+            </div>
+            
+            <ul class="suggestion-list">
+                <li class="suggestion-item priority-high">
+                    <div class="suggestion-title">
+                        <span class="badge badge-red" data-ja="優先度：高" data-zh="优先级：高">優先度：高</span>
+                        <span data-ja="FAQ情報の拡充" data-zh="FAQ信息补充">FAQ情報の拡充</span>
+                    </div>
+                    <div class="suggestion-desc" data-ja="「ディズニー」「場所」「高輪」など未回答となっている質問のFAQ追加を推奨します。（情報なし: 51件）" data-zh="建议补充「ディズニー」「場所」「高輪」等未回答问题的FAQ。（信息缺失: 51件）">「ディズニー」「場所」「高輪」など未回答となっている質問のFAQ追加を推奨します。（情報なし: 51件）</div>
+                </li>
+                <li class="suggestion-item priority-medium">
+                    <div class="suggestion-title">
+                        <span class="badge badge-yellow" data-ja="優先度：中" data-zh="优先级：中">優先度：中</span>
+                        <span data-ja="ユーザーフィードバックの促進" data-zh="促进用户反馈">ユーザーフィードバックの促進</span>
+                    </div>
+                    <div class="suggestion-desc" data-ja="フィードバック率が0.1%と低いため、評価ボタンの視認性向上を推奨します。" data-zh="反馈率仅0.1%，建议提高评价按钮的可见性。">フィードバック率が0.1%と低いため、評価ボタンの視認性向上を推奨します。</div>
+                </li>
+                <li class="suggestion-item priority-medium">
+                    <div class="suggestion-title">
+                        <span class="badge badge-yellow" data-ja="優先度：中" data-zh="优先级：中">優先度：中</span>
+                        <span data-ja="多言語対応の強化（英語）" data-zh="加强多语言支持（英語）">多言語対応の強化（英語）</span>
+                    </div>
+                    <div class="suggestion-desc" data-ja="外国語での問い合わせが約7%あり、英語のFAQ充実を推奨します。" data-zh="外语咨询约7%，建议充实英語FAQ。">外国語での問い合わせが約7%あり、英語のFAQ充実を推奨します。</div>
+                </li>
+            </ul>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            Generated by <strong>GBaseSupport Message Analyzer</strong>
+        </footer>
+    </div>
+    
+    <script>
+        // Language switch
+        let currentLang = 'ja';
+        
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.lang-btn[onclick="switchLang('${lang}')"]`).classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => {
+                el.innerHTML = el.getAttribute(`data-${lang}`);
+            });
+            initCharts();
+        }
+        
+        // Analytics Dashboard color palette
+        const palette = {
+            primary: '#3B82F6',
+            secondary: '#60A5FA',
+            success: '#10B981',
+            warning: '#F59E0B',
+            danger: '#EF4444',
+            gray: '#9CA3AF',
+            purple: '#8B5CF6',
+            text: '#1E293B',
+            border: '#E2E8F0',
+            background: '#F8FAFC'
+        };
+        
+        function initCharts() {
+            // Common chart options following Minimalism style
+            const baseOptions = {
+                grid: { left: '3%', right: '4%', bottom: '3%', top: '8%', containLabel: true },
+                tooltip: { 
+                    backgroundColor: '#FFFFFF',
+                    borderColor: palette.border,
+                    borderWidth: 1,
+                    textStyle: { color: palette.text, fontSize: 13 },
+                    extraCssText: 'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);'
+                }
+            };
+            
+            // Daily trend
+            const dailyChart = echarts.init(document.getElementById('dailyChart'));
+            dailyChart.setOption({
+                ...baseOptions,
+                tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: ['5/1(金)', '5/2(土)', '5/3(日)', '5/4(月)', '5/5(火)', '5/6(水)', '5/7(木)', '5/8(金)', '5/9(土)', '5/10(日)', '5/11(月)', '5/12(火)', '5/13(水)', '5/14(木)', '5/15(金)', '5/16(土)', '5/17(日)', '5/18(月)', '5/19(火)', '5/20(水)', '5/21(木)', '5/22(金)', '5/23(土)', '5/24(日)', '5/25(月)', '5/26(火)', '5/27(水)', '5/28(木)', '5/29(金)', '5/30(土)', '5/31(日)'],
+                    axisLine: { lineStyle: { color: palette.border } },
+                    axisLabel: { color: '#6B7280', fontSize: 10, rotate: 45 },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#F3F4F6' } },
+                    axisLabel: { color: '#6B7280' }
+                },
+                series: [{
+                    data: [21, 21, 41, 40, 52, 33, 18, 7, 17, 23, 9, 10, 24, 10, 10, 14, 19, 15, 18, 18, 11, 19, 45, 69, 21, 19, 21, 10, 13, 18, 21],
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    lineStyle: { color: palette.primary, width: 2.5 },
+                    itemStyle: { color: palette.primary },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(59,130,246,0.2)' },
+                            { offset: 1, color: 'rgba(59,130,246,0.02)' }
+                        ])
+                    }
+                }]
+            });
+            
+            // Weekday
+            const weekdayLabels = currentLang === 'ja' 
+                ? ['月', '火', '水', '木', '金', '土', '日']
+                : ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+            
+            const weekdayChart = echarts.init(document.getElementById('weekdayChart'));
+            weekdayChart.setOption({
+                ...baseOptions,
+                tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: weekdayLabels,
+                    axisLine: { lineStyle: { color: palette.border } },
+                    axisLabel: { color: '#6B7280' },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#F3F4F6' } },
+                    axisLabel: { color: '#6B7280' }
+                },
+                series: [{
+                    data: [85, 99, 96, 49, 70, 115, 173],
+                    type: 'bar',
+                    barWidth: '50%',
+                    itemStyle: {
+                        color: (params) => params.dataIndex >= 5 ? palette.success : palette.primary,
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }]
+            });
+            
+            // Hour
+            const hourChart = echarts.init(document.getElementById('hourChart'));
+            hourChart.setOption({
+                ...baseOptions,
+                tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: ['0-7', '7-11', '11-15', '15-18', '18-20', '20-24'],
+                    axisLine: { lineStyle: { color: palette.border } },
+                    axisLabel: { color: '#6B7280' },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#F3F4F6' } },
+                    axisLabel: { color: '#6B7280' }
+                },
+                series: [{
+                    data: [0, 18, 326, 241, 77, 25],
+                    type: 'bar',
+                    barWidth: '55%',
+                    itemStyle: {
+                        color: palette.warning,
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }]
+            });
+            
+            // Category
+            const catLabels = currentLang === 'ja'
+                ? ['位置・ナビ', '雑談・その他', '店舗・商品', '施設', '営業時間']
+                : ['位置/导航', '闲聊/其他', '店铺/商品', '设施', '营业时间'];
+            
+            const categoryChart = echarts.init(document.getElementById('categoryChart'));
+            categoryChart.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                legend: {
+                    orient: 'vertical',
+                    right: '5%',
+                    top: 'center',
+                    textStyle: { color: '#6B7280', fontSize: 11 }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['50%', '75%'],
+                    center: ['35%', '50%'],
+                    label: { show: false },
+                    emphasis: { label: { show: true, fontSize: 12, fontWeight: 600 } },
+                    data: [
+                        { value: 302, name: catLabels[0], itemStyle: { color: palette.primary } },
+                        { value: 256, name: catLabels[1], itemStyle: { color: palette.gray } },
+                        { value: 233, name: catLabels[2], itemStyle: { color: palette.success } },
+                        { value: 97, name: catLabels[3], itemStyle: { color: palette.warning } },
+                        { value: 11, name: catLabels[4], itemStyle: { color: palette.purple } }
+                    ]
+                }]
+            });
+            
+            // Session depth
+            const depthLabels = currentLang === 'ja' ? ['1回', '2回', '3回', '4回+'] : ['1轮', '2轮', '3轮', '4轮+'];
+            
+            const sessionChart = echarts.init(document.getElementById('sessionDepthChart'));
+            sessionChart.setOption({
+                ...baseOptions,
+                tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: depthLabels,
+                    axisLine: { lineStyle: { color: palette.border } },
+                    axisLabel: { color: '#6B7280' },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#F3F4F6' } },
+                    axisLabel: { color: '#6B7280' }
+                },
+                series: [{
+                    data: [316, 93, 27, 20],
+                    type: 'bar',
+                    barWidth: '50%',
+                    itemStyle: { color: palette.purple, borderRadius: [4, 4, 0, 0] }
+                }]
+            });
+            
+            // Language
+            const langChart = echarts.init(document.getElementById('languageChart'));
+            langChart.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                legend: {
+                    orient: 'vertical',
+                    right: '5%',
+                    top: 'center',
+                    textStyle: { color: '#6B7280' }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['50%', '75%'],
+                    center: ['35%', '50%'],
+                    label: { show: false },
+                    data: [
+                        { value: 811, name: currentLang === 'ja' ? '日本語' : '日语', itemStyle: { color: palette.danger } },
+                        { value: 55, name: currentLang === 'ja' ? '英語' : '英语', itemStyle: { color: palette.primary } },
+                        { value: 32, name: currentLang === 'ja' ? '中国語' : '中文', itemStyle: { color: palette.success } },
+                        { value: 11, name: currentLang === 'ja' ? '韓国語' : '韩语', itemStyle: { color: palette.warning } }
+                    ]
+                }]
+            });
+            
+            // Media
+            const mediaLabels = currentLang === 'ja'
+                ? ['リンク含む', '画像含む', 'テーブル含む', 'テキストのみ']
+                : ['包含链接', '包含图片', '包含表格', '纯文本'];
+            
+            const mediaChart = echarts.init(document.getElementById('mediaChart'));
+            mediaChart.setOption({
+                ...baseOptions,
+                tooltip: { ...baseOptions.tooltip, trigger: 'axis' },
+                xAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#F3F4F6' } },
+                    axisLabel: { color: '#6B7280' }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: mediaLabels.slice().reverse(),
+                    axisLine: { lineStyle: { color: palette.border } },
+                    axisLabel: { color: '#6B7280' },
+                    axisTick: { show: false }
+                },
+                series: [{
+                    data: [287, 154, 171, 75],
+                    type: 'bar',
+                    barWidth: '45%',
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                            { offset: 0, color: palette.primary },
+                            { offset: 1, color: palette.secondary }
+                        ]),
+                        borderRadius: [0, 4, 4, 0]
+                    }
+                }]
+            });
+
+            // Source Analysis (only render if element exists)
+            var sourceChartEl = document.getElementById('sourceChart');
+            if (sourceChartEl && sourceChartEl.offsetParent !== null) {
+                var sourceLabels = currentLang === 'ja'
+                    ? ['RAG', 'FAQ', 'その他']
+                    : ['RAG', 'FAQ', '其他'];
+
+                var sourceData = [386, 255, 46];
+
+                var sourceChart = echarts.init(sourceChartEl);
+                sourceChart.setOption({
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                    legend: {
+                        orient: 'vertical',
+                        right: '5%',
+                        top: 'center',
+                        textStyle: { color: '#6B7280', fontSize: 12 }
+                    },
+                    series: [{
+                        type: 'pie',
+                        radius: ['50%', '75%'],
+                        center: ['35%', '50%'],
+                        label: {
+                            show: true,
+                            formatter: '{d}%',
+                            fontSize: 12,
+                            fontWeight: 600
+                        },
+                        emphasis: { label: { show: true, fontSize: 14, fontWeight: 700 } },
+                        data: [
+                            { value: sourceData[0], name: sourceLabels[0], itemStyle: { color: '#3B82F6' } },
+                            { value: sourceData[1], name: sourceLabels[1], itemStyle: { color: '#10B981' } },
+                            { value: sourceData[2], name: sourceLabels[2], itemStyle: { color: '#94A3B8' } }
+                        ]
+                    }]
+                });
+            }
+        }
+        
+        // Initialize - wait for DOM and ECharts to be ready
+        function initWhenReady() {
+            if (typeof echarts !== 'undefined') {
+                initCharts();
+            } else {
+                setTimeout(initWhenReady, 100);
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initWhenReady);
+        } else {
+            initWhenReady();
+        }
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.chart-container').forEach(c => {
+                const chart = echarts.getInstanceByDom(c);
+                if (chart) chart.resize();
+            });
+        });
+    </script>
+</body>
+</html>

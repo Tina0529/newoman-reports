@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-16T09:33:08.963181",
+  "updated_at": "2026-05-31T13:31:16.688113",
   "months": [
     {
       "period": "2025年9月",
@@ -350,6 +350,79 @@
       },
       "report_file": "reports/2026-04.html",
       "unanswered_file": "reports/2026-04_unanswered.html"
+    },
+    {
+      "period": "2026年5月",
+      "year_month": "2026-05",
+      "total_messages": 687,
+      "normal_answer_rate": 92.6,
+      "unanswered_rate": 7.4,
+      "good_rating_rate": 100.0,
+      "feedback_rate": 0.1,
+      "daily_average": 22.2,
+      "unique_users": 2,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 6.6,
+      "weekday_counts": [
+        85,
+        99,
+        96,
+        49,
+        70,
+        115,
+        173
+      ],
+      "source_distribution": {
+        "rag_count": 386,
+        "rag_pct": 56.2,
+        "faq_count": 255,
+        "faq_pct": 37.1,
+        "other_count": 46,
+        "other_pct": 6.7
+      },
+      "language_mixing": {
+        "count": 7,
+        "rate": 1.02,
+        "samples": [
+          {
+            "timestamp": "2026-05-23 18:26:48",
+            "question": "Afuri ",
+            "answer": "Let me look up information about Afuri at NEWoMan Takanawa for you!AFURI is available at **SUPER RAW** on North 5F at NEWoMan Takanawa!\n\n店舗名: [SUPER RAW（スーパーロウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003020)\n店舗位置: North・5F\n営業時間: 11:00～23:00（L.O 22:00）\n電話番号: AFURI：0 3 - 6 4 5 5 - 7 3 7 7\n予算: Lunch: from ¥1,000 / Dinner: from ¥2,000 / Takeout: from ¥1,000\nサービス: Reservations, Child chair, Wheelchair accessible, Takeout, Delivery, Vegan-friendly\n\nSUPER RAW is a vibrant food hall where AFURI ramen, Spice Theater tapas, and SANITY craft beer come together. Whether you're stopping by for a hearty lunch, casual tapas, or an evening drink, it's open all day and welcomes everyone — families, ramen lovers, craft beer enthusiasts, and more!"
+          },
+          {
+            "timestamp": "2026-05-22 15:41:32",
+            "question": "Harbs",
+            "answer": "Let me look up information about Harbs at NEWoMan Takanawa for you!Here is the information for HARBS at NEWoMan Takanawa:\n\n店舗名: [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959)\n店舗位置: South・3F\n営業時間: 11:00～20:00（L.O 19:30）※テイクアウト20:00まで\n電話番号: 0 3 - 6 4 5 5 - 7 1 1 8\n予算: 1,500円～2,000円\nサービス: キッズメニュー（ドリンクのみ）、テイクアウト\n公式サイト: http://www.harbsjapan.com/\n\nHARBS is a fresh cake and café focused on handmade quality and freshness, where you can enjoy freshly ground original roast coffee, a rich selection of fine teas, and seasonal cakes crafted with care."
+          },
+          {
+            "timestamp": "2026-05-20 14:09:26",
+            "question": "How to get to New Balance ",
+            "answer": "Here is the information for New Balance:\n\n店舗名: [ニューバランス](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951)\n店舗位置: North・3F\n電話番号: 03-5422-6663\n公式サイト: <https://company.newbalance.jp/store/official-store/newomantakanawa>\n\nニューバランスでは、3Dスキャンによる無料の足のサイズ計測や、スタッフによるスニーカーフィッティングサービスをご体験いただけます。\n\nニュウマン高輪へのアクセスは、JR「高輪ゲートウェイ駅」改札より徒歩1分、都営浅草線、京急本線「泉岳寺駅」A2出口より徒歩3分です。\n詳しいお越し方は[こちら](https://www.newoman.jp/takanawa/access/)をご覧ください。"
+          },
+          {
+            "timestamp": "2026-05-03 16:37:55",
+            "question": "ブルーボトルコーヒーはどこ？",
+            "answer": "Let me look that up for you right away!Here is the information on Blue Bottle Coffee at NEWoMan Takanawa!\n\n---\n\n## ☕ ブルーボトルコーヒー\n\n店舗名: [BLUE BOTTLE COFFEE（ブルーボトルコーヒー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002935)\n店舗位置: South・2F\n営業時間: 10:00～20:00\n電話番号: 03-5422-9815\n公式サイト: https://store.bluebottlecoffee.jp/\n\n**サービス:** キッズメニュー、テイクアウト、アレルギー対応\n\n---\n\n**おすすめポイント 🫶**\nアメリカ・カリフォルニア州オークランド発のスペシャルティコーヒー。ご注文を受けてから丁寧に淹れた一杯と、創業時からのアイコンメニュー「リエージュ ワッフル」もお楽しみいただけます！\n\n---\n\n詳しい館内の場所は、デジタルフロアガイドをご利用ください。\n[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-05-03 16:37:27",
+            "question": "もっとわかりやすくして。あやまって。",
+            "answer": "Let me look up the directions to the 28th floor again for you!大変申し訳ございませんでした。わかりにくいご案内をしてしまい、失礼いたしました。\n\n改めて、28階（LUFTBAUM・ルフトバウム）へのアクセスをわかりやすくご案内いたします。\n\n---\n\n## 🏢 28階（LUFTBAUM）へのアクセス\n\n### ✅ 一番かんたんな行き方\n\n**① まず「North（ノース）2F」へ向かう**\n↓\n**② 28F・29F 専用エレベーターに乗る**\n↓\n**③ 28Fに到着！**\n\n---\n\n### ⏰ 28階の開放時間\n**8:00 ～ 24:00**\n※各ショップの営業時間はそれぞれ異なります\n\n---\n\n詳しい館内の場所は、デジタルフロアガイドをご利用ください。\n[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)\n\n他にご不明な点がございましたら、お気軽にお申し付けください😊"
+          },
+          {
+            "timestamp": "2026-05-03 15:53:09",
+            "question": "28階にはどうやっていく？わかりにくすぎ、",
+            "answer": "Let me look up the information about floor 28 at NEWoMan Takanawa for you!Based on the information retrieved, here is how to get to the 28th floor at NEWoMan Takanawa:\n\n---\n\n**LUFTBAUM（ルフトバウム）28F へのアクセス**\n\n**North 2F の直通エレベーター**をご利用ください。\n\nNorth 2F には、28F・29F への専用エレベーターがございます。エレベーターホールは、アコメヤ トウキョウやニコライ バーグマン付近にございます。\n\n---\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)\n\nフロアガイドの詳細は[こちら](https://www.newoman.jp/takanawa/floorguide/)もご参照いただけます。"
+          },
+          {
+            "timestamp": "2026-05-02 11:22:12",
+            "question": "ジョンすメドレー",
+            "answer": "Let me look up information about John Smedley at NEWoMan Takanawa right away!Here is the information for JOHN SMEDLEY (ジョン スメドレー) at NEWoMan Takanawa:\n\n---\n\n店舗名: [JOHN SMEDLEY（ジョン スメドレー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002940)\n店舗位置: South・2F\n営業時間: 11:00～20:00\n電話番号: 03-5422-7898\n公式サイト: https://www.johnsmedley.jp/\n\n---\n\n**店舗について**\n\nJOHN SMEDLEY（ジョン スメドレー）は1784年創業の英国老舗ニットウェアブランドです。シーアイランドコットン・メリノウール・カシミヤ・シルクなどの最高級天然素材を使用し、240年以上にわたり世界中から高い評価を得ています。英国王室御用達の証「Royal Warrant」を取得しており、世界遺産にも登録された創業当時から続く世界最古の工場で、現在も世界最高峰のニットウェアを作り続けています。"
+          }
+        ]
+      },
+      "report_file": "reports/2026-05.html",
+      "unanswered_file": "reports/2026-05_unanswered.html"
     }
   ]
 }
