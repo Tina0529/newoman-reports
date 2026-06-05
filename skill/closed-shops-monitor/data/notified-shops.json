@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T21:05:03.658535+09:00",
+  "last_updated": "2026-06-05T22:13:02.844570+09:00",
   "notified_shops": [
     {
       "name": "\"+Base 0\"　Johnny Depp: A Bunch Of Stuff",
@@ -61,6 +61,36 @@
       "faq_hit_count": 0,
       "faq_ids_at_detection": [],
       "status": "no_action_needed"
+    },
+    {
+      "name": "kuros'",
+      "name_normalized": "kuros",
+      "closed_date": "2026-05-31",
+      "floor": "North・1F",
+      "first_notified_at": "2026-06-05T22:13:02.844570+09:00",
+      "faq_hit_count": 1,
+      "faq_ids_at_detection": [
+        "f4f2e78f-d770-4fc9-a679-b0c8f9b44c37"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "ホテルライクインテリア / トーキッドホテル",
+      "name_normalized": "ホテルライクインテリアトーキッドホテル",
+      "closed_date": "2026-05-31",
+      "floor": "North・1F",
+      "first_notified_at": "2026-06-05T22:13:02.844570+09:00",
+      "faq_hit_count": 7,
+      "faq_ids_at_detection": [
+        "b2d53b4f-2a05-4353-9f7b-d7148df4ccb1",
+        "0243a683-f52a-4097-b1d5-407b84d2c44e",
+        "503fc390-d734-4e91-a9ab-fb97dad5e22e",
+        "30655ea2-9639-4562-9af3-227728bd2880",
+        "40629e30-cd69-4bd9-8dce-3ad05d493b7d",
+        "cf1c6706-54d8-4fa1-868d-ea2b24bbb02d",
+        "d85fc67c-9dec-479a-8ac6-c90963ace17d"
+      ],
+      "status": "pending_confirmation"
     }
   ]
 }
