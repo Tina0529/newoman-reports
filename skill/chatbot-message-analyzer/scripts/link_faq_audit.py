@@ -104,20 +104,34 @@ def fetch_shop_ground_truth(base_url, token, dataset_id):
     cand.sort(key=lambda f: f.get("updated_at", ""), reverse=True)
     gt = cand[0]
 
-    # 全 chunk を取得して本文を復元
-    texts, page = [], 1
-    while True:
-        try:
-            r = _get(base_url, f"/datasets/{dataset_id}/files/{gt['id']}/chunks", token,
-                     {"page": page, "size": 100})
-        except Exception as e:
-            print(f"⚠️  ショップ一覧 chunk 取得失敗: {e}")
-            break
-        texts += [c.get("text", "") for c in r.get("items", [])]
-        if page >= r.get("pages", 1) or not r.get("items"):
-            break
-        page += 1
-    text = "\n".join(texts)
+    # 本文取得: metadata の parser_res_url(S3原文) を優先。
+    # chunks 接口は学習直後に空(total=0)を返すことがあり ground truth が壊れるため。
+    text = ""
+    try:
+        meta = _get(base_url, f"/datasets/{dataset_id}/files/{gt['id']}/metadata", token)
+        purl = meta.get("parser_res_url") if isinstance(meta, dict) else None
+        if purl:
+            with urllib.request.urlopen(purl, timeout=60) as r:
+                text = r.read().decode("utf-8", errors="replace")
+    except Exception as e:
+        print(f"⚠️  parser_res_url 取得失敗、chunks にフォールバック: {e}")
+
+    # フォールバック: chunks 接口
+    if "SCDコード" not in text:
+        texts, page = [], 1
+        while True:
+            try:
+                r = _get(base_url, f"/datasets/{dataset_id}/files/{gt['id']}/chunks", token,
+                         {"page": page, "size": 100})
+            except Exception as e:
+                print(f"⚠️  ショップ一覧 chunk 取得失敗: {e}")
+                break
+            texts += [c.get("text", "") for c in r.get("items", [])]
+            if page >= r.get("pages", 1) or not r.get("items"):
+                break
+            page += 1
+        if texts:
+            text = "\n".join(texts)
 
     name2scd, scd2name = {}, {}
     for block in re.split(r"\n##\s+", text):
@@ -157,16 +171,17 @@ def audit_answer_links(records, gt):
 
     total_floor = 0
     floor_ok = 0
-    scd_invalid = []    # (店名, scd, date) — 存在しない scd
-    scd_mismatch = []   # (店名, scd, 実際の店名, date) — 別店に誤リンク
+    scd_invalid = []    # dict — 最新一覧に無い scd
+    scd_mismatch = []   # dict — 別店に誤リンク
     ext_domains = {}    # host -> count（ホワイトリスト除外後）
-    ext_samples = []    # (anchor, url, date)
     ans_with_link = 0
 
     for rec in records:
         ans = rec.get("answer") or ""
         if not ans:
             continue
+        rtime = rec.get("time") or rec.get("date") or ""
+        rq = rec.get("question") or ""
         pairs = list(_MD_LINK_RE.findall(ans))  # [(anchor,url)]
         md_urls = {u for _, u in pairs}
         for u in _BARE_URL_RE.findall(ans):
@@ -180,11 +195,12 @@ def audit_answer_links(records, gt):
             if "newoman.jp" in h and ms:
                 total_floor += 1
                 scd = ms.group(1)
+                a = anchor.strip()
                 if scd not in valid:
-                    scd_invalid.append((anchor.strip(), scd, rec.get("date", "")))
+                    scd_invalid.append({"anchor": a, "scd": scd, "gtname": "",
+                                        "time": rtime, "question": rq, "answer": ans})
                 else:
                     gtname = scd2name[scd]
-                    a = anchor.strip()
                     an = _norm_name(a)
                     gn = _norm_name(gtname)
                     # 汎用アンカー(こちら等) or 空 → 照合対象外
@@ -195,7 +211,8 @@ def audit_answer_links(records, gt):
                         floor_ok += 1
                     # アンカーが一覧に実在する別店で、その正しい scd ≠ リンクの scd → 確証された誤リンク
                     elif an in norm_name2scd and norm_name2scd[an] != scd:
-                        scd_mismatch.append((a, scd, gtname, rec.get("date", "")))
+                        scd_mismatch.append({"anchor": a, "scd": scd, "gtname": gtname,
+                                             "time": rtime, "question": rq, "answer": ans})
                     else:
                         # アンカー店名が一覧に無い（撤退/別名/英日対照など）→ 確証不可、誤検知回避のため OK 扱い
                         floor_ok += 1
@@ -203,8 +220,6 @@ def audit_answer_links(records, gt):
                 continue  # 正規リンク
             elif h and h != "?":
                 ext_domains[h] = ext_domains.get(h, 0) + 1
-                if len(ext_samples) < 30:
-                    ext_samples.append((anchor.strip(), url, rec.get("date", "")))
 
     floor_err = len(scd_invalid) + len(scd_mismatch)
     return {
@@ -220,7 +235,6 @@ def audit_answer_links(records, gt):
         "floor_error_rate": (100.0 * floor_err / total_floor) if total_floor else 0.0,
         "ext_domain_count": sum(ext_domains.values()),
         "ext_domains": sorted(ext_domains.items(), key=lambda x: -x[1]),
-        "ext_samples": ext_samples,
     }
 
 
@@ -237,6 +251,12 @@ _JP_DATE_PATTERNS = [
 _EXPIRY_HINT = re.compile(
     r"開催|会期|期間限定|フェア|POP[\s\-]?UP|ポップアップ|催事|開幕|イベント|"
     r"期間中|まで開催|まで開|までの期間|までの開催|フェスティバル|フェスタ|マルシェ")
+# 回答が既に「終了済み」と明示している場合は正しい回答 → 問題ではないので除外する
+_CLOSED_HINT = re.compile(
+    r"終了し|終了いたし|終了済|終了して|既に終了|すでに終了|開催を終了|"
+    r"現在は開催|現在開催されて|開催されておりません|開催しておりません|"
+    r"已结束|已經結束|已经结束|現已結束|现已结束|"
+    r"has ended|already ended|no longer|was held in|is over|has concluded")
 
 
 def _extract_dates(text, ref_date):
@@ -314,14 +334,19 @@ def fetch_expiring_faqs(base_url, token, dataset_id, report_period_end, language
                 "question": q,
                 "expire_date": min(soon).isoformat(),
                 "snippet": _snip(a),
+                "answer": a,
             })
         elif past and not future:
-            # 全日付が過去 → 既に終了したイベントが残存
+            # 全日付が過去 → 既に終了したイベント。
+            # ただし回答が既に「終了しました」等と正しく案内している場合は問題ではない → 除外。
+            if _CLOSED_HINT.search(a):
+                continue
             stale.append({
                 "faq_id": fq.get("id") or fq.get("faq_id") or "",
                 "question": q,
                 "expire_date": max(past).isoformat(),
                 "snippet": _snip(a),
+                "answer": a,
             })
     expiring.sort(key=lambda x: x["expire_date"])
     stale.sort(key=lambda x: x["expire_date"], reverse=True)
@@ -391,68 +416,111 @@ def _esc(s):
 
 
 def render_link_placeholders(audit):
-    """リンク監査 → {{LINK_*}} プレースホルダ dict。audit=None なら非表示。"""
+    """リンク監査 → メインレポートの {{LINK_*}} KPI プレースホルダ。audit=None なら非表示。
+    詳細テーブルは別ページ（render_link_detail）に出すため、ここは KPI のみ。"""
     if not audit:
         return {
             "LINK_SECTION_DISPLAY": "display:none",
             "LINK_FLOOR_TOTAL": "0", "LINK_ERROR_COUNT": "0", "LINK_ERROR_RATE": "0.00",
-            "LINK_EXT_COUNT": "0", "LINK_GT_FILE": "-", "LINK_GT_EXPORTED": "-",
-            "LINK_ERROR_ROWS": "", "LINK_EXT_ROWS": "", "LINK_EXT_DISPLAY": "display:none",
+            "LINK_SHOP_COUNT": "0", "LINK_GT_FILE": "-", "LINK_GT_EXPORTED": "-",
         }
-    rows = []
-    for nm, scd, gtname, date in audit["scd_mismatch"]:
-        rows.append(
-            f'<tr><td>{_esc(date)}</td><td><span style="color:var(--danger,#dc2626);font-weight:600;">誤リンク</span></td>'
-            f'<td>{_esc(nm)}</td><td>scd={_esc(scd)}</td>'
-            f'<td>実際は「{_esc(gtname)}」を指す</td></tr>')
-    for nm, scd, date in audit["scd_invalid"]:
-        rows.append(
-            f'<tr><td>{_esc(date)}</td><td><span style="color:var(--warning,#d97706);font-weight:600;">不明scd</span></td>'
-            f'<td>{_esc(nm)}</td><td>scd={_esc(scd)}</td>'
-            f'<td>最新一覧に存在しない scd（誤記 or 撤退店）</td></tr>')
-    ext_rows = []
-    for h, c in audit["ext_domains"][:20]:
-        ext_rows.append(f'<tr><td>{_esc(h)}</td><td>{c}</td></tr>')
+    floor = audit["floor_total"]
+    err = len(audit["scd_mismatch"])  # 「誤リンク」= 別店リンクのみ（不明scd は含めない）
     return {
         "LINK_SECTION_DISPLAY": "",
-        "LINK_FLOOR_TOTAL": str(audit["floor_total"]),
-        "LINK_ERROR_COUNT": str(audit["floor_error_count"]),
-        "LINK_ERROR_RATE": f'{audit["floor_error_rate"]:.2f}',
-        "LINK_EXT_COUNT": str(audit["ext_domain_count"]),
+        "LINK_FLOOR_TOTAL": str(floor),
+        "LINK_ERROR_COUNT": str(err),
+        "LINK_ERROR_RATE": f"{100.0 * err / floor:.2f}" if floor else "0.00",
+        "LINK_SHOP_COUNT": str(audit["shop_count"]),
         "LINK_GT_FILE": _esc(audit["gt_filename"] or "-"),
         "LINK_GT_EXPORTED": _esc(audit["gt_exported"] or "-"),
-        "LINK_ERROR_ROWS": "\n".join(rows) or '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">該当なし（リンク誤りは検出されませんでした）</td></tr>',
-        "LINK_EXT_ROWS": "\n".join(ext_rows),
-        "LINK_EXT_DISPLAY": "" if ext_rows else "display:none",
+    }
+
+
+def _link_detail_row(e):
+    scd = e["scd"]
+    url = f"https://www.newoman.jp/takanawa/floorguide/detail/?scd={scd}"
+    shop = _esc(e["anchor"]) or '<span style="color:var(--gray-400)">（店名なし）</span>'
+    ans = _esc(e["answer"])
+    q = _esc(e["question"]) or '<span style="color:var(--gray-400)">—</span>'
+    return (
+        f'<tr>'
+        f'<td class="timestamp">{_esc(e["time"])}</td>'
+        f'<td class="shop-cell"><div class="shop-name">{shop}</div>'
+        f'<div class="scd-line"><a href="{url}" target="_blank">scd={_esc(scd)}</a></div>'
+        f'<div class="judge" data-ja="リンク先は実際には「{_esc(e["gtname"])}」（別店舗）です" '
+        f'data-zh="链接实际指向「{_esc(e["gtname"])}」（别的店）">リンク先は実際には「{_esc(e["gtname"])}」（別店舗）です</div></td>'
+        f'<td class="question-cell">{q}</td>'
+        f'<td class="answer-cell"><div class="answer-box">{ans}</div></td></tr>')
+
+
+def render_link_detail(audit):
+    """リンク監査の詳細ページ用 {{LINK_*}} プレースホルダ（別店誤リンクのみ + 質問/回答全文）。"""
+    if not audit:
+        return None
+    rows = [_link_detail_row(e) for e in audit["scd_mismatch"]]
+    if not rows:
+        rows = ['<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;" data-ja="誤リンクは検出されませんでした" data-zh="未检测到错误链接">誤リンクは検出されませんでした</td></tr>']
+    floor = audit["floor_total"]
+    err = len(audit["scd_mismatch"])
+    return {
+        "LINK_GT_FILE": _esc(audit["gt_filename"] or "-"),
+        "LINK_GT_EXPORTED": _esc(audit["gt_exported"] or "-"),
+        "LINK_FLOOR_TOTAL": str(floor),
+        "LINK_ERROR_COUNT": str(err),
+        "LINK_ERROR_RATE": f"{100.0 * err / floor:.2f}" if floor else "0.00",
+        "LINK_DETAIL_ROWS": "\n".join(rows),
     }
 
 
 def render_faq_placeholders(faq):
-    """FAQ 期限監視 → {{FAQEXP_*}} プレースホルダ dict。faq=None なら非表示。"""
+    """FAQ 期限監視 → メインレポートの {{FAQEXP_*}} KPI プレースホルダ。faq=None なら非表示。
+    詳細リストは別ページ（render_faq_detail）に出すため、ここは KPI のみ。"""
     if not faq:
         return {
             "FAQEXP_SECTION_DISPLAY": "display:none",
             "FAQEXP_NEXT_MONTH": "-", "FAQEXP_CHECKED": "0",
             "FAQEXP_EXPIRING_COUNT": "0", "FAQEXP_STALE_COUNT": "0",
-            "FAQEXP_ROWS": "", "FAQEXP_STALE_ROWS": "", "FAQEXP_STALE_DISPLAY": "display:none",
         }
-    rows = []
-    for f in faq["expiring"]:
-        rows.append(
-            f'<tr><td>{_esc(f["expire_date"])}</td><td>{_esc(f["question"])}</td>'
-            f'<td>{_esc(f["snippet"])}</td></tr>')
-    stale_rows = []
-    for f in faq["stale"]:
-        stale_rows.append(
-            f'<tr><td>{_esc(f["expire_date"])}</td><td>{_esc(f["question"])}</td>'
-            f'<td>{_esc(f["snippet"])}</td></tr>')
     return {
         "FAQEXP_SECTION_DISPLAY": "",
         "FAQEXP_NEXT_MONTH": _esc(faq["next_month_label"]),
         "FAQEXP_CHECKED": str(faq["checked"]),
         "FAQEXP_EXPIRING_COUNT": str(len(faq["expiring"])),
         "FAQEXP_STALE_COUNT": str(len(faq["stale"])),
-        "FAQEXP_ROWS": "\n".join(rows) or '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">翌月に期限切れになる FAQ はありません</td></tr>',
+    }
+
+
+def _faq_detail_rows(items, badge_class, badge_ja, badge_zh):
+    rows = []
+    for f in items:
+        ans = _esc(f.get("answer", ""))
+        rows.append(
+            f'<tr data-type="{badge_ja}">'
+            f'<td class="timestamp">{_esc(f["expire_date"])}</td>'
+            f'<td><span class="badge {badge_class}" data-ja="{badge_ja}" data-zh="{badge_zh}">{badge_ja}</span></td>'
+            f'<td class="question-cell">{_esc(f["question"])}'
+            + (f'<div class="faq-id">FAQ ID: {_esc(f["faq_id"])}</div>' if f.get("faq_id") else "")
+            + f'</td>'
+            f'<td class="answer-cell"><div class="answer-box">{ans}</div></td></tr>')
+    return rows
+
+
+def render_faq_detail(faq):
+    """FAQ 期限監視の詳細ページ用 {{FAQEXP_*}} プレースホルダ（期限切れ予定 + 過時残存, 完整回答つき）。"""
+    if not faq:
+        return None
+    exp_rows = _faq_detail_rows(faq["expiring"], "badge-yellow", "期限間近", "即将过期")
+    stale_rows = _faq_detail_rows(faq["stale"], "badge-red", "過時残存", "已过期残留")
+    if not exp_rows:
+        exp_rows = ['<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;" data-ja="翌月に期限切れになる FAQ はありません" data-zh="下月没有将过期的 FAQ">翌月に期限切れになる FAQ はありません</td></tr>']
+    if not stale_rows:
+        stale_rows = ['<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;" data-ja="過時残存 FAQ はありません" data-zh="没有已过期残留的 FAQ">過時残存 FAQ はありません</td></tr>']
+    return {
+        "FAQEXP_NEXT_MONTH": _esc(faq["next_month_label"]),
+        "FAQEXP_CHECKED": str(faq["checked"]),
+        "FAQEXP_EXPIRING_COUNT": str(len(faq["expiring"])),
+        "FAQEXP_STALE_COUNT": str(len(faq["stale"])),
+        "FAQEXP_EXPIRING_ROWS": "\n".join(exp_rows),
         "FAQEXP_STALE_ROWS": "\n".join(stale_rows),
-        "FAQEXP_STALE_DISPLAY": "" if stale_rows else "display:none",
     }

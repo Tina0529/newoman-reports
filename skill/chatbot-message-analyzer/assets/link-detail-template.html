@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リンク整合性 詳細 - {{CLIENT_NAME}} {{PERIOD}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6; --primary-hover: #2563EB; --background: #F8FAFC; --surface: #FFFFFF;
+            --text: #1E293B; --text-muted: #64748B; --border: #E2E8F0; --success-bg: #ECFDF5;
+            --warning: #F59E0B; --warning-bg: #FFFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif; --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: #EFF6FF; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-value.muted { color: var(--text); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .note { padding: 1rem 1.5rem; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-lg); margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .timestamp { width: 130px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .shop-cell { width: 22%; }
+        .data-table .shop-name { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .data-table .scd-line { margin-top: 0.25rem; }
+        .data-table .judge { margin-top: 0.375rem; font-size: 0.75rem; color: var(--danger); line-height: 1.4; }
+        .data-table .question-cell { width: 18%; font-weight: 500; color: var(--text); }
+        .data-table .answer-cell { color: var(--text-muted); }
+        .answer-box { max-height: 220px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.5; font-size: 0.8125rem; padding: 0.5rem 0.75rem; background: var(--gray-50); border-radius: var(--radius-md); }
+        .data-table a { color: var(--primary); text-decoration: none; font-family: var(--font-mono); font-size: 0.8125rem; }
+        .data-table a:hover { text-decoration: underline; }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+                <span data-ja="リンク整合性 詳細" data-zh="链接完整性 详情">リンク整合性 詳細</span>
+            </h1>
+            <div class="header-actions">
+                <a href="{{MAIN_REPORT_FILENAME}}#linkAuditSection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">{{LINK_ERROR_COUNT}}</span><span class="summary-label" data-ja="件の誤リンク（別店舗を指す）" data-zh="条错误链接（指向别店）">件の誤リンク（別店舗を指す）</span></div>
+            <div class="summary-item"><span class="summary-value muted">{{LINK_FLOOR_TOTAL}}</span><span class="summary-label" data-ja="店舗リンク総数" data-zh="店铺链接总数">店舗リンク総数</span></div>
+            <div class="summary-item"><span class="summary-value muted">{{LINK_ERROR_RATE}}%</span><span class="summary-label" data-ja="誤リンク率" data-zh="错误率">誤リンク率</span></div>
+        </div>
+
+        <div class="note">
+            <span data-ja="※ bot 回答内の店舗リンク(?scd=)を最新の「{{LINK_GT_FILE}}」（{{LINK_GT_EXPORTED}} 時点 / 全店舗・日本語版）と照合し、scd が別店舗を指す「誤リンク」を抽出（要 FAQ 修正）。施設公式・地図・FAQ画像はホワイトリストで除外。scd リンクは別タブで開いて実際の遷移先を確認できます。" data-zh="※ 将 bot 回答中的店铺链接(?scd=)与最新「{{LINK_GT_FILE}}」（{{LINK_GT_EXPORTED}} 时点 / 全店·日语版）照合，抽取 scd 指向别店铺的「错误链接」（需修 FAQ）。设施官方·地图·FAQ图片已加白名单排除。点击 scd 链接可在新标签确认实际跳转。">※ bot 回答内の店舗リンク(?scd=)を最新の「{{LINK_GT_FILE}}」と照合。</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title" data-ja="誤リンク一覧" data-zh="错误链接一览">誤リンク一覧</div>
+            <table class="data-table" id="linkTable">
+                <thead><tr>
+                    <th data-ja="日時" data-zh="时间">日時</th>
+                    <th data-ja="誤リンク内容（店名 / scd / 判定）" data-zh="错误内容（店名 / scd / 判定）">誤リンク内容（店名 / scd / 判定）</th>
+                    <th data-ja="ユーザー質問" data-zh="用户问题">ユーザー質問</th>
+                    <th data-ja="Bot 回答全文" data-zh="Bot 回答全文">Bot 回答全文</th>
+                </tr></thead>
+                <tbody>{{LINK_DETAIL_ROWS}}</tbody>
+            </table>
+        </div>
+
+        <footer class="footer"><span data-ja="{{CLIENT_NAME}} {{PERIOD}} リンク整合性監視" data-zh="{{CLIENT_NAME}} {{PERIOD}} 链接完整性监控">{{CLIENT_NAME}} {{PERIOD}} リンク整合性監視</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#linkTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { row.style.display = (row.getAttribute('data-type') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>

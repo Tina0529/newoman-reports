@@ -1215,6 +1215,15 @@ def main():
         main_template = f.read()
     with open(TEMPLATE_DIR / "unanswered-template.html", "r", encoding="utf-8") as f:
         unanswered_template = f.read()
+    # リンク/FAQ 詳細サブページ テンプレート（存在しない旧環境でも壊れないよう任意読み込み）
+    link_detail_template = faq_detail_template = None
+    try:
+        with open(TEMPLATE_DIR / "link-detail-template.html", "r", encoding="utf-8") as f:
+            link_detail_template = f.read()
+        with open(TEMPLATE_DIR / "faq-detail-template.html", "r", encoding="utf-8") as f:
+            faq_detail_template = f.read()
+    except FileNotFoundError:
+        pass
 
     # ========================================
     # メインレポート生成（テンプレート置換）
@@ -1363,21 +1372,22 @@ def main():
 
     # ── リンク整合性監視 / FAQ 期限監視（API モードのみ。CSV では非表示） ──
     link_ph = faq_ph = None
+    link_audit_obj = faq_obj = None  # 詳細ページ生成用に保持
     is_api_mode = bool(args.token and args.dataset_id)
     if link_faq_audit is not None and is_api_mode:
         try:
             records = [
-                {"date": (r['質問時間'].strftime('%Y-%m-%d') if pd.notna(r.get('質問時間')) else ''),
+                {"time": (r['質問時間'].strftime('%Y-%m-%d %H:%M') if pd.notna(r.get('質問時間')) else ''),
                  "question": str(r.get('質問', '')),
                  "answer": str(r.get('回答', ''))}
                 for _, r in df.iterrows()
             ]
             gt = link_faq_audit.fetch_shop_ground_truth(args.api_url, args.token, args.dataset_id)
-            audit = link_faq_audit.audit_answer_links(records, gt) if gt else None
-            link_ph = link_faq_audit.render_link_placeholders(audit)
-            if audit:
-                print(f"🔗 リンク監査: floorguide {audit['floor_total']}件中 誤リンク {audit['floor_error_count']}件 "
-                      f"({audit['floor_error_rate']:.2f}%), 要確認外部 {audit['ext_domain_count']}件")
+            link_audit_obj = link_faq_audit.audit_answer_links(records, gt) if gt else None
+            link_ph = link_faq_audit.render_link_placeholders(link_audit_obj)
+            if link_audit_obj:
+                print(f"🔗 リンク監査: floorguide {link_audit_obj['floor_total']}件中 別店誤リンク {len(link_audit_obj['scd_mismatch'])}件, "
+                      f"不明scd(非表示) {len(link_audit_obj['scd_invalid'])}件")
         except Exception as e:
             print(f"⚠️  リンク監査をスキップ: {e}")
         try:
@@ -1385,11 +1395,11 @@ def main():
             # FAQ はこの dataset(=この bot, 1:1) の全件が対象。他 bot の混入は無い
             if args.end_date and args.dataset_id:
                 y, m, d = (int(x) for x in args.end_date.split('-'))
-                faq = link_faq_audit.fetch_expiring_faqs(args.api_url, args.token, args.dataset_id, _date(y, m, d))
-                faq_ph = link_faq_audit.render_faq_placeholders(faq)
-                if faq:
-                    print(f"📅 FAQ 期限監視: {faq['next_month_label']} 期限切れ {len(faq['expiring'])}件, "
-                          f"過時残存 {len(faq['stale'])}件 (点検 {faq['checked']}件)")
+                faq_obj = link_faq_audit.fetch_expiring_faqs(args.api_url, args.token, args.dataset_id, _date(y, m, d))
+                faq_ph = link_faq_audit.render_faq_placeholders(faq_obj)
+                if faq_obj:
+                    print(f"📅 FAQ 期限監視: {faq_obj['next_month_label']} 期限切れ {len(faq_obj['expiring'])}件, "
+                          f"過時残存 {len(faq_obj['stale'])}件 (点検 {faq_obj['checked']}件)")
         except Exception as e:
             print(f"⚠️  FAQ 期限監視をスキップ: {e}")
 
@@ -1402,6 +1412,11 @@ def main():
                   else {"FAQEXP_SECTION_DISPLAY": "display:none"})
     for _k, _v in {**link_ph, **faq_ph}.items():
         main_html = main_html.replace("{{" + _k + "}}", _v)
+    # 詳細ページへのリンク（ローカルファイル名。site-dir コピー時に相対名へ置換）
+    link_detail_filename = f"{client_name}_{period}_リンク詳細.html"
+    faq_detail_filename = f"{client_name}_{period}_FAQ期限詳細.html"
+    main_html = main_html.replace("__LINK_DETAIL_LINK__", link_detail_filename)
+    main_html = main_html.replace("__FAQ_DETAIL_LINK__", faq_detail_filename)
     # 取りこぼした {{LINK_*}}/{{FAQEXP_*}} を空に（テンプレに残骸を出さない）
     main_html = re.sub(r"\{\{(LINK_|FAQEXP_)[A-Z_]+\}\}", "", main_html)
 
@@ -1621,6 +1636,30 @@ def main():
             f.write(unanswered_html)
         print(f"✅ 未回答一覧生成: {sub_filename}")
 
+    # リンク整合性 / FAQ 期限監視 の詳細サブページ生成（API モード・データありの時のみ）
+    main_report_basename = f"{client_name}_{period}_分析レポート.html"
+
+    def _render_subpage(template, data_dict):
+        html = template.replace("{{CLIENT_NAME}}", client_name).replace("{{PERIOD}}", period)
+        html = html.replace("{{MAIN_REPORT_FILENAME}}", main_report_basename)
+        for k, v in data_dict.items():
+            html = html.replace("{{" + k + "}}", v)
+        return re.sub(r"\{\{[A-Z_]+\}\}", "", html)
+
+    link_detail_made = faq_detail_made = False
+    if link_detail_template and link_faq_audit and link_audit_obj:
+        ld = link_faq_audit.render_link_detail(link_audit_obj)
+        if ld:
+            (output_dir / link_detail_filename).write_text(_render_subpage(link_detail_template, ld), encoding="utf-8")
+            print(f"✅ リンク詳細生成: {output_dir / link_detail_filename}")
+            link_detail_made = True
+    if faq_detail_template and link_faq_audit and faq_obj:
+        fd = link_faq_audit.render_faq_detail(faq_obj)
+        if fd:
+            (output_dir / faq_detail_filename).write_text(_render_subpage(faq_detail_template, fd), encoding="utf-8")
+            print(f"✅ FAQ期限詳細生成: {output_dir / faq_detail_filename}")
+            faq_detail_made = True
+
     # ========================================
     # サイト統合（--site-dir 指定時）
     # ========================================
@@ -1676,6 +1715,10 @@ def main():
         html_content = html_content.replace(
             f'href="{client_name}_{period}_未回答一覧.html"',
             f'href="{year_month}_unanswered.html"'
+        ).replace(
+            f'href="{link_detail_filename}"', f'href="{year_month}_links.html"'
+        ).replace(
+            f'href="{faq_detail_filename}"', f'href="{year_month}_faq.html"'
         )
         with open(dest_main, "w", encoding="utf-8") as f:
             f.write(html_content)
@@ -1685,6 +1728,24 @@ def main():
             dest_sub = reports_dir / f"{year_month}_unanswered.html"
             shutil.copy2(sub_filename, dest_sub)
             print(f"✅ 未回答一覧コピー: {dest_sub}")
+
+        # リンク/FAQ 詳細サブページをコピー（サブページ内の戻りリンクも相対名に修正）
+        if link_detail_made:
+            dest_ld = reports_dir / f"{year_month}_links.html"
+            shutil.copy2(output_dir / link_detail_filename, dest_ld)
+            dest_ld.write_text(
+                dest_ld.read_text(encoding="utf-8").replace(
+                    f'href="{main_report_basename}', f'href="{year_month}.html'),
+                encoding="utf-8")
+            print(f"✅ リンク詳細コピー: {dest_ld}")
+        if faq_detail_made:
+            dest_fd = reports_dir / f"{year_month}_faq.html"
+            shutil.copy2(output_dir / faq_detail_filename, dest_fd)
+            dest_fd.write_text(
+                dest_fd.read_text(encoding="utf-8").replace(
+                    f'href="{main_report_basename}', f'href="{year_month}.html'),
+                encoding="utf-8")
+            print(f"✅ FAQ期限詳細コピー: {dest_fd}")
 
     print("\n🎉 分析完了！")
 

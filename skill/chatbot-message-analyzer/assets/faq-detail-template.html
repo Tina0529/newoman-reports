@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ 期限監視 詳細 - {{CLIENT_NAME}} {{PERIOD}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6; --primary-hover: #2563EB; --background: #F8FAFC; --surface: #FFFFFF;
+            --text: #1E293B; --text-muted: #64748B; --border: #E2E8F0; --success-bg: #ECFDF5;
+            --warning: #F59E0B; --warning-bg: #FFFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif; --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--warning); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--warning-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--warning); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--warning); }
+        .summary-value.muted { color: var(--text); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .note { padding: 1rem 1.5rem; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-lg); margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .timestamp { width: 110px; white-space: nowrap; font-size: 0.8125rem; color: var(--danger); font-weight: 600; font-family: var(--font-mono); }
+        .data-table .question-cell { width: 28%; font-weight: 500; color: var(--text); }
+        .data-table .answer-cell { color: var(--text-muted); }
+        .faq-id { font-size: 0.7rem; color: var(--gray-400); font-family: var(--font-mono); margin-top: 0.375rem; }
+        .answer-box { max-height: 240px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.5; font-size: 0.8125rem; padding: 0.5rem 0.75rem; background: var(--gray-50); border-radius: var(--radius-md); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions { display: none; } .section { box-shadow: none; } .answer-box { max-height: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+                <span data-ja="FAQ 期限監視 詳細" data-zh="FAQ 过期监视 详情">FAQ 期限監視 詳細</span>
+            </h1>
+            <div class="header-actions">
+                <a href="{{MAIN_REPORT_FILENAME}}#faqExpirySection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">{{FAQEXP_EXPIRING_COUNT}}</span><span class="summary-label" data-ja="件 期限間近（〜{{FAQEXP_NEXT_MONTH}}末）" data-zh="条 即将过期（〜{{FAQEXP_NEXT_MONTH}}末）">件 期限間近（〜{{FAQEXP_NEXT_MONTH}}末）</span></div>
+            <div class="summary-item"><span class="summary-value">{{FAQEXP_STALE_COUNT}}</span><span class="summary-label" data-ja="件 過時残存" data-zh="条 已过期残留">件 過時残存</span></div>
+            <div class="summary-item"><span class="summary-value muted">{{FAQEXP_CHECKED}}</span><span class="summary-label" data-ja="件 点検（日本語版）" data-zh="条 点检（日语版）">件 点検（日本語版）</span></div>
+        </div>
+
+        <div class="note">
+            <span data-ja="※ 日本語版の全 FAQ を走査し、会期・日付（「開催」「〜まで」等）を含む FAQ を抽出。「翌月期限切れ」= {{FAQEXP_NEXT_MONTH}} 末までに期限到来（要事前修正）。「過時残存」= 既に終了済みの日付を含む（早急に修正）。修正は手動で行ってください（自動修正なし）。回答全文を確認できます。" data-zh="※ 扫描日语版全部 FAQ，抽取含会期/日期（「开催」「〜まで」等）的 FAQ。「下月过期」= {{FAQEXP_NEXT_MONTH}} 末前到期（需提前修改）。「已过期残留」= 含已结束日期（请尽快修改）。请手动修改（不自动修改）。可查看回答全文。">※ 日本語版の全 FAQ を走査し、会期・日付を含む FAQ を抽出。</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title"><span class="badge badge-yellow" data-ja="期限間近" data-zh="即将过期">期限間近</span><span data-ja="翌月末（{{FAQEXP_NEXT_MONTH}}末）までに期限到来。回答全文で実際の日付を確認できます" data-zh="翌月末（{{FAQEXP_NEXT_MONTH}}末）前到期。可在回答全文确认实际日期">翌月末（{{FAQEXP_NEXT_MONTH}}末）までに期限到来</span></div>
+            <table class="data-table">
+                <thead><tr>
+                    <th data-ja="期限日" data-zh="到期日">期限日</th>
+                    <th data-ja="種別" data-zh="类别">種別</th>
+                    <th data-ja="質問" data-zh="问题">質問</th>
+                    <th data-ja="回答全文" data-zh="回答全文">回答全文</th>
+                </tr></thead>
+                <tbody>{{FAQEXP_EXPIRING_ROWS}}</tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title"><span class="badge badge-red" data-ja="過時残存" data-zh="已过期残留">過時残存</span><span data-ja="既に終了した日付を含む FAQ" data-zh="含已结束日期的 FAQ">既に終了した日付を含む FAQ</span></div>
+            <table class="data-table">
+                <thead><tr>
+                    <th data-ja="終了日" data-zh="结束日">終了日</th>
+                    <th data-ja="種別" data-zh="类别">種別</th>
+                    <th data-ja="質問" data-zh="问题">質問</th>
+                    <th data-ja="回答全文" data-zh="回答全文">回答全文</th>
+                </tr></thead>
+                <tbody>{{FAQEXP_STALE_ROWS}}</tbody>
+            </table>
+        </div>
+
+        <footer class="footer"><span data-ja="{{CLIENT_NAME}} {{PERIOD}} FAQ 期限監視" data-zh="{{CLIENT_NAME}} {{PERIOD}} FAQ 过期监视">{{CLIENT_NAME}} {{PERIOD}} FAQ 期限監視</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+    </script>
+</body>
+</html>

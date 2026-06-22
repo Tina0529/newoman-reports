@@ -1153,143 +1153,6 @@
             </div>
         </section>
 
-        <!-- Link Integrity Monitoring -->
-        <section class="section" id="linkAuditSection" style="{{LINK_SECTION_DISPLAY}}">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <span class="section-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                        </svg>
-                    </span>
-                    <span data-ja="リンク整合性監視" data-zh="链接完整性监控">リンク整合性監視</span>
-                </h2>
-            </div>
-
-            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="店舗リンク総数" data-zh="店铺链接总数">店舗リンク総数</div>
-                    <div class="kpi-value">{{LINK_FLOOR_TOTAL}}</div>
-                    <div class="kpi-sub" data-ja="floorguide(?scd=)" data-zh="floorguide(?scd=)">floorguide(?scd=)</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="誤リンク件数" data-zh="错误链接数">誤リンク件数</div>
-                    <div class="kpi-value">{{LINK_ERROR_COUNT}}</div>
-                    <div class="kpi-sub" data-ja="誤リンク率 {{LINK_ERROR_RATE}}%" data-zh="错误率 {{LINK_ERROR_RATE}}%">誤リンク率 {{LINK_ERROR_RATE}}%</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="要確認 外部リンク" data-zh="待确认 外部链接">要確認 外部リンク</div>
-                    <div class="kpi-value">{{LINK_EXT_COUNT}}</div>
-                    <div class="kpi-sub" data-ja="ホワイトリスト除外後" data-zh="白名单过滤后">ホワイトリスト除外後</div>
-                </div>
-            </div>
-
-            <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100); margin-bottom: var(--space-4);">
-                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
-                    <span data-ja="※ bot 回答内の店舗リンク(?scd=)を最新の「{{LINK_GT_FILE}}」（{{LINK_GT_EXPORTED}} 時点 / 全店舗）と照合。scd が別店舗を指す「誤リンク」、最新一覧に無い scd「不明scd（誤記 or 撤退店）」を検出。施設公式・地図・FAQ画像はホワイトリストで除外。" data-zh="※ 将 bot 回答中的店铺链接(?scd=)与最新「{{LINK_GT_FILE}}」（{{LINK_GT_EXPORTED}} 时点 / 全店）照合。检出 scd 指向别店的「错误链接」、最新一览中不存在的 scd「不明scd（写错 or 撤店）」。设施官方、地图、FAQ图片已加白名单排除。">※ bot 回答内の店舗リンク(?scd=)を最新の「{{LINK_GT_FILE}}」（{{LINK_GT_EXPORTED}} 時点 / 全店舗）と照合。</span>
-                </div>
-            </div>
-
-            <div class="chart-title" data-ja="誤リンク一覧" data-zh="错误链接一览">誤リンク一覧</div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th data-ja="日付" data-zh="日期" style="width:100px;">日付</th>
-                        <th data-ja="種別" data-zh="类别" style="width:90px;">種別</th>
-                        <th data-ja="回答内の店名" data-zh="回答中店名">回答内の店名</th>
-                        <th data-ja="scd" data-zh="scd" style="width:110px;">scd</th>
-                        <th data-ja="判定" data-zh="判定">判定</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{LINK_ERROR_ROWS}}
-                </tbody>
-            </table>
-
-            <div style="{{LINK_EXT_DISPLAY}} margin-top: var(--space-6);">
-                <div class="chart-title" data-ja="要確認 外部ドメイン（上位）" data-zh="待确认 外部域名（前列）">要確認 外部ドメイン（上位）</div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th data-ja="ドメイン" data-zh="域名">ドメイン</th>
-                            <th data-ja="出現回数" data-zh="出现次数" style="width:120px;">出現回数</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{LINK_EXT_ROWS}}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- FAQ Expiry Monitoring -->
-        <section class="section" id="faqExpirySection" style="{{FAQEXP_SECTION_DISPLAY}}">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <span class="section-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                    </span>
-                    <span data-ja="FAQ 期限監視（翌月予告）" data-zh="FAQ 过期预警（下月）">FAQ 期限監視（翌月予告）</span>
-                </h2>
-            </div>
-
-            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="翌月期限切れ FAQ" data-zh="下月过期 FAQ">翌月期限切れ FAQ</div>
-                    <div class="kpi-value">{{FAQEXP_EXPIRING_COUNT}}</div>
-                    <div class="kpi-sub" data-ja="{{FAQEXP_NEXT_MONTH}} 内に期限到来" data-zh="{{FAQEXP_NEXT_MONTH}} 内到期">{{FAQEXP_NEXT_MONTH}} 内に期限到来</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="過時残存 FAQ" data-zh="已过期残留 FAQ">過時残存 FAQ</div>
-                    <div class="kpi-value">{{FAQEXP_STALE_COUNT}}</div>
-                    <div class="kpi-sub" data-ja="既に終了した日付を含む" data-zh="含已结束日期">既に終了した日付を含む</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label" data-ja="点検 FAQ 総数" data-zh="点检 FAQ 总数">点検 FAQ 総数</div>
-                    <div class="kpi-value">{{FAQEXP_CHECKED}}</div>
-                    <div class="kpi-sub" data-ja="会期・日付つきを抽出" data-zh="抽取含会期/日期">会期・日付つきを抽出</div>
-                </div>
-            </div>
-
-            <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-100); margin-bottom: var(--space-4);">
-                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
-                    <span data-ja="※ 全 FAQ を走査し、会期・日付（「〜まで」「開催予定」等）を含み、翌月 {{FAQEXP_NEXT_MONTH}} 末までに期限が切れる FAQ を予告。終了後の手動修正漏れを防ぐためのリマインドです（自動修正は行いません）。" data-zh="※ 扫描全部 FAQ，列出含会期/日期（「〜まで」「开催预定」等）且在下月 {{FAQEXP_NEXT_MONTH}} 末前到期的 FAQ。用于提醒及时手动修改，避免过期残留（不自动修改）。">※ 全 FAQ を走査し、翌月 {{FAQEXP_NEXT_MONTH}} 末までに期限が切れる FAQ を予告。</span>
-                </div>
-            </div>
-
-            <div class="chart-title" data-ja="翌月期限切れ予定 FAQ 一覧" data-zh="下月将过期 FAQ 一览">翌月期限切れ予定 FAQ 一覧</div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th data-ja="期限日" data-zh="到期日" style="width:110px;">期限日</th>
-                        <th data-ja="質問" data-zh="问题" style="width:35%;">質問</th>
-                        <th data-ja="回答抜粋" data-zh="回答摘要">回答抜粋</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{FAQEXP_ROWS}}
-                </tbody>
-            </table>
-
-            <div style="{{FAQEXP_STALE_DISPLAY}} margin-top: var(--space-6);">
-                <div class="chart-title" data-ja="過時残存 FAQ（既に終了）" data-zh="已过期残留 FAQ（已结束）">過時残存 FAQ（既に終了）</div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th data-ja="終了日" data-zh="结束日" style="width:110px;">終了日</th>
-                            <th data-ja="質問" data-zh="问题" style="width:35%;">質問</th>
-                            <th data-ja="回答抜粋" data-zh="回答摘要">回答抜粋</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{FAQEXP_STALE_ROWS}}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
         <!-- Error Analysis -->
         <section class="section">
             <div class="section-header">
@@ -1389,7 +1252,81 @@
                 </li>
             </ul>
         </section>
-        
+
+        <!-- Link Integrity Monitoring -->
+        <section class="section" id="linkAuditSection" style="{{LINK_SECTION_DISPLAY}}">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                    </span>
+                    <span data-ja="リンク整合性監視" data-zh="链接完整性监控">リンク整合性監視</span>
+                </h2>
+            </div>
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="店舗リンク総数" data-zh="店铺链接总数">店舗リンク総数</div>
+                    <div class="kpi-value">{{LINK_FLOOR_TOTAL}}</div>
+                    <div class="kpi-sub" data-ja="floorguide(?scd=)" data-zh="floorguide(?scd=)">floorguide(?scd=)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="誤リンク件数" data-zh="错误链接数">誤リンク件数</div>
+                    <div class="kpi-value">{{LINK_ERROR_COUNT}}</div>
+                    <div class="kpi-sub" data-ja="誤リンク率 {{LINK_ERROR_RATE}}%" data-zh="错误率 {{LINK_ERROR_RATE}}%">誤リンク率 {{LINK_ERROR_RATE}}%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="照合 対象店舗数" data-zh="照合 店铺数">照合 対象店舗数</div>
+                    <div class="kpi-value">{{LINK_SHOP_COUNT}}</div>
+                    <div class="kpi-sub" data-ja="最新ショップ一覧の全店舗" data-zh="最新店铺一览全店">最新ショップ一覧の全店舗</div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top: var(--space-4);">
+                <a href="__LINK_DETAIL_LINK__" class="cta-button" style="display:inline-flex;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span data-ja="誤リンク詳細を見る" data-zh="查看错误链接详情">誤リンク詳細を見る</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- FAQ Expiry Monitoring -->
+        <section class="section" id="faqExpirySection" style="{{FAQEXP_SECTION_DISPLAY}}">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </span>
+                    <span data-ja="FAQ 期限監視（翌月予告）" data-zh="FAQ 过期预警（下月）">FAQ 期限監視（翌月予告）</span>
+                </h2>
+            </div>
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="期限間近 FAQ" data-zh="即将过期 FAQ">期限間近 FAQ</div>
+                    <div class="kpi-value">{{FAQEXP_EXPIRING_COUNT}}</div>
+                    <div class="kpi-sub" data-ja="翌月末（{{FAQEXP_NEXT_MONTH}}末）までに期限到来" data-zh="翌月末（{{FAQEXP_NEXT_MONTH}}末）前到期">翌月末（{{FAQEXP_NEXT_MONTH}}末）までに期限到来</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="過時残存 FAQ" data-zh="已过期残留 FAQ">過時残存 FAQ</div>
+                    <div class="kpi-value">{{FAQEXP_STALE_COUNT}}</div>
+                    <div class="kpi-sub" data-ja="既に終了した日付を含む" data-zh="含已结束日期">既に終了した日付を含む</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label" data-ja="点検 FAQ 総数" data-zh="点检 FAQ 总数">点検 FAQ 総数</div>
+                    <div class="kpi-value">{{FAQEXP_CHECKED}}</div>
+                    <div class="kpi-sub" data-ja="日本語版・会期つきを抽出" data-zh="日语版·含会期">日本語版・会期つきを抽出</div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top: var(--space-4);">
+                <a href="__FAQ_DETAIL_LINK__" class="cta-button" style="display:inline-flex;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span data-ja="期限切れ FAQ 詳細を見る" data-zh="查看过期 FAQ 详情">期限切れ FAQ 詳細を見る</span>
+                </a>
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
             Generated by <strong>GBaseSupport Message Analyzer</strong>
