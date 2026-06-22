@@ -1727,6 +1727,11 @@ def main():
         if total_unanswered > 10:
             dest_sub = reports_dir / f"{year_month}_unanswered.html"
             shutil.copy2(sub_filename, dest_sub)
+            # サブページ内「メインレポートに戻る」リンクを相対名に（#アンカーは保持）
+            dest_sub.write_text(
+                dest_sub.read_text(encoding="utf-8").replace(
+                    f'href="{main_report_basename}', f'href="{year_month}.html'),
+                encoding="utf-8")
             print(f"✅ 未回答一覧コピー: {dest_sub}")
 
         # リンク/FAQ 詳細サブページをコピー（サブページ内の戻りリンクも相対名に修正）
