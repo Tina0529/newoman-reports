@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-05-31T13:31:16.688113",
+  "updated_at": "2026-06-22T13:48:44.622478",
   "months": [
     {
       "period": "2025年9月",
@@ -423,6 +423,59 @@
       },
       "report_file": "reports/2026-05.html",
       "unanswered_file": "reports/2026-05_unanswered.html"
+    },
+    {
+      "period": "2026年6月",
+      "year_month": "2026-06",
+      "total_messages": 362,
+      "normal_answer_rate": 93.4,
+      "unanswered_rate": 6.6,
+      "good_rating_rate": 60.0,
+      "feedback_rate": 1.4,
+      "daily_average": 19.1,
+      "unique_users": 2,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 10.5,
+      "weekday_counts": [
+        57,
+        47,
+        53,
+        37,
+        67,
+        55,
+        46
+      ],
+      "source_distribution": {
+        "rag_count": 219,
+        "rag_pct": 60.5,
+        "faq_count": 122,
+        "faq_pct": 33.7,
+        "other_count": 21,
+        "other_pct": 5.8
+      },
+      "language_mixing": {
+        "count": 3,
+        "rate": 0.83,
+        "samples": [
+          {
+            "timestamp": "2026-06-06 16:43:50",
+            "question": "ギフトの買える店は",
+            "answer": "Let me look up gift shop information at NEWoMan Takanawa for you!Here are the shops at NEWoMan Takanawa where you can purchase gifts:\n\n**Gift sweets & confectionery**\n\n| Floor | Shop |\n|---|---|\n| South 1F | シヅカ洋菓子店 自然菓子研究所 |\n| North 1F | 八芳園洋菓子店 |\n| South 2F | ラ・メゾン・デュ・ショコラ |\n| North 2F | 東京ミルクチーズ工場 |\n| South 4F | アンドローカルズ |\n| MIMURE 3F | パティスリーアサコイワヤナギ |\n\n**Gift specialty shop**\n\n| Floor | Shop | Phone |\n|---|---|---|\n| South 5F | [PRESENTERS ROOM](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003044) | 03-6277-1125 |\n\nPRESENTERS ROOM はギフト専門ショップで、内祝いや贈り物全般をお取り扱いしております。\n\nその他のスイーツ店舗情報は[こちら](https://www.newoman.jp/takanawa/restaurant/?category=type03)をご覧ください。"
+          },
+          {
+            "timestamp": "2026-06-03 13:06:06",
+            "question": "28階の行き方をおしえて",
+            "answer": "Let me look up the information about the 28th floor for you!Let me look up the directions to the 28th floor for you!Let me look up the directions to the 28th floor for you!Let me look up the directions to the 28th floor for you!28階（LUFTBAUM／ルフトバウム）へは、**North 2F** にある直通エレベーターをご利用ください。\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-06-02 16:32:03",
+            "question": "子供と食べれる飲食店は？",
+            "answer": "I will now search for restaurants suitable for children.Certainly, I can help you find restaurants suitable for dining with children.\n\nOn South 5F, you'll find \"こもれびら,\" a unified space designed to be comfortable for both adults and children, offering ways for parents and children to spend time together. This area includes TOOTH TOOTH BISTRO&CAFE, an all-day dining option where parents and children can casually enjoy meals.\n\nAdditionally, here are some restaurants that offer child-friendly services such as kids' menus or child chairs:\n\n| Floor        | 店舗名                                                                                               | 電話番号         |\n| ------------ | ------------------------------------------------------------------------------------------------- | ------------ |\n| North・1F     | [POSTUDIO (ポスタジオ)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002902)                 | 03-5422-7754 |\n| North・2F     | [365日とCOFFEE (サンビャクロクジュウゴニチトコーヒー)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002914) | 03-6450-2314 |\n| LUFTBAUM・28F | [GARDEN HOUSE (ガーデンハウス)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003053)           | 03-6447-7763 |\n| LUFTBAUM・28F | [The Public Place (ザ パブリック プレイス)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003047)  | 03-6277-4047 |\n| LUFTBAUM・28F | [高輪それがし (タカナワソレガシ)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003050)                | 03-6450-4792 |\n| LUFTBAUM・29F | [割烹 BUTAI (カッポウ ブタイ)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003057)              | 03-6277-0685 |"
+          }
+        ]
+      },
+      "report_file": "reports/2026-06.html",
+      "unanswered_file": "reports/2026-06_unanswered.html"
     }
   ]
 }

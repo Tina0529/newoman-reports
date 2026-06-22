@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未回答質問一覧 - NEWoMan高輪 2026年6月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-400: #9CA3AF;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--danger); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--danger-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--danger); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .data-table th:first-child { border-radius: var(--radius-md) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-md) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background var(--transition); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .number { text-align: center; width: 50px; font-family: var(--font-mono); color: var(--gray-400); }
+        .data-table .timestamp { width: 140px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .question-cell { width: 30%; }
+        .data-table .answer-cell { width: 40%; font-size: 0.8125rem; color: var(--text-muted); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                <span data-ja="未回答質問一覧" data-zh="未回答问题列表">未回答質問一覧</span>
+            </h1>
+            <div class="header-actions">
+                <a href="NEWoMan高輪_2026年6月_分析レポート.html" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">24</span><span class="summary-label" data-ja="件の未回答" data-zh="条未回答">件の未回答</span></div>
+            <div class="summary-item"><span class="badge badge-red">情報なし</span><span class="summary-label">24件 (100%)</span></div>
+            <div class="summary-item"><span class="badge badge-yellow">検索失敗</span><span class="summary-label">0件 (0%)</span></div>
+            <div class="summary-item"><span class="badge badge-gray">再確認</span><span class="summary-label">0件 (0%)</span></div>
+        </div>
+        <div class="section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTable('all')" data-ja="すべて" data-zh="全部">すべて</button>
+                <button class="filter-btn" onclick="filterTable('情報なし')">情報なし</button>
+                <button class="filter-btn" onclick="filterTable('検索失敗')">検索失敗</button>
+                <button class="filter-btn" onclick="filterTable('再確認')">再確認</button>
+            </div>
+            <table class="data-table" id="unansweredTable">
+                <thead><tr><th>#</th><th data-ja="日時" data-zh="时间">日時</th><th data-ja="タイプ" data-zh="类型">タイプ</th><th data-ja="質問内容" data-zh="问题内容">質問内容</th><th data-ja="Bot回答" data-zh="Bot回答">Bot回答</th></tr></thead>
+                <tbody>
+<tr>
+    <td class="number">1</td>
+    <td class="timestamp">2026-06-19 13:23:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">予算100以内の男の靴を買いたい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ご予算100円以内でのメンズシューズとのことですが、ニュウマン高輪の取扱店舗では、残念ながら100円以内でご購入いただける靴は見つかりませんでした。
+
+もしかして「1万円以内」や「3万円以内」などのご予算でしょうか？ご予算を改めてお知らせいただければ、改めてご...</td>
+</tr>
+<tr>
+    <td class="number">2</td>
+    <td class="timestamp">2026-06-18 13:45:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">日本の美しい心　のイベント</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。「日本の美しい心」というイベントについて、ニュウマン高輪の情報をお調べしましたが、その名称に一致するイベント情報は見つかりませんでした。
+
+ただ、現在ニュウマン高輪で開催中・予定のイベントとして以下の情報がございます。
+
+**LUFTBAUM「金糸雀の庵」イベ...</td>
+</tr>
+<tr>
+    <td class="number">3</td>
+    <td class="timestamp">2026-06-15 11:10:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ヘアドライヤー</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪でヘアドライヤーを専門に取り扱っている店舗の情報は見つかりませんでした。
+
+ただ、ヘアケア・美容機器を取り扱っている以下の店舗でご相談いただける可能性がございます。
+
+| フロア | 店舗名 | 電話番号 |
+|---|--...</td>
+</tr>
+<tr>
+    <td class="number">4</td>
+    <td class="timestamp">2026-06-15 11:08:50</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ドライヤー</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪でドライヤーをお取り扱いしている店舗の情報は見つかりませんでした。
+
+ただ、ヘアケア関連商品を取り扱っている店舗として、以下をご参考にいただけます。
+
+| フロア | 店舗名 | 電話番号 |
+|---|---|---|
+|...</td>
+</tr>
+<tr>
+    <td class="number">5</td>
+    <td class="timestamp">2026-06-14 20:44:02</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">季の記憶</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。「季の記憶」というキーワードでお調べしましたが、ニュウマン高輪にその名称の店舗や情報は見つかりませんでした。
+
+もしかすると、別の店舗名やサービスをお探しでしょうか？キーワードを変えてお調べすることもできますので、お気軽にお申し付けください。
+
+また、ニュウマ...</td>
+</tr>
+<tr>
+    <td class="number">6</td>
+    <td class="timestamp">2026-06-13 19:22:00</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">他はない？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をさらにお調べいたします。お調べいたしました。メンズの革靴という観点では、検索結果の中に追加でご案内できる専門店の情報は見つかりませんでした。
+
+ただ、期間限定ショップとして、South・3F の **+Lab 1** にて **PELLICO（ペリコ）** が出店しております（...</td>
+</tr>
+<tr>
+    <td class="number">7</td>
+    <td class="timestamp">2026-06-13 15:50:08</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ガチャガチャはありますか？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にガチャガチャ（カプセルトイ）の設置に関する情報は見つかりませんでした。
+
+ご不明な点は、館内インフォメーションへ直接お問い合わせいただくことをおすすめいたします。他にご質問がございましたら、お気軽にどうぞ。</td>
+</tr>
+<tr>
+    <td class="number">8</td>
+    <td class="timestamp">2026-06-13 14:56:53</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">さけじゃんぶへの行き方</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「さけじゃんぶ」というお店の情報はニュウマン高輪では見つかりませんでした。
+
+店舗名の表記が異なる場合もございますので、別のキーワードでお試しいただくか、お探しの内容についてもう少し詳しく教えていただけますでしょうか？
+
+フロアガイドもご...</td>
+</tr>
+<tr>
+    <td class="number">9</td>
+    <td class="timestamp">2026-06-13 14:47:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">子供の靴は売ってる？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします！お調べしました。残念ながら、ニュウマン高輪には**子供用の靴**を専門に取り扱う店舗の情報は見つかりませんでした。
+
+ただし、以下のシューズショップがございますので、一部キッズサイズを取り扱っている可能性があります。直接各店舗へお問い合わせいただくことをおすす...</td>
+</tr>
+<tr>
+    <td class="number">10</td>
+    <td class="timestamp">2026-06-13 13:09:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">寝具売ってるところどこ？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、今回の検索結果には寝具を専門に取り扱う店舗の情報は見つかりませんでした。
+
+ただ、インテリア・生活雑貨を扱う店舗として以下のショップがございます。寝具関連商品が見つかる可能性がありますので、直接お問い合わせいただくことをおすすめします。
+...</td>
+</tr>
+<tr>
+    <td class="number">11</td>
+    <td class="timestamp">2026-06-12 17:00:18</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ラケット</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ラケットに関する情報はニュウマン高輪の検索結果からは見つかりませんでした。
+
+テニスやスポーツ用品をお探しでしたら、South・2Fの [Wilson（ウイルソン）](https://www.newoman.jp/takanawa/flo...</td>
+</tr>
+<tr>
+    <td class="number">12</td>
+    <td class="timestamp">2026-06-12 16:40:35</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ラケット</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。取得した情報では、ラケットに関連する店舗情報が見つかりませんでした。ただし、以前ご案内した通り、ニュウマン高輪にはラケットをお取り扱いしているショップがございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| South・2F | ...</td>
+</tr>
+<tr>
+    <td class="number">13</td>
+    <td class="timestamp">2026-06-12 16:34:23</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ドライヤーが買いたい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはドライヤーを専門に取り扱う店舗の情報は見つかりませんでした。
+
+ただ、家電・生活雑貨を取り扱う [Anker Store（アンカーストア）](https://www.newoman.jp/takanawa/floorgu...</td>
+</tr>
+<tr>
+    <td class="number">14</td>
+    <td class="timestamp">2026-06-12 13:19:02</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">入浴剤を売っているお店はどこですか？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。少々お待ちください。申し訳ございませんが、入浴剤を専門に取り扱っているお店の情報は見つかりませんでした。
+
+ただ、ドラッグストアの[マツモトキヨシ](https://www.newoman.jp/takanawa/floorguide/detail/?scd=...</td>
+</tr>
+<tr>
+    <td class="number">15</td>
+    <td class="timestamp">2026-06-07 17:15:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">扇子売ってる？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。少々お待ちください。申し訳ございませんが、ニュウマン高輪館内で扇子を専門に取り扱っている店舗の情報は見つかりませんでした。
+
+ただ、日本の暮らしや工芸品を扱う [中川政七商店（ナカガワマサシチショウテン）](https://www.newoman.jp/tak...</td>
+</tr>
+<tr>
+    <td class="number">16</td>
+    <td class="timestamp">2026-06-07 16:24:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">東急ハンズ</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪には「東急ハンズ」の出店情報は見つかりませんでした。
+
+ニュウマン高輪には、生活雑貨や日用品をお探しの場合、以下のような店舗がございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・...</td>
+</tr>
+<tr>
+    <td class="number">17</td>
+    <td class="timestamp">2026-06-07 15:34:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ドーナツ屋さんを知りたい</td>
+    <td class="answer-cell">ニュウマン高輪のドーナツ情報をお調べいたします！申し訳ございませんが、ニュウマン高輪にはドーナツ専門店の情報は現在見つかりませんでした。
+
+ただ、〆蕎麦 燦々（LUFTBAUM・28F）の説明に「ドーナツショップなどで話題のグリップセカンドが手がける新業態」との記載があり、同グループがドーナツで知ら...</td>
+</tr>
+<tr>
+    <td class="number">18</td>
+    <td class="timestamp">2026-06-06 15:07:19</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ネクタイ</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはネクタイを専門に取り扱う店舗の情報は見つかりませんでした。
+
+メンズファッションを扱う店舗では、[DRESSTERIOR（ドレステリア）](https://www.newoman.jp/takanawa/floorgui...</td>
+</tr>
+<tr>
+    <td class="number">19</td>
+    <td class="timestamp">2026-06-06 12:33:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ろっかー</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはコインロッカーに関する情報が見つかりませんでした。
+
+詳しくは館内のインフォメーションへお問い合わせいただくか、[デジタルフロアガイド](https://platinumaps.jp/d/newoman-takanawa...</td>
+</tr>
+<tr>
+    <td class="number">20</td>
+    <td class="timestamp">2026-06-06 11:18:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">自販機4階にある？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、4階に自動販売機があるという情報は見つかりませんでした。
+
+自動販売機はSouth・1F（館外）のみにございます。飲み物をお探しでしたら、館内にカフェも多数ございますので、よろしければご利用ください。</td>
+</tr>
+<tr>
+    <td class="number">21</td>
+    <td class="timestamp">2026-06-05 15:19:19</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">一般者用駐輪場</td>
+    <td class="answer-cell">ニュウマン高輪の駐輪場情報をお調べいたします。申し訳ございませんが、一般者用駐輪場に関する詳細情報は現在お調べした内容では見つかりませんでした。
+
+フロアマップによると、駐輪場（Bicycle Parking）は **NEWoMan South 1F** および **NEWoMan North 1F...</td>
+</tr>
+<tr>
+    <td class="number">22</td>
+    <td class="timestamp">2026-06-04 13:45:59</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">かき氷</td>
+    <td class="answer-cell">ニュウマン高輪のかき氷情報をお調べいたします。少々お待ちください。申し訳ございませんが、ニュウマン高輪館内にかき氷を専門に提供している店舗の情報は見つかりませんでした。
+
+夏のスイーツをお探しでしたら、以下のような冷たいスイーツをお楽しみいただける店舗がございます。
+
+| フロア | 店舗名 |
+|...</td>
+</tr>
+<tr>
+    <td class="number">23</td>
+    <td class="timestamp">2026-06-03 16:32:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">隈研吾</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「隈研吾」に関するニュウマン高輪の情報は見つかりませんでした。
+
+ニュウマン高輪の店舗やサービスについて、他にご質問がございましたらお気軽にお申し付けください。</td>
+</tr>
+<tr>
+    <td class="number">24</td>
+    <td class="timestamp">2026-06-01 12:35:06</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">メリッサのポップアップの場所は？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、お調べした情報の中に「メリッサ」のポップアップに関する情報は見つかりませんでした。
+
+現在ニュウマン高輪で開催中のポップアップスペース「+Lab」の情報としては、以下のものがございます。
+
+| フロア | ショップ名 | 期間 |
+|--...</td>
+</tr></tbody>
+            </table>
+        </div>
+        <footer class="footer"><span data-ja="NEWoMan高輪 2026年6月 メッセージ履歴分析" data-zh="NEWoMan高輪 2026年6月 消息履历分析">NEWoMan高輪 2026年6月 メッセージ履歴分析</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#unansweredTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { const badge = row.querySelector('.badge'); row.style.display = (badge && badge.getAttribute('data-ja') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>
