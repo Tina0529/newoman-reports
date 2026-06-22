@@ -35,6 +35,12 @@ except ImportError:
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = SKILL_DIR / "assets"
 
+# リンク監査 / FAQ 期限監視モジュール（API モードのみ）
+try:
+    import link_faq_audit
+except ImportError:
+    link_faq_audit = None
+
 # ========================================
 # 未回答判定用キーワード
 # ========================================
@@ -1354,6 +1360,50 @@ def main():
     else:
         main_html = main_html.replace("{{LANG_MIX_SAMPLES_DISPLAY}}", "display:none")
         main_html = main_html.replace("{{LANG_MIX_SAMPLE_ROWS}}", "")
+
+    # ── リンク整合性監視 / FAQ 期限監視（API モードのみ。CSV では非表示） ──
+    link_ph = faq_ph = None
+    is_api_mode = bool(args.token and args.dataset_id)
+    if link_faq_audit is not None and is_api_mode:
+        try:
+            records = [
+                {"date": (r['質問時間'].strftime('%Y-%m-%d') if pd.notna(r.get('質問時間')) else ''),
+                 "question": str(r.get('質問', '')),
+                 "answer": str(r.get('回答', ''))}
+                for _, r in df.iterrows()
+            ]
+            gt = link_faq_audit.fetch_shop_ground_truth(args.api_url, args.token, args.dataset_id)
+            audit = link_faq_audit.audit_answer_links(records, gt) if gt else None
+            link_ph = link_faq_audit.render_link_placeholders(audit)
+            if audit:
+                print(f"🔗 リンク監査: floorguide {audit['floor_total']}件中 誤リンク {audit['floor_error_count']}件 "
+                      f"({audit['floor_error_rate']:.2f}%), 要確認外部 {audit['ext_domain_count']}件")
+        except Exception as e:
+            print(f"⚠️  リンク監査をスキップ: {e}")
+        try:
+            from datetime import date as _date
+            # FAQ はこの dataset(=この bot, 1:1) の全件が対象。他 bot の混入は無い
+            if args.end_date and args.dataset_id:
+                y, m, d = (int(x) for x in args.end_date.split('-'))
+                faq = link_faq_audit.fetch_expiring_faqs(args.api_url, args.token, args.dataset_id, _date(y, m, d))
+                faq_ph = link_faq_audit.render_faq_placeholders(faq)
+                if faq:
+                    print(f"📅 FAQ 期限監視: {faq['next_month_label']} 期限切れ {len(faq['expiring'])}件, "
+                          f"過時残存 {len(faq['stale'])}件 (点検 {faq['checked']}件)")
+        except Exception as e:
+            print(f"⚠️  FAQ 期限監視をスキップ: {e}")
+
+    # フォールバック（CSVモード / モジュール無し / 失敗）→ 全プレースホルダを非表示で確定置換
+    if link_ph is None:
+        link_ph = (link_faq_audit.render_link_placeholders(None) if link_faq_audit
+                   else {"LINK_SECTION_DISPLAY": "display:none"})
+    if faq_ph is None:
+        faq_ph = (link_faq_audit.render_faq_placeholders(None) if link_faq_audit
+                  else {"FAQEXP_SECTION_DISPLAY": "display:none"})
+    for _k, _v in {**link_ph, **faq_ph}.items():
+        main_html = main_html.replace("{{" + _k + "}}", _v)
+    # 取りこぼした {{LINK_*}}/{{FAQEXP_*}} を空に（テンプレに残骸を出さない）
+    main_html = re.sub(r"\{\{(LINK_|FAQEXP_)[A-Z_]+\}\}", "", main_html)
 
     # Unanswered CTA
     main_html = re.sub(r'<div class="cta-value">104</div>', f'<div class="cta-value">{kpi["unanswered_count"]}</div>', main_html)
