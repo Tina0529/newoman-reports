@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リンク整合性 詳細 - NEWoMan高輪 2026年6月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6; --primary-hover: #2563EB; --background: #F8FAFC; --surface: #FFFFFF;
+            --text: #1E293B; --text-muted: #64748B; --border: #E2E8F0; --success-bg: #ECFDF5;
+            --warning: #F59E0B; --warning-bg: #FFFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif; --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: #EFF6FF; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-value.muted { color: var(--text); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .note { padding: 1rem 1.5rem; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-lg); margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .timestamp { width: 130px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .shop-cell { width: 22%; }
+        .data-table .shop-name { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .data-table .scd-line { margin-top: 0.25rem; }
+        .data-table .judge { margin-top: 0.375rem; font-size: 0.75rem; color: var(--danger); line-height: 1.4; }
+        .data-table .question-cell { width: 18%; font-weight: 500; color: var(--text); }
+        .data-table .answer-cell { color: var(--text-muted); }
+        .answer-box { max-height: 220px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.5; font-size: 0.8125rem; padding: 0.5rem 0.75rem; background: var(--gray-50); border-radius: var(--radius-md); }
+        .data-table a { color: var(--primary); text-decoration: none; font-family: var(--font-mono); font-size: 0.8125rem; }
+        .data-table a:hover { text-decoration: underline; }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+                <span data-ja="リンク整合性 詳細" data-zh="链接完整性 详情">リンク整合性 詳細</span>
+            </h1>
+            <div class="header-actions">
+                <a href="2026-06.html#linkAuditSection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">10</span><span class="summary-label" data-ja="件の誤リンク（別店舗を指す）" data-zh="条错误链接（指向别店）">件の誤リンク（別店舗を指す）</span></div>
+            <div class="summary-item"><span class="summary-value muted">584</span><span class="summary-label" data-ja="店舗リンク総数" data-zh="店铺链接总数">店舗リンク総数</span></div>
+            <div class="summary-item"><span class="summary-value muted">1.71%</span><span class="summary-label" data-ja="誤リンク率" data-zh="错误率">誤リンク率</span></div>
+        </div>
+
+        <div class="note">
+            <span data-ja="※ bot 回答内の店舗リンク(?scd=)を最新の「NEWoMan高輪全ショップ情報一覧_20260622.md」（2026-06-22 09:15:43 時点 / 全店舗・日本語版）と照合し、scd が別店舗を指す「誤リンク」を抽出（要 FAQ 修正）。施設公式・地図・FAQ画像はホワイトリストで除外。scd リンクは別タブで開いて実際の遷移先を確認できます。" data-zh="※ 将 bot 回答中的店铺链接(?scd=)与最新「NEWoMan高輪全ショップ情報一覧_20260622.md」（2026-06-22 09:15:43 时点 / 全店·日语版）照合，抽取 scd 指向别店铺的「错误链接」（需修 FAQ）。设施官方·地图·FAQ图片已加白名单排除。点击 scd 链接可在新标签确认实际跳转。">※ bot 回答内の店舗リンク(?scd=)を最新の「NEWoMan高輪全ショップ情報一覧_20260622.md」と照合。</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title" data-ja="誤リンク一覧" data-zh="错误链接一览">誤リンク一覧</div>
+            <table class="data-table" id="linkTable">
+                <thead><tr>
+                    <th data-ja="日時" data-zh="时间">日時</th>
+                    <th data-ja="誤リンク内容（店名 / scd / 判定）" data-zh="错误内容（店名 / scd / 判定）">誤リンク内容（店名 / scd / 判定）</th>
+                    <th data-ja="ユーザー質問" data-zh="用户问题">ユーザー質問</th>
+                    <th data-ja="Bot 回答全文" data-zh="Bot 回答全文">Bot 回答全文</th>
+                </tr></thead>
+                <tbody><tr><td class="timestamp">2026-06-19 14:36</td><td class="shop-cell"><div class="shop-name">鮨 上ル</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340" target="_blank">scd=003340</a></div><div class="judge" data-ja="リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です" data-zh="链接实际指向「Dialog in the Dark 5-1=∞ Lab.」（别的店）">リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です</div></td><td class="question-cell">おすすめの場所</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の情報をお調べいたします。ニュウマン高輪のおすすめスポットをご案内いたします！目的やシーンに合わせて、いくつかピックアップしました。
+
+**話題の新エリア「MIMURE（ミムレ）」**
+2026年3月にオープンした注目エリアです。THE LINKPILLAR 2の2F・3Fに位置し、日本の食文化を中心とした個性豊かな店舗が揃っています。
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| MIMURE・2F | [OGAWA COFFEE LABORATORY 高輪](https://www.newoman.jp/takanawa/mimure/shops/) | コーヒー・ベーカリー・ジェラートなど12のラボが集結 |
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 築地玉寿司が提案する新しい江戸前寿司 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | シェフパティシエール岩柳麻子によるデセールレストラン |
+| MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344) | 全国の希少な牡蠣を堪能できる専門店 |
+
+**眺望を楽しむなら「LUFTBAUM（ルフトバウム）」**
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| LUFTBAUM・28F | [The Public Place](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003047) | 地上約150mの絶景を望むオールデイダイニング |
+
+**ゆっくり過ごしたいなら**
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| South・5F | [BUNKITSU TOKYO（ブンキツ トーキョー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003042) | 約1,000坪の大型書店＆カフェラウンジ、195席 |
+| North・1F | [POSTUDIO（ポスタジオ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002902) | 日本各地の「好き」に出会えるテーマ型体験カフェ |
+
+どのようなシーン（お食事・カフェ・ショッピングなど）をお探しでしょうか？さらに詳しくご案内いたします😊
+
+詳しい館内の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-06-19 14:36</td><td class="shop-cell"><div class="shop-name">L'ECAILLER 8th SEA OYSTER</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344" target="_blank">scd=003344</a></div><div class="judge" data-ja="リンク先は実際には「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（別店舗）です" data-zh="链接实际指向「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（别的店）">リンク先は実際には「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（別店舗）です</div></td><td class="question-cell">おすすめの場所</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の情報をお調べいたします。ニュウマン高輪のおすすめスポットをご案内いたします！目的やシーンに合わせて、いくつかピックアップしました。
+
+**話題の新エリア「MIMURE（ミムレ）」**
+2026年3月にオープンした注目エリアです。THE LINKPILLAR 2の2F・3Fに位置し、日本の食文化を中心とした個性豊かな店舗が揃っています。
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| MIMURE・2F | [OGAWA COFFEE LABORATORY 高輪](https://www.newoman.jp/takanawa/mimure/shops/) | コーヒー・ベーカリー・ジェラートなど12のラボが集結 |
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 築地玉寿司が提案する新しい江戸前寿司 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | シェフパティシエール岩柳麻子によるデセールレストラン |
+| MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344) | 全国の希少な牡蠣を堪能できる専門店 |
+
+**眺望を楽しむなら「LUFTBAUM（ルフトバウム）」**
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| LUFTBAUM・28F | [The Public Place](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003047) | 地上約150mの絶景を望むオールデイダイニング |
+
+**ゆっくり過ごしたいなら**
+
+| フロア | 店舗名 | 特徴 |
+|---|---|---|
+| South・5F | [BUNKITSU TOKYO（ブンキツ トーキョー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003042) | 約1,000坪の大型書店＆カフェラウンジ、195席 |
+| North・1F | [POSTUDIO（ポスタジオ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002902) | 日本各地の「好き」に出会えるテーマ型体験カフェ |
+
+どのようなシーン（お食事・カフェ・ショッピングなど）をお探しでしょうか？さらに詳しくご案内いたします😊
+
+詳しい館内の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-06-15 18:46</td><td class="shop-cell"><div class="shop-name">+Lab 1</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003183" target="_blank">scd=003183</a></div><div class="judge" data-ja="リンク先は実際には「&quot;+Lab 3&quot;」（別店舗）です" data-zh="链接实际指向「&quot;+Lab 3&quot;」（别的店）">リンク先は実際には「&quot;+Lab 3&quot;」（別店舗）です</div></td><td class="question-cell">ポップアップのクルーンはどこ</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の情報をお調べいたします。現在ニュウマン高輪で開催中のポップアップスペース「+Lab」の情報をご案内いたします。
+
+営業時間：11:00～20:00
+
+| フロア | スペース名 | 出店ブランド | 期間 |
+|---|---|---|---|
+| South・3F | [+Lab 1](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003183) | PELLICO | 3月19日(木)～6月18日(木) |
+| North・2F | [+Lab 3](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | ※イベントにより異なります | — |
+| North・4F | [+Lab 4](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003186) | 'eir | 5月21日(木)～6月30日(火) |
+
+※South・4F「+Lab 2」（OCHA STREET 2026）は6月15日（月）をもって終了しております。
+
+最新のポップアップスケジュールは[こちら](https://www.newoman.jp/takanawa/topics/detail/?cd=001944)をご覧ください。
+
+詳しい場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-06-15 18:46</td><td class="shop-cell"><div class="shop-name">+Lab 3</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184" target="_blank">scd=003184</a></div><div class="judge" data-ja="リンク先は実際には「&quot;+Base 2&quot;」（別店舗）です" data-zh="链接实际指向「&quot;+Base 2&quot;」（别的店）">リンク先は実際には「&quot;+Base 2&quot;」（別店舗）です</div></td><td class="question-cell">ポップアップのクルーンはどこ</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の情報をお調べいたします。現在ニュウマン高輪で開催中のポップアップスペース「+Lab」の情報をご案内いたします。
+
+営業時間：11:00～20:00
+
+| フロア | スペース名 | 出店ブランド | 期間 |
+|---|---|---|---|
+| South・3F | [+Lab 1](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003183) | PELLICO | 3月19日(木)～6月18日(木) |
+| North・2F | [+Lab 3](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | ※イベントにより異なります | — |
+| North・4F | [+Lab 4](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003186) | 'eir | 5月21日(木)～6月30日(火) |
+
+※South・4F「+Lab 2」（OCHA STREET 2026）は6月15日（月）をもって終了しております。
+
+最新のポップアップスケジュールは[こちら](https://www.newoman.jp/takanawa/topics/detail/?cd=001944)をご覧ください。
+
+詳しい場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-06-12 16:39</td><td class="shop-cell"><div class="shop-name">La Maison du Chocolat</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002912" target="_blank">scd=002912</a></div><div class="judge" data-ja="リンク先は実際には「東京ミルクチーズ工場」（別店舗）です" data-zh="链接实际指向「東京ミルクチーズ工場」（别的店）">リンク先は実際には「東京ミルクチーズ工場」（別店舗）です</div></td><td class="question-cell">南原さんに贈りたい</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の情報をお調べいたします。南原さんへのギフトにおすすめのショップをご案内いたします。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| South・1F | [静香洋菓子店 天然菓子研究所](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002909) | 03-6450-4708 |
+| South・2F | [La Maison du Chocolat](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002912) | 03-6409-6267 |
+| North・1F | [八芳園洋菓子店](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002897) | 0570-064-128 |
+| South・4F | [&amp;LOCALS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003013) | 03-6450-2414 |
+| South・5F | [PRESENTERS ROOM](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003044) | 03-6277-1125 |
+
+特に、South・5Fの[PRESENTERS ROOM](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003044)は、世界でも類を見ないギフトコンシェルジュサービスを提供する専門店です。個人・法人を問わず、シーンや礼儀に合わせたギフト選びをコンシェルジュが丁寧にご相談に応じてくれます。
+
+他のスイーツショップの情報は[こちら](https://www.newoman.jp/takanawa/restaurant/?category=type03)をご覧ください。</div></td></tr>
+<tr><td class="timestamp">2026-06-12 10:19</td><td class="shop-cell"><div class="shop-name">UNITED ARROWS（ユナイテッド アローズ）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002975" target="_blank">scd=002975</a></div><div class="judge" data-ja="リンク先は実際には「SALOMON STORE」（別店舗）です" data-zh="链接实际指向「SALOMON STORE」（别的店）">リンク先は実際には「SALOMON STORE」（別店舗）です</div></td><td class="question-cell">スーツも買いたい</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪のスーツ取り扱い店舗をお調べいたします。ニュウマン高輪でスーツを一部取り扱っている店舗をご案内いたします。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・4F | [UNITED ARROWS（ユナイテッド アローズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002975) | 050-8894-7044 |
+| North・4F | [DRESSTERIOR（ドレステリア）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002974) | 03-6277-2507 |
+| North・5F | [URBAN RESEARCH DOORS（アーバンリサーチ ドアーズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002980) | 03-6277-4533 |
+
+就活用のきちんとしたスーツをお探しでしたら、**UNITED ARROWS** や **DRESSTERIOR** がセレクトショップとして上質なスーツを取り揃えており、特におすすめです。
+
+他のメンズ・レディスファッションのショップ情報は[こちら](https://www.lumine.ne.jp/global_search/?store=nman03&amp;category=type02#result-top)をご覧ください。</div></td></tr>
+<tr><td class="timestamp">2026-06-12 10:19</td><td class="shop-cell"><div class="shop-name">URBAN RESEARCH DOORS（アーバンリサーチ ドアーズ）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002980" target="_blank">scd=002980</a></div><div class="judge" data-ja="リンク先は実際には「BEAMS CULTUART」（別店舗）です" data-zh="链接实际指向「BEAMS CULTUART」（别的店）">リンク先は実際には「BEAMS CULTUART」（別店舗）です</div></td><td class="question-cell">スーツも買いたい</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪のスーツ取り扱い店舗をお調べいたします。ニュウマン高輪でスーツを一部取り扱っている店舗をご案内いたします。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・4F | [UNITED ARROWS（ユナイテッド アローズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002975) | 050-8894-7044 |
+| North・4F | [DRESSTERIOR（ドレステリア）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002974) | 03-6277-2507 |
+| North・5F | [URBAN RESEARCH DOORS（アーバンリサーチ ドアーズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002980) | 03-6277-4533 |
+
+就活用のきちんとしたスーツをお探しでしたら、**UNITED ARROWS** や **DRESSTERIOR** がセレクトショップとして上質なスーツを取り揃えており、特におすすめです。
+
+他のメンズ・レディスファッションのショップ情報は[こちら](https://www.lumine.ne.jp/global_search/?store=nman03&amp;category=type02#result-top)をご覧ください。</div></td></tr>
+<tr><td class="timestamp">2026-06-06 10:15</td><td class="shop-cell"><div class="shop-name">HARBS</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960" target="_blank">scd=002960</a></div><div class="judge" data-ja="リンク先は実際には「@aroma」（別店舗）です" data-zh="链接实际指向「@aroma」（别的店）">リンク先は実際には「@aroma」（別店舗）です</div></td><td class="question-cell">What cafes are opened at 10am</td><td class="answer-cell"><div class="answer-box">Let me look up the café information at NEWoMan Takanawa for you!Based on the information retrieved, here are the cafés at NEWoMan Takanawa that open at 10:00 AM:
+
+| Floor | Shop Name | Phone Number |
+|---|---|---|
+| South・1F | [ZEROCORNER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002903) | 03-6277-2882 |
+| South・4F | [SOW COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003011) | 03-6833-4004 |
+
+These two cafés open at 10:00 AM. Please note that many other cafés and restaurants open at 11:00 AM, such as [VERVE COFFEE ROASTERS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002896), [HARBS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960), and [STARBUCKS](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003028).
+
+For a full list of café shops, please see [here](https://www.newoman.jp/takanawa/restaurant/?category=type02).</div></td></tr>
+<tr><td class="timestamp">2026-06-03 17:18</td><td class="shop-cell"><div class="shop-name">鮨 上ル</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340" target="_blank">scd=003340</a></div><div class="judge" data-ja="リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です" data-zh="链接实际指向「Dialog in the Dark 5-1=∞ Lab.」（别的店）">リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です</div></td><td class="question-cell">お腹がすきました</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の飲食店情報をお調べいたします！お腹が空いているとのこと、ニュウマン高輪にはさまざまな飲食店がございます！目的やお好みに合わせてご案内いたします。
+
+**最近オープンした注目のレストラン（MIMURE・3F）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 03-6277-3558 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003341) | 03-6277-4522 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003339) | 03-6277-3556 |
+| MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344) | 03-6277-4527 |
+
+**手頃な価格でお食事できる店舗**
+
+| 階 | 店舗名 | 予算 |
+|---|---|---|
+| South・1F | [ZEROCORNER（ゼロコーナー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002903) | ランチ：1,500円～ |
+| North・5F | [SUPER RAW（スーパーロウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003020) | ランチ：1,000円～ |
+| LUFTBAUM・28F | [LOOPS（ループス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003054) | ランチ：1,000円～ |
+
+どのようなお料理をご希望でしょうか？ジャンルやご予算をお知らせいただければ、さらに詳しくご案内いたします。
+
+他のレストラン・カフェ情報は[こちら](https://www.newoman.jp/takanawa/restaurant/)をご覧ください。</div></td></tr>
+<tr><td class="timestamp">2026-06-03 17:18</td><td class="shop-cell"><div class="shop-name">L'ECAILLER 8th SEA OYSTER</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344" target="_blank">scd=003344</a></div><div class="judge" data-ja="リンク先は実際には「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（別店舗）です" data-zh="链接实际指向「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（别的店）">リンク先は実際には「OGAWA COFFEE LABORATORY CUP : 092 The Extracting Lab」（別店舗）です</div></td><td class="question-cell">お腹がすきました</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪の飲食店情報をお調べいたします！お腹が空いているとのこと、ニュウマン高輪にはさまざまな飲食店がございます！目的やお好みに合わせてご案内いたします。
+
+**最近オープンした注目のレストラン（MIMURE・3F）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 03-6277-3558 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003341) | 03-6277-4522 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003339) | 03-6277-3556 |
+| MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003344) | 03-6277-4527 |
+
+**手頃な価格でお食事できる店舗**
+
+| 階 | 店舗名 | 予算 |
+|---|---|---|
+| South・1F | [ZEROCORNER（ゼロコーナー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002903) | ランチ：1,500円～ |
+| North・5F | [SUPER RAW（スーパーロウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003020) | ランチ：1,000円～ |
+| LUFTBAUM・28F | [LOOPS（ループス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003054) | ランチ：1,000円～ |
+
+どのようなお料理をご希望でしょうか？ジャンルやご予算をお知らせいただければ、さらに詳しくご案内いたします。
+
+他のレストラン・カフェ情報は[こちら](https://www.newoman.jp/takanawa/restaurant/)をご覧ください。</div></td></tr></tbody>
+            </table>
+        </div>
+
+        <footer class="footer"><span data-ja="NEWoMan高輪 2026年6月 リンク整合性監視" data-zh="NEWoMan高輪 2026年6月 链接完整性监控">NEWoMan高輪 2026年6月 リンク整合性監視</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#linkTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { row.style.display = (row.getAttribute('data-type') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>
