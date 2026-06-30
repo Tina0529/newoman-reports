@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-06-22T13:16:49.508970",
+  "updated_at": "2026-06-30T13:33:54.453134",
   "months": [
     {
       "period": "2025年9月",
@@ -427,36 +427,41 @@
     {
       "period": "2026年6月",
       "year_month": "2026-06",
-      "total_messages": 438,
-      "normal_answer_rate": 92.9,
-      "unanswered_rate": 7.1,
-      "good_rating_rate": 60.0,
-      "feedback_rate": 1.1,
-      "daily_average": 19.9,
+      "total_messages": 591,
+      "normal_answer_rate": 92.7,
+      "unanswered_rate": 7.3,
+      "good_rating_rate": 57.1,
+      "feedback_rate": 1.2,
+      "daily_average": 19.7,
       "unique_users": 2,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 9.4,
+      "foreign_language_pct": 10.5,
       "weekday_counts": [
-        68,
-        47,
-        53,
-        37,
-        67,
-        95,
-        71
+        89,
+        75,
+        62,
+        58,
+        83,
+        123,
+        101
       ],
       "source_distribution": {
-        "rag_count": 262,
-        "rag_pct": 59.8,
-        "faq_count": 149,
-        "faq_pct": 34.0,
-        "other_count": 27,
-        "other_pct": 6.2
+        "rag_count": 333,
+        "rag_pct": 56.3,
+        "faq_count": 214,
+        "faq_pct": 36.2,
+        "other_count": 44,
+        "other_pct": 7.4
       },
       "language_mixing": {
-        "count": 3,
+        "count": 4,
         "rate": 0.68,
         "samples": [
+          {
+            "timestamp": "2026-06-26 18:47:58",
+            "question": "どうやって28階まであがれますか？",
+            "answer": "Let me look up that information for you right away!To get to the 28th floor (LUFTBAUM, floors 28–29), please use the **dedicated elevator located at North 2F**.\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
           {
             "timestamp": "2026-06-06 16:43:50",
             "question": "ギフトの買える店は",
