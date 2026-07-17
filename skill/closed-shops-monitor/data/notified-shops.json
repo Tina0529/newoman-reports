@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-05T22:13:02.844570+09:00",
+  "last_updated": "2026-07-17T22:46:10.190203+09:00",
   "notified_shops": [
     {
       "name": "\"+Base 0\"　Johnny Depp: A Bunch Of Stuff",
@@ -89,6 +89,28 @@
         "40629e30-cd69-4bd9-8dce-3ad05d493b7d",
         "cf1c6706-54d8-4fa1-868d-ea2b24bbb02d",
         "d85fc67c-9dec-479a-8ac6-c90963ace17d"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "ほしのバター",
+      "name_normalized": "ほしのバター",
+      "closed_date": "2026-07-31",
+      "floor": "North・1F",
+      "first_notified_at": "2026-07-17T22:46:10.190203+09:00",
+      "faq_hit_count": 0,
+      "faq_ids_at_detection": [],
+      "status": "no_action_needed"
+    },
+    {
+      "name": "BRING",
+      "name_normalized": "bring",
+      "closed_date": "2026-07-31",
+      "floor": "North・4F",
+      "first_notified_at": "2026-07-17T22:46:10.190203+09:00",
+      "faq_hit_count": 1,
+      "faq_ids_at_detection": [
+        "977f9af6-510d-40ea-b686-e67ab21f3936"
       ],
       "status": "pending_confirmation"
     }
