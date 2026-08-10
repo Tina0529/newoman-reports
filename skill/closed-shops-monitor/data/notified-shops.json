@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-17T22:46:10.190203+09:00",
+  "last_updated": "2026-08-10T22:16:16.170912+09:00",
   "notified_shops": [
     {
       "name": "\"+Base 0\"　Johnny Depp: A Bunch Of Stuff",
@@ -113,6 +113,16 @@
         "977f9af6-510d-40ea-b686-e67ab21f3936"
       ],
       "status": "pending_confirmation"
+    },
+    {
+      "name": "FRECKLE donuts",
+      "name_normalized": "freckledonuts",
+      "closed_date": "2026-05-31",
+      "floor": "LUFTBAUM・28F",
+      "first_notified_at": "2026-08-10T22:16:16.170912+09:00",
+      "faq_hit_count": 0,
+      "faq_ids_at_detection": [],
+      "status": "no_action_needed"
     }
   ]
 }
