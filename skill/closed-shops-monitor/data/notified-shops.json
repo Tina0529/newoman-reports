@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-10T22:16:16.170912+09:00",
+  "last_updated": "2026-08-17T21:51:00.570032+09:00",
   "notified_shops": [
     {
       "name": "\"+Base 0\"　Johnny Depp: A Bunch Of Stuff",
@@ -123,6 +123,46 @@
       "faq_hit_count": 0,
       "faq_ids_at_detection": [],
       "status": "no_action_needed"
+    },
+    {
+      "name": "sooca",
+      "name_normalized": "sooca",
+      "closed_date": "2026-08-31",
+      "floor": "South・1F",
+      "first_notified_at": "2026-08-17T21:51:00.570032+09:00",
+      "faq_hit_count": 4,
+      "faq_ids_at_detection": [
+        "04e3b378-a8fb-4b11-908a-34a11b2aaa74",
+        "a8523e30-1baf-4357-9676-0b75d805d8ea",
+        "57ea329c-d02c-49f4-bd89-7aff509a9e39",
+        "9ed1a55c-dc09-4409-a437-b72a1124a7a3"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "LINE Enmarket",
+      "name_normalized": "lineenmarket",
+      "closed_date": "2026-08-31",
+      "floor": "South・5F",
+      "first_notified_at": "2026-08-17T21:51:00.570032+09:00",
+      "faq_hit_count": 1,
+      "faq_ids_at_detection": [
+        "0c1a4a1f-6f25-4b70-bd95-f73ca1cebdc5"
+      ],
+      "status": "pending_confirmation"
+    },
+    {
+      "name": "Maker's Watch Knot",
+      "name_normalized": "makerswatchknot",
+      "closed_date": "2026-08-30",
+      "floor": "North・5F",
+      "first_notified_at": "2026-08-17T21:51:00.570032+09:00",
+      "faq_hit_count": 2,
+      "faq_ids_at_detection": [
+        "4aac079a-fad3-4843-9eed-f7e13dee8cf6",
+        "44a92c35-9c60-407f-a6ce-ccc90b7a8421"
+      ],
+      "status": "pending_confirmation"
     }
   ]
 }
