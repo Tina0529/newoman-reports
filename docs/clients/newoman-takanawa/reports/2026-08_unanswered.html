@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未回答質問一覧 - NEWoMan高輪 2026年8月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-400: #9CA3AF;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--danger); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--danger-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--danger); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .data-table th:first-child { border-radius: var(--radius-md) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-md) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background var(--transition); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .number { text-align: center; width: 50px; font-family: var(--font-mono); color: var(--gray-400); }
+        .data-table .timestamp { width: 140px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .question-cell { width: 30%; }
+        .data-table .answer-cell { width: 40%; font-size: 0.8125rem; color: var(--text-muted); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                <span data-ja="未回答質問一覧" data-zh="未回答问题列表">未回答質問一覧</span>
+            </h1>
+            <div class="header-actions">
+                <a href="2026-08.html#unansweredSection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">94</span><span class="summary-label" data-ja="件の未回答" data-zh="条未回答">件の未回答</span></div>
+            <div class="summary-item"><span class="badge badge-red">情報なし</span><span class="summary-label">94件 (100%)</span></div>
+            <div class="summary-item"><span class="badge badge-yellow">検索失敗</span><span class="summary-label">0件 (0%)</span></div>
+            <div class="summary-item"><span class="badge badge-gray">再確認</span><span class="summary-label">0件 (0%)</span></div>
+        </div>
+        <div class="section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTable('all')" data-ja="すべて" data-zh="全部">すべて</button>
+                <button class="filter-btn" onclick="filterTable('情報なし')">情報なし</button>
+                <button class="filter-btn" onclick="filterTable('検索失敗')">検索失敗</button>
+                <button class="filter-btn" onclick="filterTable('再確認')">再確認</button>
+            </div>
+            <table class="data-table" id="unansweredTable">
+                <thead><tr><th>#</th><th data-ja="日時" data-zh="时间">日時</th><th data-ja="タイプ" data-zh="类型">タイプ</th><th data-ja="質問内容" data-zh="问题内容">質問内容</th><th data-ja="Bot回答" data-zh="Bot回答">Bot回答</th></tr></thead>
+                <tbody>
+<tr>
+    <td class="number">1</td>
+    <td class="timestamp">2026-08-30 14:42:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">theoryへの行き方をおしえて。</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;theory 場所 フロア 行き方&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The content ...</td>
+</tr>
+<tr>
+    <td class="number">2</td>
+    <td class="timestamp">2026-08-30 11:38:24</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">靴屋は何処？</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;靴 シューズ ショップ フロア 場所 ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The...</td>
+</tr>
+<tr>
+    <td class="number">3</td>
+    <td class="timestamp">2026-08-30 11:37:59</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">靴屋</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;靴 シューズ ショップ ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The conten...</td>
+</tr>
+<tr>
+    <td class="number">4</td>
+    <td class="timestamp">2026-08-29 17:15:53</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">イコールカフェなに</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;イコールカフェ ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The content be...</td>
+</tr>
+<tr>
+    <td class="number">5</td>
+    <td class="timestamp">2026-08-29 17:14:48</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">カフェは</td>
+    <td class="answer-cell">[ANSWER]
+ニュウマン高輪のカフェ情報をお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;カフェ ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve result...</td>
+</tr>
+<tr>
+    <td class="number">6</td>
+    <td class="timestamp">2026-08-29 17:04:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">south行き方</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ニュウマン高輪 South 行き方 場所 アクセス&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrie...</td>
+</tr>
+<tr>
+    <td class="number">7</td>
+    <td class="timestamp">2026-08-29 17:03:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ノウスからサウスへ行きたい</td>
+    <td class="answer-cell">[ANSWER]
+ノースからサウスへの行き方についてお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ノース サウス 行き方 フロア 館内 移動&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INST...</td>
+</tr>
+<tr>
+    <td class="number">8</td>
+    <td class="timestamp">2026-08-29 16:56:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ハローワンダーに行きたいです</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ハローワンダー 店舗情報&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge...</td>
+</tr>
+<tr>
+    <td class="number">9</td>
+    <td class="timestamp">2026-08-29 16:41:53</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">一休みできるところ</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;カフェ 休憩 ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The content bel...</td>
+</tr>
+<tr>
+    <td class="number">10</td>
+    <td class="timestamp">2026-08-29 16:10:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ついに来ました！高輪ゲートウェイ！</td>
+    <td class="answer-cell">[ANSWER]
+ニュウマン高輪へようこそ！🎉[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ニュウマン高輪 おすすめ 店舗 フロア案内&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+Wh...</td>
+</tr>
+<tr>
+    <td class="number">11</td>
+    <td class="timestamp">2026-08-29 15:38:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Box1000はどこ　</td>
+    <td class="answer-cell">[ANSWER]
+「Box1000」についてお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;Box1000 店舗 場所 フロア&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve r...</td>
+</tr>
+<tr>
+    <td class="number">12</td>
+    <td class="timestamp">2026-08-29 15:37:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Box1000</td>
+    <td class="answer-cell">[TOOL_CALL] execute
+{&quot;command&quot;: &quot;ls /app/projects/robot/b50d5b21-262a-4802-a8c4-512af224c72f/skills/&quot;}[TOOL_RESPONSE] execute
+rag-retrieve
+
+[Command s...</td>
+</tr>
+<tr>
+    <td class="number">13</td>
+    <td class="timestamp">2026-08-29 15:37:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">今空いてるカフェどこ</td>
+    <td class="answer-cell">[ANSWER]
+現在の営業時間情報を確認いたします。[TOOL_CALL] execute
+{&quot;command&quot;: &quot;echo $CURRENT_TIME&quot;}[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;カフェ 営業時間 ニュウマン高輪&quot;}[TOOL_RESP...</td>
+</tr>
+<tr>
+    <td class="number">14</td>
+    <td class="timestamp">2026-08-29 13:54:55</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">スーツケース売ってる？</td>
+    <td class="answer-cell">[ANSWER]
+スーツケースに関する情報をお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;スーツケース 販売 店舗&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve result...</td>
+</tr>
+<tr>
+    <td class="number">15</td>
+    <td class="timestamp">2026-08-29 12:15:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">wifiはありますか</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;WiFi 無線LAN インターネット 館内&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved ...</td>
+</tr>
+<tr>
+    <td class="number">16</td>
+    <td class="timestamp">2026-08-29 11:58:56</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Southエリアへの行き方</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;Southエリア 場所 行き方 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved kn...</td>
+</tr>
+<tr>
+    <td class="number">17</td>
+    <td class="timestamp">2026-08-28 18:08:34</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">メタマップのqr</td>
+    <td class="answer-cell">[ANSWER]
+メタマップのQRコードについて、ニュウマン高輪の情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;メタマップ QRコード&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INST...</td>
+</tr>
+<tr>
+    <td class="number">18</td>
+    <td class="timestamp">2026-08-28 17:09:38</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">香水が買いたい</td>
+    <td class="answer-cell">[ANSWER]
+ニュウマン高輪のフレグランス情報をお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;香水 フレグランス 店舗&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve re...</td>
+</tr>
+<tr>
+    <td class="number">19</td>
+    <td class="timestamp">2026-08-28 17:09:23</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">コーヒーショップを探してほしい</td>
+    <td class="answer-cell">[ANSWER]
+ニュウマン高輪のコーヒーショップをお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;コーヒーショップ カフェ&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve re...</td>
+</tr>
+<tr>
+    <td class="number">20</td>
+    <td class="timestamp">2026-08-27 14:29:14</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ギフトショップ</td>
+    <td class="answer-cell">[ANSWER]
+ギフトショップの情報をお調べいたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;ギフトショップ ニュウマン高輪&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve resul...</td>
+</tr>
+<tr>
+    <td class="number">21</td>
+    <td class="timestamp">2026-08-26 19:01:36</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">South 2F/3F“+Base 0の行き方</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;South 2F 3F Base 0 場所 行き方 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the re...</td>
+</tr>
+<tr>
+    <td class="number">22</td>
+    <td class="timestamp">2026-08-26 15:58:07</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ヒロの展示はどこ</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ 展示&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge bel...</td>
+</tr>
+<tr>
+    <td class="number">23</td>
+    <td class="timestamp">2026-08-26 15:03:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">広いところは？</td>
+    <td class="answer-cell">[ANSWER]
+カフェの中で席数が多い（広い）店舗をご案内いたします。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;カフェ 席数 広い&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve resu...</td>
+</tr>
+<tr>
+    <td class="number">24</td>
+    <td class="timestamp">2026-08-25 14:05:14</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">+ベースゼロ</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;+Base 0 プラスベースゼロ 場所 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieve...</td>
+</tr>
+<tr>
+    <td class="number">25</td>
+    <td class="timestamp">2026-08-25 13:51:49</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">中文楼层店铺</td>
+    <td class="answer-cell">[ANSWER]
+我来为您查询ニュウマン高輪的楼层店铺信息。[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;ニュウマン高輪 楼层 店铺 全部&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve res...</td>
+</tr>
+<tr>
+    <td class="number">26</td>
+    <td class="timestamp">2026-08-24 17:21:21</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ヒロ　愛がある展</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ 愛がある展&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge ...</td>
+</tr>
+<tr>
+    <td class="number">27</td>
+    <td class="timestamp">2026-08-24 16:38:24</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">+Base0の行き方</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;+Base0 場所 フロア 行き方&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved know...</td>
+</tr>
+<tr>
+    <td class="number">28</td>
+    <td class="timestamp">2026-08-24 16:09:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切さんpopup</td>
+    <td class="answer-cell">[ANSWER]
+小田切さんのポップアップについて情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ ポップアップ&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTION...</td>
+</tr>
+<tr>
+    <td class="number">29</td>
+    <td class="timestamp">2026-08-24 15:32:52</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ひろのイベントに行きたい</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ひろ イベント&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge b...</td>
+</tr>
+<tr>
+    <td class="number">30</td>
+    <td class="timestamp">2026-08-24 12:05:13</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">NEWoMan高輪 South 2F /3F　行き方</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;NEWoMan高輪 South 2F 3F 行き方 場所&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the ret...</td>
+</tr>
+<tr>
+    <td class="number">31</td>
+    <td class="timestamp">2026-08-23 17:19:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">jreポイントを後からレシートで貯めたい</td>
+    <td class="answer-cell">[ANSWER]
+JREポイントのレシートによる後付け積算についてお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;JREポイント レシート 後から 積算&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION...</td>
+</tr>
+<tr>
+    <td class="number">32</td>
+    <td class="timestamp">2026-08-23 16:15:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">base0にいきたい</td>
+    <td class="answer-cell">[ANSWER]
+「base0」についてニュウマン高輪の情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;base0 店舗情報&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIO...</td>
+</tr>
+<tr>
+    <td class="number">33</td>
+    <td class="timestamp">2026-08-23 15:47:11</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">wifiってどこ？</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;WiFi 無線LAN 館内&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledg...</td>
+</tr>
+<tr>
+    <td class="number">34</td>
+    <td class="timestamp">2026-08-23 13:53:20</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">BASE0</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;BASE0&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge below,...</td>
+</tr>
+<tr>
+    <td class="number">35</td>
+    <td class="timestamp">2026-08-23 13:52:39</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ヒロ</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge below,...</td>
+</tr>
+<tr>
+    <td class="number">36</td>
+    <td class="timestamp">2026-08-23 13:47:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">提案の行き方は？</td>
+    <td class="answer-cell">[ANSWER]
+品川駅への行き方についてお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ニュウマン高輪 アクセス 行き方&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+...</td>
+</tr>
+<tr>
+    <td class="number">37</td>
+    <td class="timestamp">2026-08-23 13:02:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ベースゼロの行き方教えて</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ベースゼロ BASE ZERO 場所 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved...</td>
+</tr>
+<tr>
+    <td class="number">38</td>
+    <td class="timestamp">2026-08-23 11:38:30</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">クマミュージアムに行きたい</td>
+    <td class="answer-cell">[ANSWER]
+「クマミュージアム」についてニュウマン高輪の情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;クマミュージアム&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTI...</td>
+</tr>
+<tr>
+    <td class="number">39</td>
+    <td class="timestamp">2026-08-23 11:20:14</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ヒロさんのイベントの入り口がわかりません</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ イベント 入り口&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowled...</td>
+</tr>
+<tr>
+    <td class="number">40</td>
+    <td class="timestamp">2026-08-23 11:03:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">＋BASE0への行き方は？</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;+BASE0 場所 フロア 行き方&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved know...</td>
+</tr>
+<tr>
+    <td class="number">41</td>
+    <td class="timestamp">2026-08-22 16:20:08</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ベース0</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;+Base 0 プラスベースゼロ 場所 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieve...</td>
+</tr>
+<tr>
+    <td class="number">42</td>
+    <td class="timestamp">2026-08-22 16:19:38</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">スペース0の場所は？</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;スペース0 場所 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge...</td>
+</tr>
+<tr>
+    <td class="number">43</td>
+    <td class="timestamp">2026-08-22 16:14:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ゼロベースの行き方</td>
+    <td class="answer-cell">[ANSWER]
+ゼロベースの場所・行き方についてお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;ゼロベース 場所 行き方 フロア&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIO...</td>
+</tr>
+<tr>
+    <td class="number">44</td>
+    <td class="timestamp">2026-08-22 12:54:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小田切ヒロさんのイベント会場は</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;小田切ヒロ イベント 会場&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledg...</td>
+</tr>
+<tr>
+    <td class="number">45</td>
+    <td class="timestamp">2026-08-22 11:19:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">base0</td>
+    <td class="answer-cell">[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;base0 店舗&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When using the retrieved knowledge bel...</td>
+</tr>
+<tr>
+    <td class="number">46</td>
+    <td class="timestamp">2026-08-22 11:18:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">おすすめには愛がある　行き方</td>
+    <td class="answer-cell">[ANSWER]
+「おすすめには愛がある」の情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;おすすめには愛がある 場所 行き方&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTI...</td>
+</tr>
+<tr>
+    <td class="number">47</td>
+    <td class="timestamp">2026-08-21 14:55:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">謎解きってどこでやってる？</td>
+    <td class="answer-cell">[ANSWER]
+「謎解き」に関する情報をお調べいたします。[TOOL_CALL] rag_retrieve
+{&quot;query&quot;: &quot;謎解き イベント&quot;, &quot;top_k&quot;: 50}[TOOL_RESPONSE] rag_retrieve
+&lt;CITATION_INSTRUCTIONS&gt;
+When usi...</td>
+</tr>
+<tr>
+    <td class="number">48</td>
+    <td class="timestamp">2026-08-21 14:54:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">912新川</td>
+    <td class="answer-cell">[TOOL_CALL] table_rag_retrieve
+{&quot;query&quot;: &quot;912新川&quot;}[TOOL_RESPONSE] table_rag_retrieve
+No table_rag_retrieve results were found. The content below is the...</td>
+</tr>
+<tr>
+    <td class="number">49</td>
+    <td class="timestamp">2026-08-19 14:19:42</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">すみけんごの建築の</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします！「すみけんご」さんの建築に関する情報は、今回の検索結果には見つかりませんでした。
+
+もしかして、ニュウマン高輪 South・North 1〜5Fの施設全体設計を手掛けた設計事務所 **sinato（シナト）** の **大野力（おおの ちから）** さんのこと...</td>
+</tr>
+<tr>
+    <td class="number">50</td>
+    <td class="timestamp">2026-08-19 12:22:14</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">木漏れミラーの写真。</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「木漏れミラー」に関する写真や画像の情報は見つかりませんでした。
+
+お探しの内容について、もう少し詳しく教えていただけますでしょうか？または別のキーワードでお調べすることも可能です。</td>
+</tr>
+<tr>
+    <td class="number">51</td>
+    <td class="timestamp">2026-08-18 14:17:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ミムレにはある？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ミムレ（MIMURE）エリアに車寄せがあるかどうかについての情報は見つかりませんでした。
+
+詳しくは、直接店舗またはインフォメーションにてご確認いただくか、アクセス情報を[こちら](https://www.newoman.jp/takan...</td>
+</tr>
+<tr>
+    <td class="number">52</td>
+    <td class="timestamp">2026-08-17 18:19:38</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">マタニティの服を扱ってるお店は？</td>
+    <td class="answer-cell">ニュウマン高輪のマタニティ関連店舗をお調べいたします。申し訳ございませんが、ニュウマン高輪にはマタニティウェアを専門に取り扱う店舗の情報は見つかりませんでした。
+
+マタニティ向けのアイテムを取り扱っている可能性のある店舗として、ランジェリーショップの [WACOAL is（ワコール イズ）](htt...</td>
+</tr>
+<tr>
+    <td class="number">53</td>
+    <td class="timestamp">2026-08-16 10:42:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">いのちのみらい展に行きたい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「いのちのみらい展」に関する情報はニュウマン高輪の店舗・施設情報の中では見つかりませんでした。
+
+最新のイベント情報は公式サイトよりご確認いただけます。[イベント・トピックスはこちら](https://www.newoman.jp/tak...</td>
+</tr>
+<tr>
+    <td class="number">54</td>
+    <td class="timestamp">2026-08-15 18:47:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ベビーギフト</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ベビーギフトに特化した店舗情報は見つかりませんでした。
+
+ギフト全般をお探しでしたら、ギフト専門ショップの[PRESENTERS ROOM](https://www.newoman.jp/takanawa/floorguide/detai...</td>
+</tr>
+<tr>
+    <td class="number">55</td>
+    <td class="timestamp">2026-08-15 16:00:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">市販のお菓子が食べたい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪には市販のお菓子（スナック菓子・インスタント食品など）を取り扱う店舗の情報は見つかりませんでした。
+
+ただ、手土産やギフト向けの焼き菓子・スイーツをお求めでしたら、以下のショップがございます。
+
+| 階 | 店舗名 | 電話...</td>
+</tr>
+<tr>
+    <td class="number">56</td>
+    <td class="timestamp">2026-08-14 18:17:28</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">PCケースが欲しい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはPCケースを専門に取り扱う店舗の情報は見つかりませんでした。
+
+ただ、スマートフォンケースやテックアクセサリーをお探しでしたら、North・4Fの[CASETiFY STUDiO（ケースティファイスタジオ）](https...</td>
+</tr>
+<tr>
+    <td class="number">57</td>
+    <td class="timestamp">2026-08-14 17:50:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ミムレの石の水やりの時間を教えて</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ミムレ（MIMURE）の石への水やり時間に関する情報は見つかりませんでした。
+
+詳しくは館内のインフォメーションカウンターへお気軽にお問い合わせください。</td>
+</tr>
+<tr>
+    <td class="number">58</td>
+    <td class="timestamp">2026-08-13 15:28:16</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">女性用水着は</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。少々お待ちください。申し訳ございませんが、ニュウマン高輪では女性用水着を専門に取り扱う店舗の情報は見つかりませんでした。
+
+女性向けのファッションをお探しでしたら、以下の店舗でご覧いただけます。
+
+| 階 | 店舗名 |
+|---|---|
+| South・3...</td>
+</tr>
+<tr>
+    <td class="number">59</td>
+    <td class="timestamp">2026-08-13 15:25:45</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">小中学生　女子</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。少々お待ちください。申し訳ございませんが、ニュウマン高輪では小中学生向けの女子水着に関する情報は見つかりませんでした。
+
+キッズファッションをお探しでしたら、他のキッズ関連ショップの情報は[こちら](https://www.lumine.ne.jp/globa...</td>
+</tr>
+<tr>
+    <td class="number">60</td>
+    <td class="timestamp">2026-08-13 15:25:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">子供用水着をみたい</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪では子供用水着を取り扱っている店舗の情報は見つかりませんでした。
+
+キッズファッション雑貨をお探しでしたら、South・2Fの [CFCL（シーエフシーエル）](https://www.newoman.jp/takanawa...</td>
+</tr>
+<tr>
+    <td class="number">61</td>
+    <td class="timestamp">2026-08-12 20:37:40</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">駐車場直通エレベーターの営業時間は？</td>
+    <td class="answer-cell">ニュウマン高輪の駐車場直通エレベーターの営業時間をお調べいたします。申し訳ございませんが、駐車場直通エレベーターの営業時間について、現在ご案内できる情報が見つかりませんでした。
+
+正確な営業時間につきましては、駐車場を管理しているタイムズコンタクトセンターへお問い合わせいただくことをお勧めいたします...</td>
+</tr>
+<tr>
+    <td class="number">62</td>
+    <td class="timestamp">2026-08-12 20:34:21</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">駐車場に行く館外エレベータ―はどこか？</td>
+    <td class="answer-cell">ニュウマン高輪の館外エレベーター情報をお調べいたします。申し訳ございませんが、駐車場へ直通の館外エレベーターの詳しい場所について、現在お調べできる情報が見つかりませんでした。申し訳ございませんが、駐車場へ直通の館外エレベーターの詳しい場所について、現在ご案内できる情報が見つかりませんでした。
+
+正確...</td>
+</tr>
+<tr>
+    <td class="number">63</td>
+    <td class="timestamp">2026-08-12 15:34:04</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ほうじ茶が飲みたいです</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ほうじ茶が楽しめるお店の情報をお調べいたします。申し訳ございませんが、ほうじ茶が楽しめる店舗の具体的な情報が見つかりませんでした。
+
+ニュウマン高輪にはカフェやレストランが複数ございますので、よろしければ以下よりご確認いただけます。
+
+他のカフェ・レストランの...</td>
+</tr>
+<tr>
+    <td class="number">64</td>
+    <td class="timestamp">2026-08-10 13:09:14</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">銀行ATMはありますか？？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ATMに関する詳細情報をお調べいたします。申し訳ございませんが、ニュウマン高輪館内にATMに関する情報は見つかりませんでした。
+
+ATMをお探しの場合は、お近くのコンビニエンスストアや高輪ゲートウェイ駅周辺をご利用いただくことをおすすめいたします。
+
+他にご不...</td>
+</tr>
+<tr>
+    <td class="number">65</td>
+    <td class="timestamp">2026-08-09 18:14:43</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">unico</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ニュウマン高輪内の「unico」に関する具体的な店舗情報をお調べいたします。申し訳ございませんが、ニュウマン高輪に「unico（ユニコ）」の店舗情報は見つかりませんでした。
+
+お探しの店舗名や商品カテゴリについて、別のキーワードでお調べすることもできます。イン...</td>
+</tr>
+<tr>
+    <td class="number">66</td>
+    <td class="timestamp">2026-08-09 17:38:36</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">総合受付の場所は？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、総合受付（インフォメーションカウンター）の詳細な場所について、現在お調べできる情報が見つかりませんでした。
+
+詳しい場所については、デジタルフロアガイドをご利用いただくか、ルミネ・ニュウマン総合コールセンター（**03-5334-0550...</td>
+</tr>
+<tr>
+    <td class="number">67</td>
+    <td class="timestamp">2026-08-09 16:56:48</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ミルクティーが売ってるお店</td>
+    <td class="answer-cell">ニュウマン高輪のミルクティーが楽しめるお店をお調べいたします。ニュウマン高輪でミルクティーに関する情報をお調べしましたが、「ミルクティーが売っているお店」として明確に一致する店舗情報は見つかりませんでした。
+
+ミルクティーはカフェやスイーツのお店で取り扱っている場合がございます。以下よりご確認いただ...</td>
+</tr>
+<tr>
+    <td class="number">68</td>
+    <td class="timestamp">2026-08-09 14:26:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">かんづめのひみつ展</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。少々お待ちください。申し訳ございませんが、「かんづめのひみつ展」に関する情報は見つかりませんでした。
+
+イベント名や開催場所など、別のキーワードでお調べすることもできますので、よろしければもう少し詳しく教えていただけますでしょうか？
+
+ニュウマン高輪のイベント...</td>
+</tr>
+<tr>
+    <td class="number">69</td>
+    <td class="timestamp">2026-08-08 15:10:31</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ブローチ</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ブローチを取り扱う店舗の情報をお調べいたします。申し訳ございませんが、ブローチを取り扱う店舗の情報は見つかりませんでした。
+
+アクセサリー全般を取り扱う店舗をお探しでしたら、別のキーワード（例：「アクセサリー」「ジュエリー」など）でお調べすることもできます。お...</td>
+</tr>
+<tr>
+    <td class="number">70</td>
+    <td class="timestamp">2026-08-08 14:20:16</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">サンダルショップ</td>
+    <td class="answer-cell">ニュウマン高輪のサンダルショップ情報をお調べいたします。サンダルを取り扱うショップの詳細情報をさらにお調べいたします。少々お待ちください。申し訳ございませんが、ニュウマン高輪のサンダルショップに関する具体的な店舗情報は現在見つかりませんでした。
+
+よろしければ、フロアガイドよりシューズ・靴関連のショ...</td>
+</tr>
+<tr>
+    <td class="number">71</td>
+    <td class="timestamp">2026-08-08 13:16:51</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">メイソンクラシックサロン</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。「MEISON CLASSIC FACTORY」に関する詳細情報をさらにお調べいたします。申し訳ございませんが、「メイソンクラシックサロン」に一致する店舗情報は見つかりませんでした。
+
+お探しの店舗名が「MEISON CLASSIC FACTORY（メイソン ...</td>
+</tr>
+<tr>
+    <td class="number">72</td>
+    <td class="timestamp">2026-08-08 12:50:53</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">NIKEのスニーカーは？</td>
+    <td class="answer-cell">ニュウマン高輪のスニーカーに関する情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはNIKEの取扱店舗に関する情報は見つかりませんでした。
+
+スニーカーをお探しでしたら、以下のシューズショップがございます。
+
+| フロア | 店舗名 | 電話番号 |
+|---|---|---|
+| N...</td>
+</tr>
+<tr>
+    <td class="number">73</td>
+    <td class="timestamp">2026-08-08 12:49:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">NIKEが欲しい</td>
+    <td class="answer-cell">ニュウマン高輪のNIKEに関する情報をお調べいたします。申し訳ございませんが、現在ニュウマン高輪にはNIKEの直営店・取扱店舗に関する情報が見つかりませんでした。
+
+NIKEの商品をお探しの場合は、インフォメーションカウンターへお問い合わせいただくか、フロアガイドにてご確認いただけますと幸いです。
+...</td>
+</tr>
+<tr>
+    <td class="number">74</td>
+    <td class="timestamp">2026-08-07 13:10:17</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">エイトハンドレッドでぃぐりーずの場所がわからない</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「800°DEGREES（エイトハンドレッドディグリーズ）」に関する情報は見つかりませんでした。
+
+店舗名が異なる可能性もございますので、別のキーワードでお試しいただくか、フロアガイドよりご確認いただけますでしょうか。
+
+詳しい店舗情報は...</td>
+</tr>
+<tr>
+    <td class="number">75</td>
+    <td class="timestamp">2026-08-05 19:34:30</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Dior</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪にはDior（ディオール）の店舗に関する情報は見つかりませんでした。
+
+別のブランドやご要望がございましたら、お気軽にお申し付けください。フロアガイドもぜひご活用ください。
+
+[フロアガイドはこちら](https://www...</td>
+</tr>
+<tr>
+    <td class="number">76</td>
+    <td class="timestamp">2026-08-05 14:27:30</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">今開催中の催事</td>
+    <td class="answer-cell">ニュウマン高輪の催事情報をお調べいたします。申し訳ございませんが、現在開催中の催事・イベントに関する詳細情報は見つかりませんでした。
+
+最新のイベント・催事情報は、ニュウマン高輪の公式サイトよりご確認いただけます。
+
+[ニュウマン高輪 イベント・お知らせ](https://www.newoman.j...</td>
+</tr>
+<tr>
+    <td class="number">77</td>
+    <td class="timestamp">2026-08-05 12:28:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">傘</td>
+    <td class="answer-cell">ニュウマン高輪の傘に関する情報をお調べいたします。申し訳ございませんが、ニュウマン高輪店で傘を専門に取り扱っている店舗の情報は見つかりませんでした。
+
+よろしければ、[フロアガイド](https://www.newoman.jp/takanawa/floorguide/)よりご確認いただくか、別のキ...</td>
+</tr>
+<tr>
+    <td class="number">78</td>
+    <td class="timestamp">2026-08-05 12:24:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">日傘</td>
+    <td class="answer-cell">ニュウマン高輪の日傘に関する情報をお調べいたします。検索結果に日傘を直接取り扱う店舗の情報が見つかりませんでしたので、傘・雑貨関連の店舗情報をさらにお調べいたします。申し訳ございませんが、ニュウマン高輪店で日傘を取り扱っている店舗の情報は見つかりませんでした。
+
+よろしければ、別のキーワードでお探し...</td>
+</tr>
+<tr>
+    <td class="number">79</td>
+    <td class="timestamp">2026-08-05 12:23:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ソフトクリーム</td>
+    <td class="answer-cell">ニュウマン高輪のソフトクリーム情報をお調べいたします。ソフトクリームに関する詳細情報をお調べいたします。申し訳ございませんが、ニュウマン高輪店でソフトクリームを提供している店舗の情報は見つかりませんでした。
+
+スイーツをお探しでしたら、こちらからご確認いただけます。
+
+他のスイーツショップ情報は[こ...</td>
+</tr>
+<tr>
+    <td class="number">80</td>
+    <td class="timestamp">2026-08-04 19:01:41</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">150センチの水着</td>
+    <td class="answer-cell">ニュウマン高輪の店舗情報をお調べいたします。申し訳ございませんが、150センチ向けのキッズ水着に関する店舗情報は見つかりませんでした。
+
+お子様向けのファッションアイテムをお探しでしたら、キッズファッションの取り扱い店舗について別途お調べすることも可能です。また、水着以外のアイテムや、別のキーワード...</td>
+</tr>
+<tr>
+    <td class="number">81</td>
+    <td class="timestamp">2026-08-04 14:47:00</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">かき氷が食べたい</td>
+    <td class="answer-cell">ニュウマン高輪のかき氷情報をお調べいたします！ニュウマン高輪のかき氷情報をお調べいたします。少々お待ちください。ニュウマン高輪のかき氷情報をお調べいたします。ニュウマン高輪のかき氷情報をお調べいたします。ニュウマン高輪のかき氷情報をお調べいたします。申し訳ございませんが、現在ニュウマン高輪でかき氷を...</td>
+</tr>
+<tr>
+    <td class="number">82</td>
+    <td class="timestamp">2026-08-04 14:01:52</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">アイスクリームパークどこ？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「アイスクリームパーク」というスポットはニュウマン高輪の情報では見つかりませんでした。
+
+もしかして**えきパーク**のことでしょうか？えきパークは**JR高輪ゲートウェイ駅の改札内**に位置しております。
+
+詳しい行き方は、デジタルフロ...</td>
+</tr>
+<tr>
+    <td class="number">83</td>
+    <td class="timestamp">2026-08-04 14:01:34</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">アイスクリームパークはどこ？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「アイスクリームパーク」というスポットに関する情報は見つかりませんでした。
+
+もしかして、**えきパーク**のことをお探しでしょうか？えきパークは**JR高輪ゲートウェイ駅の改札内**に位置しております。
+
+詳しい行き方は、デジタルフロア...</td>
+</tr>
+<tr>
+    <td class="number">84</td>
+    <td class="timestamp">2026-08-04 10:42:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">2階のブルーボトルコーヒー近くの共用部に展示されている、布がたくさん結ばれたパネルは何？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、今回お調べした情報の中には、South・2Fのブルーボトルコーヒー近くの共用部に展示されている「布が結ばれたパネル」に関する詳細情報は見つかりませんでした。
+
+展示アートや共用部の装飾に関する詳細については、館内のインフォメーションカウン...</td>
+</tr>
+<tr>
+    <td class="number">85</td>
+    <td class="timestamp">2026-08-03 18:38:16</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">やきにくたかなわへの行き方</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、ニュウマン高輪の店舗情報をお調べいたしましたところ、「やきにくたかなわ」に一致する店舗情報は見つかりませんでした。
+
+店舗名が異なる可能性もございますので、別のキーワードでお試しいただくか、館内のインフォメーションスタッフにお気軽にお声が...</td>
+</tr>
+<tr>
+    <td class="number">86</td>
+    <td class="timestamp">2026-08-03 15:20:49</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">電車がよく見える休憩スポットはありますか？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします！電車がよく見える休憩スポットについて、もう少し詳しくお調べいたします！申し訳ございませんが、「電車がよく見える休憩スポット」に関する具体的な情報は見つかりませんでした。
+
+ただ、ニュウマン高輪には自由にご利用いただける休憩スペースがございます。
+
+- **LU...</td>
+</tr>
+<tr>
+    <td class="number">87</td>
+    <td class="timestamp">2026-08-02 19:21:02</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">お魚たべたい</td>
+    <td class="answer-cell">ニュウマン高輪のお魚料理のお店をお調べいたします。お魚料理が楽しめるお店を詳しくお調べいたします。申し訳ございませんが、お魚料理に関する店舗情報が見つかりませんでした。
+
+改めてニュウマン高輪のレストラン情報をお調べいたします。申し訳ございませんが、現在お魚料理を提供する店舗の詳細情報をお調べするこ...</td>
+</tr>
+<tr>
+    <td class="number">88</td>
+    <td class="timestamp">2026-08-02 14:49:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ナースからサウスに行きたい。屋外は歩きたくなき</td>
+    <td class="answer-cell">ニュウマン高輪の館内ルートについてお調べいたします！申し訳ございませんが、ノースからサウスへの屋内ルートについて詳細な情報が見つかりませんでした。
+
+詳しい館内の移動ルートについては、デジタルフロアガイドをご利用いただくか、館内スタッフにお気軽にお尋ねください。
+
+詳しいフロアガイドは[こちら](h...</td>
+</tr>
+<tr>
+    <td class="number">89</td>
+    <td class="timestamp">2026-08-02 13:47:22</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ベビー用品</td>
+    <td class="answer-cell">ニュウマン高輪のベビー用品に関する情報をお調べいたします。ベビー用品を取り扱う店舗について、改めて詳しくお調べいたします。申し訳ございませんが、ニュウマン高輪でベビー用品を取り扱う店舗の情報が見つかりませんでした。
+
+よろしければ、別のキーワードでお探しいただくか、お探しの内容についてもう少し詳しく...</td>
+</tr>
+<tr>
+    <td class="number">90</td>
+    <td class="timestamp">2026-08-02 11:23:03</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ほんやを探しています。今mucha </td>
+    <td class="answer-cell">ニュウマン高輪の本屋情報をお調べいたします！申し訳ございませんが、ニュウマン高輪には書店（本屋）の情報は見つかりませんでした。
+
+なお、途中で送信されたようですが、「今mucha」とのことでしたが、[MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floor...</td>
+</tr>
+<tr>
+    <td class="number">91</td>
+    <td class="timestamp">2026-08-02 11:17:09</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">レストランはどこにありますか</td>
+    <td class="answer-cell">ニュウマン高輪のレストラン情報をお調べいたします。ニュウマン高輪のレストラン情報を詳しくお調べいたします。ニュウマン高輪のレストラン情報をお調べいたします。申し訳ございませんが、具体的なレストランの店舗情報を取得できませんでした。改めてお調べいたします。申し訳ございませんが、お問い合わせいただいた内...</td>
+</tr>
+<tr>
+    <td class="number">92</td>
+    <td class="timestamp">2026-08-01 18:37:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">The Museum of Narratives　とNorthはどうやって移動する？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。ご質問の「The Museum of Narratives（MoN Takanawa）とNorthの間の移動方法」について、詳細な経路情報はお調べいたしましたが、具体的な館内移動ルートの情報が見つかりませんでした。
+
+MoN Takanawa: The Mus...</td>
+</tr>
+<tr>
+    <td class="number">93</td>
+    <td class="timestamp">2026-08-01 11:17:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ギャラリーBは</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「ギャラリーB」に関する情報はニュウマン高輪の情報の中から見つかりませんでした。
+
+お探しの場所について、もう少し詳しく教えていただけますでしょうか？または、館内のサービスカウンター（South 4F）にお問い合わせいただくか、デジタルフ...</td>
+</tr>
+<tr>
+    <td class="number">94</td>
+    <td class="timestamp">2026-08-01 11:15:46</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">せなけいこ展はどこですか？</td>
+    <td class="answer-cell">ニュウマン高輪の情報をお調べいたします。申し訳ございませんが、「せなけいこ展」に関する情報はニュウマン高輪の情報の中から見つかりませんでした。
+
+開催場所や詳細については、ニュウマン高輪のインフォメーションへ直接お問い合わせいただくか、公式サイトをご確認いただけますでしょうか。
+
+他にニュウマン高輪...</td>
+</tr></tbody>
+            </table>
+        </div>
+        <footer class="footer"><span data-ja="NEWoMan高輪 2026年8月 メッセージ履歴分析" data-zh="NEWoMan高輪 2026年8月 消息履历分析">NEWoMan高輪 2026年8月 メッセージ履歴分析</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#unansweredTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { const badge = row.querySelector('.badge'); row.style.display = (badge && badge.getAttribute('data-ja') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>
