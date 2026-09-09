@@ -280,6 +280,49 @@ def load_brand_whitelist(client_slug):
     return brands
 
 
+# ========================================
+# General Agent の実行トレース除去
+# ========================================
+# 2026-08-20 以降の General Agent（DeepAgents 基盤）では、API の answer に
+# 実行トレースがそのまま含まれる:
+#   [TOOL_CALL] ... [TOOL_RESPONSE] <検索で取得した FAQ 本文> ... [ANSWER] <最終回答>
+# 検索結果の中に「見つかりませんでした」型の FAQ が混じると、最終回答が正しくても
+# キーワード判定が誤って未回答扱いにするため、判定・表示は最終回答のみを対象にする。
+AGENT_ANSWER_MARKER = "[ANSWER]"
+AGENT_TRACE_MARKERS = ("[TOOL_CALL]", "[TOOL_RESPONSE]")
+
+
+def has_agent_trace(answer):
+    if not isinstance(answer, str):
+        return False
+    return AGENT_ANSWER_MARKER in answer or any(m in answer for m in AGENT_TRACE_MARKERS)
+
+
+def extract_final_answer(answer):
+    """実行トレース付き回答から最終回答（[ANSWER] 以降）だけを取り出す。
+    トレースのみで [ANSWER] が無い場合は空文字（=未回答）を返す。
+    トレースを含まない回答はそのまま返す。"""
+    if not isinstance(answer, str):
+        return answer
+    if AGENT_ANSWER_MARKER in answer:
+        return answer.rsplit(AGENT_ANSWER_MARKER, 1)[1].strip()
+    if any(m in answer for m in AGENT_TRACE_MARKERS):
+        return ""
+    return answer
+
+
+def strip_agent_traces(df):
+    """df['回答'] を最終回答に置き換え、元の値を df['回答_raw'] に退避する。"""
+    df['回答_raw'] = df['回答']
+    trace_mask = df['回答'].apply(has_agent_trace)
+    n_trace = int(trace_mask.sum())
+    if n_trace:
+        df['回答'] = df['回答'].apply(extract_final_answer)
+        n_empty = int((trace_mask & (df['回答'].astype(str).str.strip() == '')).sum())
+        print(f"🧹 Agent実行トレース除去: {n_trace}件（[ANSWER] 以降の最終回答のみを判定対象に、最終回答なし {n_empty}件）")
+    return df
+
+
 def is_unanswered(answer):
     """未回答かどうかを判定（ルールベース・フォールバック用）
 
@@ -997,6 +1040,9 @@ def main():
         parser.error('Either --csv or (--dataset-id/--ai-id + --token + --start-date + --end-date) is required')
 
     print(f"📊 データ件数: {len(df)}件")
+
+    # General Agent の実行トレースを除去（最終回答のみを判定対象にする）
+    df = strip_agent_traces(df)
 
     # 前処理
     df['質問時間'] = pd.to_datetime(df['質問時間'], errors='coerce')

@@ -56,6 +56,7 @@ GBase API / CSV → analyze.py → HTML报告 + dashboard-data.json → docs/ �
 - **时区**：API 数据从 UTC 转换为 JST（+9小时）。
 - **CSV 编码**：自动检测 UTF-8、UTF-8-BOM、Shift-JIS、CP932。
 - **未回答判定**：空内容 → 关键词匹配 → 去除垫语后<20字符。
+- **General Agent 轨迹剥离**（2026-09-09 起）：General Agent（2026-08-20 切换）的 API `answer` 字段内含执行轨迹 `[TOOL_CALL] … [TOOL_RESPONSE] <检索到的FAQ原文> … [ANSWER] <最终回答>`。检索结果里混入「見つかりませんでした」型 FAQ 会让关键词判定误报，因此 `strip_agent_traces()` 在加载数据后立即把 `回答` 替换为 `[ANSWER]` 之后的最终回答（原文保留在 `回答_raw`）。所有判定/展示只看最终回答。
 - **问题分类**：7 个固定类别（位置/店铺/设施/营业时间/活动/投诉/其他），基于关键词匹配。
 - **报告命名**：`{client}_{period}_分析レポート.html`，未回答一览为 `{client}_{period}_未回答一覧.html`。
 - **analyze.py 输出到 site-dir 时**，会自动更新对应客户的 dashboard-data.json（追加或更新月份数据）并复制报告文件。
