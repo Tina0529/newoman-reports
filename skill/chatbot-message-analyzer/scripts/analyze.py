@@ -55,6 +55,8 @@ UNANSWERED_KEYWORDS = [
     "情報は見つかりませんでした",
     "ご案内できる情報がありません",
     "お調べしましたが、情報がございません",
+    "<NO_ANSWER>",            # General Agent が回答不能時に付与する内部タグ
+    "確認できておりません",
 ]
 
 # 垫语（自動回答のプレフィックス）- フィラーのみの場合は未回答とする
@@ -321,6 +323,34 @@ def strip_agent_traces(df):
         n_empty = int((trace_mask & (df['回答'].astype(str).str.strip() == '')).sum())
         print(f"🧹 Agent実行トレース除去: {n_trace}件（[ANSWER] 以降の最終回答のみを判定対象に、最終回答なし {n_empty}件）")
     return df
+
+
+# ========================================
+# 検証用アカウントの除外（2026-09-09 定例合意）
+# ========================================
+def load_exclude_users(args):
+    """除外する user_id → ラベル。--exclude-users と <site-dir>/clients/<slug>/exclude_users.json の和集合"""
+    ids = {}
+    for u in (getattr(args, 'exclude_users', None) or '').split(','):
+        if u.strip():
+            ids[u.strip()] = ''
+    if getattr(args, 'site_dir', None) and getattr(args, 'client_slug', None):
+        p = Path(args.site_dir) / 'clients' / args.client_slug / 'exclude_users.json'
+        if p.exists():
+            for e in json.load(open(p, encoding='utf-8')).get('users', []):
+                ids[e['user_id']] = e.get('label', '')
+    return ids
+
+
+def exclude_test_users(df, ids):
+    if not ids or 'ユーザー' not in df.columns:
+        return df
+    mask = df['ユーザー'].astype(str).isin(ids.keys())
+    n = int(mask.sum())
+    if n:
+        detail = ', '.join(f"{ids.get(u) or u}={c}" for u, c in df.loc[mask, 'ユーザー'].astype(str).value_counts().items())
+        print(f"🚫 検証用アカウント除外: {n} 件 ({detail})")
+    return df[~mask].copy()
 
 
 def is_unanswered(answer):
@@ -979,6 +1009,7 @@ def main():
     parser.add_argument('--client-slug', default=None, help='URL-safe client identifier (e.g. newoman-takanawa)')
 
     # LLM evaluation mode
+    parser.add_argument('--exclude-users', default=None, help='Comma-separated user_id list to exclude from stats (test accounts). Also read from <site-dir>/clients/<slug>/exclude_users.json')
     parser.add_argument('--use-llm', action='store_true', help='Use Claude Haiku for semantic unanswered judgment + language mixing verification (more accurate)')
     parser.add_argument('--anthropic-key', default=None, help='Anthropic API key (or set ANTHROPIC_API_KEY env var)')
 
@@ -1044,6 +1075,9 @@ def main():
     # General Agent の実行トレースを除去（最終回答のみを判定対象にする）
     df = strip_agent_traces(df)
 
+    # 検証用アカウント（弊社・ルミネ様の動作確認）を集計から除外
+    df = exclude_test_users(df, load_exclude_users(args))
+
     # 前処理
     df['質問時間'] = pd.to_datetime(df['質問時間'], errors='coerce')
     df = df.dropna(subset=['質問時間'])
@@ -1084,6 +1118,17 @@ def main():
         unanswered_results = df['回答'].apply(is_unanswered)
         df['未回答フラグ'] = unanswered_results.apply(lambda x: x[0])
         df['未回答タイプ'] = unanswered_results.apply(lambda x: x[1] if x[0] else None)
+
+    # FAQ に登録済みの回答をそのまま返したもの（FAQ直接回答）は、「見つかりません」等を含んでも未回答にしない
+    # （FAQ文面はルミネ様確認済みの正しい案内のため。未回答は検索で情報が見つからなかった場合のみ／2026-09-09 定例合意）
+    if '回答来源' in df.columns:
+        faq_mask = df['回答来源'].isin(['faq', 'agent_faq']) & (df['未回答フラグ'] == True)
+        if faq_mask.any():
+            print(f"📌 FAQ登録回答のため未回答から除外: {int(faq_mask.sum())} 件")
+            df.loc[faq_mask, '未回答フラグ'] = False
+            df.loc[faq_mask, '未回答タイプ'] = None
+    # 表示用に内部タグを除去
+    df['回答'] = df['回答'].apply(lambda a: a.replace('<NO_ANSWER>', '').lstrip() if isinstance(a, str) else a)
 
     unanswered_count = df['未回答フラグ'].sum()
     answered_count = total_messages - unanswered_count

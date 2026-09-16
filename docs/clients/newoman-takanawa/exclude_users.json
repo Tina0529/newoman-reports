@@ -1,0 +1,7 @@
+{
+  "_comment": "月次集計から除外する検証用アカウント（2026-09-09 定例でルミネ様と合意）",
+  "users": [
+    {"user_id": "auth0|67be730f3fa739a8a1cffe2d", "label": "Sparticle検証"},
+    {"user_id": "auth0|6853ef8689c9bad22dcff37e", "label": "ルミネ様検証"}
+  ]
+}

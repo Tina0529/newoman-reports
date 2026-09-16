@@ -383,13 +383,15 @@ def _load_all_faqs(base_url, token, dataset_id, language):
       ai_id 系の /faqs/list は ID 指定・search は検索用で「全件列挙」に不適。）
     返り値: list[dict(question, answer, id)] / None
     """
-    out, page, total = [], 1, None
+    # 既定の並び順でページングすると取りこぼし・重複が出る（2026-09-15 判明。11,400件中で欠落10〜20件）。
+    # order_by=id で安定させ、size は API 上限の 1000 にする。取得後に total と件数・重複を検証。
+    out, page, total, seen = [], 1, None, set()
     while True:
-        params = {"page": page, "size": 100, "exclude_tree_nodes": "true"}
+        params = {"page": page, "size": 1000, "order_by": "id", "exclude_tree_nodes": "true"}
         if language:
             params["language"] = language  # 多言語(1問答=10言語)のうち指定言語版のみ取得
         try:
-            r = _get(base_url, f"/datasets/{dataset_id}/faqs", token, params, timeout=90)
+            r = _get(base_url, f"/datasets/{dataset_id}/faqs", token, params, timeout=180)
         except Exception as e:
             print(f"⚠️  faqs 取得失敗(page {page}): {e}")
             return out or None
@@ -397,14 +399,21 @@ def _load_all_faqs(base_url, token, dataset_id, language):
         for it in items:
             if not isinstance(it, dict):
                 continue
-            out.append({"id": it.get("id") or it.get("faq_id"),
+            fid = it.get("id") or it.get("faq_id")
+            if fid in seen:
+                continue
+            seen.add(fid)
+            out.append({"id": fid,
                         "question": it.get("question"),
                         "answer": it.get("answer")})
         if not items or not pages or page >= pages:
             break
         page += 1
         time.sleep(0.1)
-    print(f"   FAQ 取得: {len(out)}" + (f"/{total} 件" if total else " 件"))
+    if total and len(out) != total:
+        print(f"⚠️  FAQ 取得件数が total と不一致: {len(out)}/{total} 件（取りこぼしの可能性）")
+    else:
+        print(f"   FAQ 取得: {len(out)}" + (f"/{total} 件" if total else " 件"))
     return out or None
 
 

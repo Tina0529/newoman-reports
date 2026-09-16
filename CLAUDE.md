@@ -57,6 +57,9 @@ GBase API / CSV → analyze.py → HTML报告 + dashboard-data.json → docs/ �
 - **CSV 编码**：自动检测 UTF-8、UTF-8-BOM、Shift-JIS、CP932。
 - **未回答判定**：空内容 → 关键词匹配 → 去除垫语后<20字符。
 - **General Agent 轨迹剥离**（2026-09-09 起）：General Agent（2026-08-20 切换）的 API `answer` 字段内含执行轨迹 `[TOOL_CALL] … [TOOL_RESPONSE] <检索到的FAQ原文> … [ANSWER] <最终回答>`。检索结果里混入「見つかりませんでした」型 FAQ 会让关键词判定误报，因此 `strip_agent_traces()` 在加载数据后立即把 `回答` 替换为 `[ANSWER]` 之后的最终回答（原文保留在 `回答_raw`）。所有判定/展示只看最终回答。
+- **检证账号排除**（2026-09-09 定例合意）：`docs/clients/<slug>/exclude_users.json` 里的 `user_id` 会在加载数据后从统计中排除（也可用 `--exclude-users` 追加）。NEWoMan高輪 现在排除我方 Sparticle検証 和ルミネ様検証各 1 个账号。
+- **FAQ 固定回答不算未回答**（2026-09-09 定例合意）：`回答来源` 为 `faq`/`agent_faq` 的消息即使命中「見つかりません」等关键词也不计入未回答。另外 `<NO_ANSWER>`、「確認できておりません」已加入未回答关键词。
+- **FAQ 一览 API 分页**：`/datasets/{id}/faqs` 默认排序分页会漏/重复记录，`link_faq_audit._load_all_faqs` 固定用 `size=1000&order_by=id` 并核对 total，件数不一致时打印警告。
 - **问题分类**：7 个固定类别（位置/店铺/设施/营业时间/活动/投诉/其他），基于关键词匹配。
 - **报告命名**：`{client}_{period}_分析レポート.html`，未回答一览为 `{client}_{period}_未回答一覧.html`。
 - **analyze.py 输出到 site-dir 时**，会自动更新对应客户的 dashboard-data.json（追加或更新月份数据）并复制报告文件。
