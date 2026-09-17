@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リンク整合性 詳細 - NEWoMan高輪 2026年9月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6; --primary-hover: #2563EB; --background: #F8FAFC; --surface: #FFFFFF;
+            --text: #1E293B; --text-muted: #64748B; --border: #E2E8F0; --success-bg: #ECFDF5;
+            --warning: #F59E0B; --warning-bg: #FFFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif; --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: #EFF6FF; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-value.muted { color: var(--text); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .note { padding: 1rem 1.5rem; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-lg); margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; }
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .timestamp { width: 130px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .shop-cell { width: 22%; }
+        .data-table .shop-name { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .data-table .scd-line { margin-top: 0.25rem; }
+        .data-table .judge { margin-top: 0.375rem; font-size: 0.75rem; color: var(--danger); line-height: 1.4; }
+        .data-table .question-cell { width: 18%; font-weight: 500; color: var(--text); }
+        .data-table .answer-cell { color: var(--text-muted); }
+        .answer-box { max-height: 220px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; line-height: 1.5; font-size: 0.8125rem; padding: 0.5rem 0.75rem; background: var(--gray-50); border-radius: var(--radius-md); }
+        .data-table a { color: var(--primary); text-decoration: none; font-family: var(--font-mono); font-size: 0.8125rem; }
+        .data-table a:hover { text-decoration: underline; }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+                <span data-ja="リンク整合性 詳細" data-zh="链接完整性 详情">リンク整合性 詳細</span>
+            </h1>
+            <div class="header-actions">
+                <a href="2026-09.html#linkAuditSection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">16</span><span class="summary-label" data-ja="件の誤リンク（別店舗を指す）" data-zh="条错误链接（指向别店）">件の誤リンク（別店舗を指す）</span></div>
+            <div class="summary-item"><span class="summary-value muted">324</span><span class="summary-label" data-ja="店舗リンク総数" data-zh="店铺链接总数">店舗リンク総数</span></div>
+            <div class="summary-item"><span class="summary-value muted">4.94%</span><span class="summary-label" data-ja="誤リンク率" data-zh="错误率">誤リンク率</span></div>
+        </div>
+
+        <div class="note">
+            <span data-ja="※ bot 回答内の店舗リンク(?scd=)を最新の「NEWoMan高輪全ショップ情報一覧_20260917.md」（2026-09-17 09:16:29 時点 / 全店舗・日本語版）と照合し、scd が別店舗を指す「誤リンク」を抽出（要 FAQ 修正）。施設公式・地図・FAQ画像はホワイトリストで除外。scd リンクは別タブで開いて実際の遷移先を確認できます。" data-zh="※ 将 bot 回答中的店铺链接(?scd=)与最新「NEWoMan高輪全ショップ情報一覧_20260917.md」（2026-09-17 09:16:29 时点 / 全店·日语版）照合，抽取 scd 指向别店铺的「错误链接」（需修 FAQ）。设施官方·地图·FAQ图片已加白名单排除。点击 scd 链接可在新标签确认实际跳转。">※ bot 回答内の店舗リンク(?scd=)を最新の「NEWoMan高輪全ショップ情報一覧_20260917.md」と照合。</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title" data-ja="誤リンク一覧" data-zh="错误链接一览">誤リンク一覧</div>
+            <table class="data-table" id="linkTable">
+                <thead><tr>
+                    <th data-ja="日時" data-zh="时间">日時</th>
+                    <th data-ja="誤リンク内容（店名 / scd / 判定）" data-zh="错误内容（店名 / scd / 判定）">誤リンク内容（店名 / scd / 判定）</th>
+                    <th data-ja="ユーザー質問" data-zh="用户问题">ユーザー質問</th>
+                    <th data-ja="Bot 回答全文" data-zh="Bot 回答全文">Bot 回答全文</th>
+                </tr></thead>
+                <tbody><tr><td class="timestamp">2026-09-13 16:17</td><td class="shop-cell"><div class="shop-name">TOOTH TOOTH BISTRO&amp;CAFE</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003046" target="_blank">scd=003046</a></div><div class="judge" data-ja="リンク先は実際には「Spiral Nail Salon」（別店舗）です" data-zh="链接实际指向「Spiral Nail Salon」（别的店）">リンク先は実際には「Spiral Nail Salon」（別店舗）です</div></td><td class="question-cell">赤ちゃん</td><td class="answer-cell"><div class="answer-box">赤ちゃん連れのお客様向けに、ニュウマン高輪でご利用いただける施設・サービスをご案内いたします。
+
+**ベビー休憩室・授乳室**
+以下のフロアにございます。電子レンジ・調乳器も設置されております。
+- South・North 5F
+- LUFTBAUM 29F
+- MIMURE 3F
+
+**ベビーカー貸出（無料）**
+以下の場所で無料でお貸出しいたしております。
+- South 2F　ベビーカー貸出スペース
+- North 2F　ベビーカー貸出スペース
+- South 4F　サービスカウンター（受付時間：11:00〜20:00）
+
+※生後1か月〜35か月頃まで（体重15kg以下）ご利用可能です。ご利用後は元の場所へご返却ください。
+
+館外でのご利用をご希望の場合は、館外South 2F「Area Information &amp; Mobility」にてベビカル（有料）をお貸出しいたしております。
+
+**お子様と楽しめるスポット（South 5F）**
+「こもれびら」エリアでは、書籍を軸に遊びとアートを切り口にした屋内パークがございます。また、[TOOTH TOOTH BISTRO&amp;CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003046)ではチャイルドチェアもご用意しております。
+
+詳しい館内の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-10 11:37</td><td class="shop-cell"><div class="shop-name">800°DEGREES TAKANAWA</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002930" target="_blank">scd=002930</a></div><div class="judge" data-ja="リンク先は実際には「VERMICULAR RESTAURANT THE FOUNDRY」（別店舗）です" data-zh="链接实际指向「VERMICULAR RESTAURANT THE FOUNDRY」（别的店）">リンク先は実際には「VERMICULAR RESTAURANT THE FOUNDRY」（別店舗）です</div></td><td class="question-cell">レストランフロアへ行きたい</td><td class="answer-cell"><div class="answer-box">ニュウマン高輪のレストランフロアについてご案内いたします。
+
+レストラン・カフェは複数のフロアにございます。
+
+**1F（South）**
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| South・1F | [VERVE COFFEE ROASTERS（ヴァーヴ コーヒー ロースターズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002906) | 03-6721-6788 |
+| South・1F | [ZEROCORNER（ゼロコーナー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002903) | 03-6277-2882 |
+| South・1F | [800°DEGREES TAKANAWA](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002930) | 店舗へお問い合わせください |
+
+**3F（South / North）**
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+| North・3F | [MARGARET HOWELL SHOP &amp; CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2545 |
+
+**MIMURE（ミムレ）・3F** ※2026年3月28日オープンの新エリア
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+
+他のレストラン・カフェ情報は[こちら](https://www.newoman.jp/takanawa/restaurant/)をご覧ください。
+
+詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">AP STUDIO</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953" target="_blank">scd=002953</a></div><div class="judge" data-ja="リンク先は実際には「A.P.C.」（別店舗）です" data-zh="链接实际指向「A.P.C.」（别的店）">リンク先は実際には「A.P.C.」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">@aroma</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962" target="_blank">scd=002962</a></div><div class="judge" data-ja="リンク先は実際には「Whim Gazette」（別店舗）です" data-zh="链接实际指向「Whim Gazette」（别的店）">リンク先は実際には「Whim Gazette」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">Whim Gazette</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954" target="_blank">scd=002954</a></div><div class="judge" data-ja="リンク先は実際には「agnès b.」（別店舗）です" data-zh="链接实际指向「agnès b.」（别的店）">リンク先は実際には「agnès b.」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">martinique（マルティニーク）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955" target="_blank">scd=002955</a></div><div class="judge" data-ja="リンク先は実際には「and wander」（別店舗）です" data-zh="链接实际指向「and wander」（别的店）">リンク先は実際には「and wander」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">ASSEMBLEESTNATION</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956" target="_blank">scd=002956</a></div><div class="judge" data-ja="リンク先は実際には「NOSE SHOP」（別店舗）です" data-zh="链接实际指向「NOSE SHOP」（别的店）">リンク先は実際には「NOSE SHOP」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">LE PHIL</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960" target="_blank">scd=002960</a></div><div class="judge" data-ja="リンク先は実際には「@aroma」（別店舗）です" data-zh="链接实际指向「@aroma」（别的店）">リンク先は実際には「@aroma」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">Theory（セオリー）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952" target="_blank">scd=002952</a></div><div class="judge" data-ja="リンク先は実際には「LAVENHAM」（別店舗）です" data-zh="链接实际指向「LAVENHAM」（别的店）">リンク先は実際には「LAVENHAM」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">THE STORE by C'</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963" target="_blank">scd=002963</a></div><div class="judge" data-ja="リンク先は実際には「martinique」（別店舗）です" data-zh="链接实际指向「martinique」（别的店）">リンク先は実際には「martinique」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">MOSCOT（モスコット）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948" target="_blank">scd=002948</a></div><div class="judge" data-ja="リンク先は実際には「Clarks」（別店舗）です" data-zh="链接实际指向「Clarks」（别的店）">リンク先は実際には「Clarks」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">Barbour（バブアー）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949" target="_blank">scd=002949</a></div><div class="judge" data-ja="リンク先は実際には「MOSCOT」（別店舗）です" data-zh="链接实际指向「MOSCOT」（别的店）">リンク先は実際には「MOSCOT」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">A.P.C.</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950" target="_blank">scd=002950</a></div><div class="judge" data-ja="リンク先は実際には「Barbour」（別店舗）です" data-zh="链接实际指向「Barbour」（别的店）">リンク先は実際には「Barbour」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-09 14:35</td><td class="shop-cell"><div class="shop-name">NOSE SHOP（ノーズショップ）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951" target="_blank">scd=002951</a></div><div class="judge" data-ja="リンク先は実際には「ニューバランス」（別店舗）です" data-zh="链接实际指向「ニューバランス」（别的店）">リンク先は実際には「ニューバランス」（別店舗）です</div></td><td class="question-cell">3階にはどういったお店がありますか？</td><td class="answer-cell"><div class="answer-box">3階の店舗情報が揃いました。South・3F、North・3F、MIMURE・3Fの3エリアに分けてご案内します。
+
+---
+
+ニュウマン高輪の3階は **South・3F**、**North・3F**、**MIMURE（ミムレ）・3F** の3エリアに分かれています。
+
+**South・3F（ファッション・カフェ）**
+
+| 階 | 店舗名 | 電話番号 ||---|---|---|
+| South・3F | [AP STUDIO](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002953) | 03-6635-5052 |
+| South・3F | [@aroma](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002962) | 03-5422-9228 |
+| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |
+| South・3F | [Whim Gazette](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002954) | 03-6447-7801 |
+| South・3F | [martinique（マルティニーク）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002955) | 03-6455-7188 |
+| South・3F | [ASSEMBLEESTNATION](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6277-4155 || South・3F | [LE PHIL](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5860-2276 |
+| South・3F | [Theory（セオリー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002952) | 03-6277-3531 |
+| South・3F | [THE STORE by C'](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002963) | 03-6277-2611 |
+| South・3F | [HARBS（ハーブス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002959) | 03-6455-7118 |
+
+**North・3F（ファッション・雑貨）**
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・3F | [SLOW authentic goods store](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002947) | 03-6277-1870 |
+| North・3F | [MOSCOT（モスコット）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002948) | 03-5422-7937 |
+| North・3F | [Barbour（バブアー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002949) | 03-6455-7911 |
+| North・3F | [A.P.C.](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002950) | 03-5422-8035 || North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002951) | 03-6721-6661 |
+| North・3F | [MARGARET HOWELL SHOP ＆ CAFE](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002957) | 03-5860-2305 |
+| North・3F | [+Inn 2（プラスインツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003185) | — || North・3F | [+Base 2（プラスベースツー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003184) | — |
+
+※ **+Inn 2** は無料でご利用いただけるオープンラウンジです。「没頭・集中」をテーマに、不定期でイベントも開催しています。※ **+Base 2** は企業・ブランドとお客さまの出会いの場となるイベントスペースです。
+
+**MIMURE（ミムレ）・3F（グルメ・スイーツ）**
+
+「卓越した技と感性が響き合う」食の空間です。開放感あふれるテラス「悠久の森」もこの階にございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| MIMURE・3F | [鮨 上ル](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003338) | 03-5860-2308 |
+| MIMURE・3F | [鎌倉 松原庵 高輪](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003336) | 03-5422-9688 |
+| MIMURE・3F | [牛丼 㐂㐂屋](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003337) | 050-1794-0630 || MIMURE・3F | [L'ECAILLER 8th SEA OYSTER](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003332) | 03-6277-1256 |
+| MIMURE・3F | [PÂTISSERIE ASAKO IWAYANAGI](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003343) | 03-6721-6915 |
+| MIMURE・3F | [MAISON AS（メゾン アス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003342) | 03-6721-6925 || MIMURE・3F | [sakejump takanawa](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003333) | 03-6450-3958 |
+| MIMURE・3F | [ROYAL BLUE TEA Takanawa Boutique](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003335) | 03-6456-3120 |
+
+詳しい店舗の場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)</div></td></tr>
+<tr><td class="timestamp">2026-09-03 14:10</td><td class="shop-cell"><div class="shop-name">鮨 上ル（스시 노보루）</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340" target="_blank">scd=003340</a></div><div class="judge" data-ja="リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です" data-zh="链接实际指向「Dialog in the Dark 5-1=∞ Lab.」（别的店）">リンク先は実際には「Dialog in the Dark 5-1=∞ Lab.」（別店舗）です</div></td><td class="question-cell">밥 종류를 파는 레스토랑 지금 식사가능한</td><td class="answer-cell"><div class="answer-box">현재 시각은 **오후 2시 10분(JST, 14:10)** 입니다.
+
+&quot;밥 종류&quot;를 파는 레스토랑으로는 **쌀밥·덮밥·소바·스시** 등 일식 위주의 매장이 해당됩니다. 현재 시각 기준으로 식사 가능한 곳을 안내드립니다.
+
+**현재 식사 가능한 밥 관련 레스토랑**
+
+| 층 | 매장명 | 현재 상태 | 전화번호 |
+|---|---|---|---|
+| MIMURE・3F | [牛丼 㐂㐂屋（규동 기기야）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003341) | 영업 중 11:00~22:00 | 03-6277-4522 |
+| MIMURE・3F | [鎌倉 松原庵 高輪（가마쿠라 마츠바라안 다카나와）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003339) | 영업 중 런치 11:00~16:00 | 03-6277-3556 |
+| MIMURE・3F | [鮨 上ル（스시 노보루）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 영업 중 11:00~22:00 | 03-6277-3558 |
+| LUFTBAUM・28F | [〆蕎麦 燦々（시메소바 산산）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003052) | 영업 중 런치 11:00~14:30 → **현재 카페 타임(14:30~16:00)** | - |
+| LUFTBAUM・28F | [SUSHI TOKYO TEN](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003053) | 영업 중 런치 11:00~15:00 | - |
+| LUFTBAUM・29F | [割烹 BUTAI（갓포 부타이）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003057) | 영업 중 런치 11:00~15:00 | - |
+
+※ 〆蕎麦 燦々는 현재 카페 타임으로, 소바 식사는 17:00 디너부터 가능합니다.
+※ SUSHI TOKYO TEN, 割烹 BUTAI는 런치 마감(15:00)이 가까우니 서두르시는 것을 권장드립니다.
+
+**특히 추천:**
+- **牛丼 㐂㐂屋** — 일본 와규를 사용한 규동(소고기 덮밥) 전문점
+- **鎌倉 松原庵 高輪** — 가마쿠라 발상의 수타 소바 명점
+- **鮨 上ル** — 에도마에 스시 전문점
+
+다른 레스토랑 정보는 [여기](https://www.newoman.jp/takanawa/restaurant/?category=type01)에서도 확인하실 수 있습니다.</div></td></tr>
+<tr><td class="timestamp">2026-09-03 14:10</td><td class="shop-cell"><div class="shop-name">SUSHI TOKYO TEN</div><div class="scd-line"><a href="https://www.newoman.jp/takanawa/floorguide/detail/?scd=003053" target="_blank">scd=003053</a></div><div class="judge" data-ja="リンク先は実際には「GARDEN HOUSE」（別店舗）です" data-zh="链接实际指向「GARDEN HOUSE」（别的店）">リンク先は実際には「GARDEN HOUSE」（別店舗）です</div></td><td class="question-cell">밥 종류를 파는 레스토랑 지금 식사가능한</td><td class="answer-cell"><div class="answer-box">현재 시각은 **오후 2시 10분(JST, 14:10)** 입니다.
+
+&quot;밥 종류&quot;를 파는 레스토랑으로는 **쌀밥·덮밥·소바·스시** 등 일식 위주의 매장이 해당됩니다. 현재 시각 기준으로 식사 가능한 곳을 안내드립니다.
+
+**현재 식사 가능한 밥 관련 레스토랑**
+
+| 층 | 매장명 | 현재 상태 | 전화번호 |
+|---|---|---|---|
+| MIMURE・3F | [牛丼 㐂㐂屋（규동 기기야）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003341) | 영업 중 11:00~22:00 | 03-6277-4522 |
+| MIMURE・3F | [鎌倉 松原庵 高輪（가마쿠라 마츠바라안 다카나와）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003339) | 영업 중 런치 11:00~16:00 | 03-6277-3556 |
+| MIMURE・3F | [鮨 上ル（스시 노보루）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003340) | 영업 중 11:00~22:00 | 03-6277-3558 |
+| LUFTBAUM・28F | [〆蕎麦 燦々（시메소바 산산）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003052) | 영업 중 런치 11:00~14:30 → **현재 카페 타임(14:30~16:00)** | - |
+| LUFTBAUM・28F | [SUSHI TOKYO TEN](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003053) | 영업 중 런치 11:00~15:00 | - |
+| LUFTBAUM・29F | [割烹 BUTAI（갓포 부타이）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003057) | 영업 중 런치 11:00~15:00 | - |
+
+※ 〆蕎麦 燦々는 현재 카페 타임으로, 소바 식사는 17:00 디너부터 가능합니다.
+※ SUSHI TOKYO TEN, 割烹 BUTAI는 런치 마감(15:00)이 가까우니 서두르시는 것을 권장드립니다.
+
+**특히 추천:**
+- **牛丼 㐂㐂屋** — 일본 와규를 사용한 규동(소고기 덮밥) 전문점
+- **鎌倉 松原庵 高輪** — 가마쿠라 발상의 수타 소바 명점
+- **鮨 上ル** — 에도마에 스시 전문점
+
+다른 레스토랑 정보는 [여기](https://www.newoman.jp/takanawa/restaurant/?category=type01)에서도 확인하실 수 있습니다.</div></td></tr></tbody>
+            </table>
+        </div>
+
+        <footer class="footer"><span data-ja="NEWoMan高輪 2026年9月 リンク整合性監視" data-zh="NEWoMan高輪 2026年9月 链接完整性监控">NEWoMan高輪 2026年9月 リンク整合性監視</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#linkTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { row.style.display = (row.getAttribute('data-type') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>

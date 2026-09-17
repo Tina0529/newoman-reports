@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-09-09T14:37:24.725857",
+  "updated_at": "2026-09-17T15:26:54.912103",
   "months": [
     {
       "period": "2025年9月",
@@ -597,6 +597,89 @@
       },
       "report_file": "reports/2026-08.html",
       "unanswered_file": "reports/2026-08_unanswered.html"
+    },
+    {
+      "period": "2026年9月",
+      "year_month": "2026-09",
+      "total_messages": 224,
+      "normal_answer_rate": 94.6,
+      "unanswered_rate": 5.4,
+      "good_rating_rate": 50.0,
+      "feedback_rate": 1.8,
+      "daily_average": 13.2,
+      "unique_users": 1,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 12.1,
+      "weekday_counts": [
+        20,
+        37,
+        35,
+        48,
+        18,
+        28,
+        38
+      ],
+      "source_distribution": {
+        "rag_count": 0,
+        "rag_pct": 0.0,
+        "faq_count": 68,
+        "faq_pct": 30.4,
+        "other_count": 156,
+        "other_pct": 69.6
+      },
+      "language_mixing": {
+        "count": 9,
+        "rate": 4.02,
+        "samples": [
+          {
+            "timestamp": "2026-09-15 15:31:29",
+            "question": "レインボーブリッジが見えるところある",
+            "answer": "申し訳ございませんが、ニュウマン高輪の情報の中に「レインボーブリッジが見える」という明確な記載は確認できませんでした。\n\nただ、LUFTBAUM（ルフトバウム）の **North 28F・29F** では地上約150mからの開放的な眺望をお楽しみいただけます。<CITATION file=\"afe5f511-dd35-4509-a5e3-cc3a11cdda36\" filename=\"North 28・29F【 LUFTBAUM（ルフトバウム）】 .pdf\" page=0 />\n\n- **翠の庭（28F）**：快晴時には富士山を望む眺望が楽しめます\n- **山吹の庭（28F）**：竹林のトンネルを抜けた先に**お台場方面の眺望**が広がります\n\nお台場方面が見渡せるとのことですので、レインボーブリッジも視野に入る可能性がございますが、確実にご覧いただけるかどうかは当日の天候・視界状況によります。\n\n実際の眺望については、ぜひ現地でご確認ください。LUFTBAUMへは **North 2F の直通エレベーター**をご利用ください。\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-15 15:06:00",
+            "question": "エレベーターどこ",
+            "answer": "LUFTBAUM（ルフトバウム）への直通エレベーターは、**North 2F のニコライバーグマン前**にございます。「LUFTBAUM」と記載のあるエレベーターホール入口が目印です。<CITATION file=\"afe5f511-dd35-4509-a5e3-cc3a11cdda36\" filename=\"North 28・29F【 LUFTBAUM（ルフトバウム）】 .pdf\" page=0 />\n\n以下のフロアマップもご参考ください。\n\n![North 2F フロアマップ](https://prd-mygpt.s3.ap-northeast-1.amazonaws.com/parser_file/b870127ccf0f475cbb7398b55b754531.png)\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-14 15:57:28",
+            "question": "駐車場はどこにある？",
+            "answer": "駐車場の情報をご案内いたします。<CITATION file=\"b00a9a7c-de1d-4b7d-acad-1474922b2c58\" filename=\"NEWoMan高輪共通情報一覧_20260914.md\" page=0 />\n\n**駐車場の場所**\n- **P1駐車場**：South・North B1（THE LINKPILLAR 1 North の入庫口をご利用ください）\n- **P2駐車場**：MIMURE B1（THE LINKPILLAR 2 の入庫口をご利用ください）\n\n**お車でのアクセス**\n国道15号「高輪二丁目」を高輪ゲートウェイ駅方面に進み、突き当りを左折し直進いただくと、左手にございます。\n\n**料金**\nオールタイム 30分500円 / 駐車後24時間まで最大2,500円\n\n**駐車場割引サービス**\nニュウマン高輪各ショップでの当日お買い上げ合算金額に応じてサービスがございます。各ショップのお会計時に駐車券をご提示ください。\n\n| お買い上げ合算金額 | サービス内容 |\n|---|---|\n| 5,000円（税込）以上 | 1,000円サービス |\n| 20,000円（税込）以上 | 2,000円サービス |\n\n※一部対象外のショップ・イベントがございます。\n\n**お問い合わせ**\nタイムズコンタクトセンター（時間貸）：0120-77-8924（24時間受付）\n\n詳しい駐車場・アクセス情報は[こちら](https://www.newoman.jp/takanawa/access/)をご覧ください。\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-11 16:14:25",
+            "question": "インフォメーションカウンターはどこ？",
+            "answer": "インフォメーションカウンター（サービスカウンター）は **South・4F** にございます。<CITATION file=\"8714a97b-d9c3-440d-a596-53ea984737b7\" filename=\"NEWoMan高輪共通情報一覧_20260911.md\" page=0 />\n\n以下のサービスをご利用いただけます。\n\n| サービス内容 | 受付時間 |\n|---|---|\n| 館内のご案内 | 11:00〜19:00（お受取り 11:00〜19:30） |\n| ルミネカードのお申し込み | 11:00〜19:00（お受取り 11:00〜19:30） |\n| アイルミネ ご購入商品のお受け取り | 11:00〜19:30 |\n| anewloop買取・引取カウンター supported by RAGTAG | 11:00〜15:00 / 16:00〜20:00 |\n| ベビーカー貸出 | 11:00〜20:00 |\n| 車いす貸出 | 11:00〜20:00 |\n| 配送サービス | 各ショップにて対応 |\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-11 16:13:24",
+            "question": "ジョーマローンロンドンへのルート",
+            "answer": "[JO MALONE LONDON（ジョー マローン ロンドン）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002944)は、**South・2F** にございます。<CITATION file=\"ed7a5086-3ac9-4a8b-ab3f-2ba75ba756e6\" filename=\"NEWoMan高輪全ショップ情報一覧_20260911.md\" page=0 />\n\n**店舗情報**\n| 項目 | 内容 |\n|---|---|\n| 店舗位置 | South・2F |\n| 営業時間 | 11:00〜20:00 |\n| 電話番号 | 03-6277-0789 |\n\nSouth棟のエスカレーターまたはエレベーターで2Fへお上がりください。\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-11 16:11:30",
+            "question": "お香を売っている店舗はどこ？",
+            "answer": "お香・フレグランスを取り扱う店舗をご案内いたします。<CITATION file=\"ed7a5086-3ac9-4a8b-ab3f-2ba75ba756e6\" filename=\"NEWoMan高輪全ショップ情報一覧_20260911.md\" page=0 />\n\n特にお香専門店として、[薫玉堂（クンギョクドウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002942)がございます。1594年創業の日本最古の御香調進所で、伝統的なお香を幅広く取り揃えております。\n\n| 階 | 店舗名 | 電話番号 |\n|---|---|---|\n| South・2F | [薫玉堂（クンギョクドウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002942) | 03-6455-7370 |\n\nフレグランス全般をお探しの場合は、以下の店舗もございます。\n\n| 階 | 店舗名 | 電話番号 |\n|---|---|---|\n| South・2F | [Santa Maria Novella（サンタ・マリア・ノヴェッラ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002941) | 03-5422-8112 |\n| South・2F | [JO MALONE LONDON（ジョー マローン ロンドン）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002944) | 03-6277-0789 |\n| South・3F | [@aroma（アットアロマ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002960) | 03-5422-9228 |\n| South・3F | [MUCHA（ミュシャ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002961) | 03-6450-3119 |\n| North・2F | [DIPTYQUE（ディプティック）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002928) | 03-6721-7871 |\n| North・2F | [BYREDO（バイレード）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002929) | 03-6409-6306 |\n| North・2F | [Maison Margiela Fragrances（メゾン マルジェラ フレグランス）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003369) | 03-6277-0422 |\n| North・3F | [NOSE SHOP（ノーズショップ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002956) | 03-6721-6661 |\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)\n\n他のフレグランスショップ情報は[こちら](https://www.newoman.jp/takanawa/cosmebeauty/?category=type03)をご覧ください。"
+          },
+          {
+            "timestamp": "2026-09-10 15:58:02",
+            "question": "そこは充電できる？",
+            "answer": "申し訳ございませんが、+Inn 1・+Inn 2のラウンジスペースにコンセント（充電設備）が設置されているかどうかについては、現在確認できる情報がございません。<CITATION file=\"10e543ae-a468-4a96-883b-6d73728c6a4b\" filename=\"NEWoMan高輪全ショップ情報一覧_20260910.md\" page=0 />\n\n詳しくは直接お問い合わせいただくことをおすすめいたします。\n\n**お問い合わせ先**\nルミネ・ニュウマン総合コールセンター：03-5334-0550\n\nなお、コンセントが使えることが確認されているカフェは以下の通りです。\n\n| 階 | 店舗名 | 電話番号 |\n|---|---|---|\n| South・4F | [SOW COFFEE ROASTERS（ソー コーヒー ロースターズ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003011) | 03-6833-4004 |\n| South・5F | [Link cafe TOKYO（リンク カフェ トウキョウ）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=003029) | 03-6432-5310 |\n| North・2F | [365日とCOFFEE（サンビャクロクジュウゴニチトコーヒー）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002914) | 03-6450-2314 |\n\nご利用の際は、各店舗へ事前にご確認いただくことをおすすめいたします。"
+          },
+          {
+            "timestamp": "2026-09-07 16:11:52",
+            "question": "Is there mizuno here",
+            "answer": "Yes, MIZUNO SHOP (ミズノショップ) is at NEWoMan Takanawa!\n\n店舗名: [MIZUNO SHOP (ミズノショップ)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002917)\n店舗位置: North・2F\n営業時間: 11:00～20:00\n電話番号: 03-6455-7782\n公式サイト: https://jpn.mizuno.com/shop\n\nThe store focuses on sports style shoes with some apparel, bringing Mizuno's 100+ years of brand heritage and innovative performance technology into everyday life.\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-09-07 16:09:11",
+            "question": "Is there beams here",
+            "answer": "Yes! BEAMS is at NEWoMan Takanawa:\n\n店舗名: [BEAMS CULTUART (ビームスカルチャート)](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002980)\n店舗位置: North・4F\n営業時間: 11:00～20:00\n電話番号: 03-6721-6421\n公式サイト: https://www.beams.co.jp/special/beams_cultuart/\n\nBEAMS CULTUART is BEAMS' first standalone store dedicated to art, entertainment, and design culture — featuring contemporary art, anime, music, and graphics. They also hold collaborative product releases and creator exhibitions.\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          }
+        ]
+      },
+      "report_file": "reports/2026-09.html",
+      "unanswered_file": "reports/2026-09_unanswered.html"
     }
   ]
 }
