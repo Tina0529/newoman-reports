@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-09-29T18:23:11.864757",
+  "updated_at": "2026-10-01T10:55:50.236511",
   "months": [
     {
       "period": "2025年9月",
@@ -601,36 +601,41 @@
     {
       "period": "2026年9月",
       "year_month": "2026-09",
-      "total_messages": 412,
-      "normal_answer_rate": 94.4,
-      "unanswered_rate": 5.6,
+      "total_messages": 417,
+      "normal_answer_rate": 94.5,
+      "unanswered_rate": 5.5,
       "good_rating_rate": 50.0,
       "feedback_rate": 1.0,
-      "daily_average": 14.2,
+      "daily_average": 13.9,
       "unique_users": 1,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.9,
+      "foreign_language_pct": 10.8,
       "weekday_counts": [
         38,
         86,
-        50,
+        55,
         66,
         27,
         67,
         78
       ],
       "source_distribution": {
-        "rag_count": 0,
-        "rag_pct": 0.0,
+        "rag_count": 301,
+        "rag_pct": 72.2,
         "faq_count": 116,
-        "faq_pct": 28.2,
-        "other_count": 296,
-        "other_pct": 71.8
+        "faq_pct": 27.8,
+        "other_count": 0,
+        "other_pct": 0.0
       },
       "language_mixing": {
-        "count": 14,
-        "rate": 3.4,
+        "count": 15,
+        "rate": 3.6,
         "samples": [
+          {
+            "timestamp": "2026-09-30 15:12:41",
+            "question": "喫煙所はどこですか",
+            "answer": "ニュウマン高輪の喫煙所は以下の場所にございます。<CITATION file=\"f5a83ec2-d9e2-49b7-8a7b-f40ea1ef9d9d\" filename=\"Internal Knowledge\" page=0 />\n\n| フロア | 備考 |\n|---|---|\n| South・1F | 館外 |\n| South・4F | |\n| North・5F | |\n| North・28F（LUFTBAUM） | 電子たばこ・加熱式たばこ専用 |\n| MIMURE・3F | |\n\n詳しい場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
           {
             "timestamp": "2026-09-29 16:28:05",
             "question": "Vermicular Pot Made Bakery",
@@ -675,11 +680,6 @@
             "timestamp": "2026-09-11 16:14:25",
             "question": "インフォメーションカウンターはどこ？",
             "answer": "インフォメーションカウンター（サービスカウンター）は **South・4F** にございます。<CITATION file=\"8714a97b-d9c3-440d-a596-53ea984737b7\" filename=\"NEWoMan高輪共通情報一覧_20260911.md\" page=0 />\n\n以下のサービスをご利用いただけます。\n\n| サービス内容 | 受付時間 |\n|---|---|\n| 館内のご案内 | 11:00〜19:00（お受取り 11:00〜19:30） |\n| ルミネカードのお申し込み | 11:00〜19:00（お受取り 11:00〜19:30） |\n| アイルミネ ご購入商品のお受け取り | 11:00〜19:30 |\n| anewloop買取・引取カウンター supported by RAGTAG | 11:00〜15:00 / 16:00〜20:00 |\n| ベビーカー貸出 | 11:00〜20:00 |\n| 車いす貸出 | 11:00〜20:00 |\n| 配送サービス | 各ショップにて対応 |\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
-          },
-          {
-            "timestamp": "2026-09-11 16:13:24",
-            "question": "ジョーマローンロンドンへのルート",
-            "answer": "[JO MALONE LONDON（ジョー マローン ロンドン）](https://www.newoman.jp/takanawa/floorguide/detail/?scd=002944)は、**South・2F** にございます。<CITATION file=\"ed7a5086-3ac9-4a8b-ab3f-2ba75ba756e6\" filename=\"NEWoMan高輪全ショップ情報一覧_20260911.md\" page=0 />\n\n**店舗情報**\n| 項目 | 内容 |\n|---|---|\n| 店舗位置 | South・2F |\n| 営業時間 | 11:00〜20:00 |\n| 電話番号 | 03-6277-0789 |\n\nSouth棟のエスカレーターまたはエレベーターで2Fへお上がりください。\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
           }
         ]
       },

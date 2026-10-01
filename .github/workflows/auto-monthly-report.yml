@@ -1,23 +1,21 @@
 name: Auto Monthly Report
 
-# 月末日 22:00 JST に当月分の月次レポートを自動生成
-# - cron は UTC で動くため 13:00 UTC = 22:00 JST
-# - 28-31 日に発火し、スクリプトで「明日が翌月」かを確認(=月末)
-# - 月末でなければ no-op で終了
+# 毎月1日に「前月分」の月次レポートを自動生成（2026-10-01 変更）
+# - 以前は月末 22:00 JST に当月分を生成していたが、GitHub の schedule は数時間遅れることがあり、
+#   月末当日の未明に走って最終日のデータが欠ける／本来の回が翌月にずれて「月末でない」と判定され
+#   スキップされる事象が 8月・9月に発生した。
+# - 前月分を翌月1日に集計すれば、実行時刻が多少遅れても対象月のデータは確定済みで欠けない。
+# - cron 01:00 UTC = 10:00 JST（1日）。数時間遅れても同日中に完了する。
+# - 未回答判定はルールベース（キーワード判定）に統一。7・8月の再集計と同じ基準で月次比較できるようにするため、
+#   LLM 判定（--use-llm）は使わない。
 
 on:
   schedule:
-    - cron: '0 13 28-31 * *'
+    - cron: '0 1 1 * *'
   workflow_dispatch:
     inputs:
-      force:
-        description: '日付チェックをスキップして強制実行(テスト用)'
-        required: false
-        default: 'false'
-        type: choice
-        options: ['false', 'true']
       target_month:
-        description: '対象月 YYYY-MM（空欄なら当月）。過去月の再生成に使用'
+        description: '対象月 YYYY-MM（空欄なら前月）。過去月の再生成や当月の途中経過に使用'
         required: false
         default: ''
         type: string
@@ -28,46 +26,35 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Check if today is the last day of month
-        id: date_check
-        run: |
-          # JST(UTC+9)で「今日」と「明日」を計算
-          TODAY_JST=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
-          TOMORROW_JST=$(TZ='Asia/Tokyo' date -d 'tomorrow' +%Y-%m-%d)
-          THIS_MONTH=$(echo "$TODAY_JST" | cut -d'-' -f2)
-          NEXT_DAY_MONTH=$(echo "$TOMORROW_JST" | cut -d'-' -f2)
-          echo "today_jst=$TODAY_JST" >> $GITHUB_OUTPUT
-          echo "month=$THIS_MONTH" >> $GITHUB_OUTPUT
-
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            echo "🔧 Force run (workflow_dispatch with force=true)"
-            echo "is_last_day=true" >> $GITHUB_OUTPUT
-          elif [ "$THIS_MONTH" != "$NEXT_DAY_MONTH" ]; then
-            echo "✅ Today ($TODAY_JST) is the last day of month $THIS_MONTH"
-            echo "is_last_day=true" >> $GITHUB_OUTPUT
-          else
-            echo "⏭️  Today ($TODAY_JST) is NOT the last day. Tomorrow is $TOMORROW_JST. Skipping."
-            echo "is_last_day=false" >> $GITHUB_OUTPUT
-          fi
-
       - uses: actions/checkout@v4
-        if: steps.date_check.outputs.is_last_day == 'true'
 
       - uses: actions/setup-python@v5
-        if: steps.date_check.outputs.is_last_day == 'true'
         with:
           python-version: '3.11'
 
       - name: Install dependencies
-        if: steps.date_check.outputs.is_last_day == 'true'
-        run: pip install pandas requests anthropic
+        run: pip install pandas requests
 
-      - name: Run analysis for current month
-        if: steps.date_check.outputs.is_last_day == 'true'
+      - name: Decide target month
+        id: target
+        run: |
+          # 対象月: target_month 入力があればそれ、なければ前月（JST 基準）
+          INPUT_MONTH="${{ github.event.inputs.target_month }}"
+          if [ -n "$INPUT_MONTH" ]; then
+            YEAR_MONTH="$INPUT_MONTH"
+            MODE="manual"
+            echo "🎯 Target month override: $YEAR_MONTH"
+          else
+            YEAR_MONTH=$(TZ='Asia/Tokyo' date -d "$(TZ='Asia/Tokyo' date +%Y-%m-01) -1 day" +%Y-%m)
+            MODE="scheduled"
+          fi
+          echo "year_month=$YEAR_MONTH" >> $GITHUB_OUTPUT
+          echo "mode=$MODE" >> $GITHUB_OUTPUT
+
+      - name: Run analysis
         env:
           GBASE_DATASET_ID: ${{ secrets.GBASE_DATASET_ID }}
           GBASE_API_TOKEN: ${{ secrets.GBASE_API_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           if [ -z "$GBASE_DATASET_ID" ] || [ -z "$GBASE_API_TOKEN" ]; then
             echo "❌ GBASE_DATASET_ID または GBASE_API_TOKEN が未設定です。"
@@ -75,43 +62,22 @@ jobs:
             exit 1
           fi
 
-          # 対象月: target_month 入力があればそれを使う、なければ当月(JST)
-          INPUT_MONTH="${{ github.event.inputs.target_month }}"
-          if [ -n "$INPUT_MONTH" ]; then
-            YEAR_MONTH="$INPUT_MONTH"
-            echo "🎯 Target month override: $YEAR_MONTH"
-          else
-            YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
-          fi
+          YEAR_MONTH="${{ steps.target.outputs.year_month }}"
           YEAR=$(echo "$YEAR_MONTH" | cut -d'-' -f1)
           MONTH_NUM=$(echo "$YEAR_MONTH" | cut -d'-' -f2)
           MONTH_INT=$((10#$MONTH_NUM))
           START_DATE="${YEAR_MONTH}-01"
 
-          # END_DATE: 対象月が当月なら今日、過去月なら月末
+          # END_DATE: 対象月が当月（途中経過の手動実行）なら今日、過去月なら月末
           CURRENT_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
           if [ "$YEAR_MONTH" = "$CURRENT_MONTH" ]; then
             END_DATE=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
           else
-            END_DATE=$(python3 -c "
-          from datetime import date, timedelta
-          y, m = $YEAR, $MONTH_INT
-          if m == 12:
-              last = date(y, 12, 31)
-          else:
-              last = date(y, m + 1, 1) - timedelta(days=1)
-          print(last.strftime('%Y-%m-%d'))
-          ")
+            END_DATE=$(date -d "${YEAR_MONTH}-01 +1 month -1 day" +%Y-%m-%d)
           fi
           PERIOD="${YEAR}年${MONTH_INT}月"
 
-          echo "📊 Analyzing: $PERIOD ($START_DATE ~ $END_DATE)"
-
-          LLM_ARGS=""
-          if [ -n "$ANTHROPIC_API_KEY" ]; then
-            LLM_ARGS="--use-llm --anthropic-key $ANTHROPIC_API_KEY"
-            echo "LLM semantic judgment: enabled"
-          fi
+          echo "📊 Analyzing: $PERIOD ($START_DATE ~ $END_DATE) / 未回答判定: ルールベース"
 
           python3 skill/chatbot-message-analyzer/scripts/analyze.py \
             --dataset-id "$GBASE_DATASET_ID" \
@@ -122,11 +88,9 @@ jobs:
             --period "$PERIOD" \
             --output /tmp \
             --site-dir docs \
-            --client-slug "newoman-takanawa" \
-            $LLM_ARGS
+            --client-slug "newoman-takanawa"
 
       - name: Commit and push
-        if: steps.date_check.outputs.is_last_day == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -134,12 +98,10 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            INPUT_MONTH="${{ github.event.inputs.target_month }}"
-            if [ -n "$INPUT_MONTH" ]; then
-              YEAR_MONTH="$INPUT_MONTH"
+            YEAR_MONTH="${{ steps.target.outputs.year_month }}"
+            if [ "${{ steps.target.outputs.mode }}" = "manual" ]; then
               COMMIT_MSG="Re-run monthly report: $YEAR_MONTH (manual)"
             else
-              YEAR_MONTH=$(TZ='Asia/Tokyo' date +%Y-%m)
               COMMIT_MSG="Auto-update monthly report: $YEAR_MONTH (scheduled)"
             fi
             git commit -m "$COMMIT_MSG"

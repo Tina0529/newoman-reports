@@ -1256,6 +1256,11 @@ def main():
             'agent_faq': 'その他',
         }
         df['来源カテゴリ'] = df['回答来源'].map(source_map).fillna('その他')
+        # General Agent（2026-08-20〜）は AI が検索して生成した回答も comes_from=greetings になる。
+        # 実行トレース（[TOOL_CALL] 等）を持つ回答は検索ベースの生成なので RAG として数える。
+        if '回答_raw' in df.columns:
+            agent_rag = (df['回答来源'] == 'greetings') & df['回答_raw'].apply(has_agent_trace)
+            df.loc[agent_rag, '来源カテゴリ'] = 'RAG'
 
         source_category_counts = df['来源カテゴリ'].value_counts()
         source_stats = {}

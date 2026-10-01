@@ -60,6 +60,8 @@ GBase API / CSV → analyze.py → HTML报告 + dashboard-data.json → docs/ �
 - **检证账号排除**（2026-09-09 定例合意）：`docs/clients/<slug>/exclude_users.json` 里的 `user_id` 会在加载数据后从统计中排除（也可用 `--exclude-users` 追加）。NEWoMan高輪 现在排除我方 Sparticle検証 和ルミネ様検証各 1 个账号。
 - **FAQ 固定回答不算未回答**（2026-09-09 定例合意）：`回答来源` 为 `faq`/`agent_faq` 的消息即使命中「見つかりません」等关键词也不计入未回答。另外 `<NO_ANSWER>`、「確認できておりません」已加入未回答关键词。
 - **FAQ 一览 API 分页**：`/datasets/{id}/faqs` 默认排序分页会漏/重复记录，`link_faq_audit._load_all_faqs` 固定用 `size=1000&order_by=id` 并核对 total，件数不一致时打印警告。
+- **回答来源分类**：新 Agent 由 AI 检索生成的回答 `comes_from` 也是 `greetings`，带执行轨迹的 `greetings` 统计为 RAG（2026-10-01 起）。
+- **月报自动生成**：`auto-monthly-report.yml` 每月 1 日 10:00 JST 统计前月，未回答判定统一用关键词规则（不再用 `--use-llm`）。
 - **问题分类**：7 个固定类别（位置/店铺/设施/营业时间/活动/投诉/其他），基于关键词匹配。
 - **报告命名**：`{client}_{period}_分析レポート.html`，未回答一览为 `{client}_{period}_未回答一覧.html`。
 - **analyze.py 输出到 site-dir 时**，会自动更新对应客户的 dashboard-data.json（追加或更新月份数据）并复制报告文件。
