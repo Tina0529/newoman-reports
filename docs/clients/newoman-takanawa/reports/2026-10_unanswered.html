@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未回答質問一覧 - NEWoMan高輪 2026年10月</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success-bg: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-400: #9CA3AF;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --font-sans: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --transition: 200ms ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--background); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--danger); }
+        .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .header-icon { width: 32px; height: 32px; background: var(--danger-bg); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--danger); }
+        .header-icon svg { width: 18px; height: 18px; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color var(--transition); }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; }
+        .lang-switch { display: flex; gap: 0.25rem; background: var(--gray-100); padding: 0.25rem; border-radius: var(--radius-md); }
+        .lang-btn { padding: 0.5rem 1rem; border: none; background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .lang-btn:hover { color: var(--text); }
+        .lang-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+        .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .summary-item { display: flex; align-items: center; gap: 0.75rem; }
+        .summary-value { font-size: 1.5rem; font-weight: 700; color: var(--danger); }
+        .summary-label { font-size: 0.875rem; color: var(--text-muted); }
+        .section { background: var(--surface); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md); cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); transition: all var(--transition); }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; vertical-align: top; }
+        .data-table th { background: var(--gray-50); font-weight: 600; color: var(--text-muted); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .data-table th:first-child { border-radius: var(--radius-md) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-md) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background var(--transition); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table .number { text-align: center; width: 50px; font-family: var(--font-mono); color: var(--gray-400); }
+        .data-table .timestamp { width: 140px; white-space: nowrap; font-size: 0.8125rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .data-table .question-cell { width: 30%; }
+        .data-table .answer-cell { width: 40%; font-size: 0.8125rem; color: var(--text-muted); }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 0.8125rem; }
+        @media print { body { background: white; } .header-actions, .filter-bar { display: none; } .section { box-shadow: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                <span data-ja="未回答質問一覧" data-zh="未回答问题列表">未回答質問一覧</span>
+            </h1>
+            <div class="header-actions">
+                <a href="2026-10.html#unansweredSection" class="back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span data-ja="メインレポートに戻る" data-zh="返回主报告">メインレポートに戻る</span>
+                </a>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+            </div>
+        </header>
+        <div class="summary-bar">
+            <div class="summary-item"><span class="summary-value">26</span><span class="summary-label" data-ja="件の未回答" data-zh="条未回答">件の未回答</span></div>
+            <div class="summary-item"><span class="badge badge-red">情報なし</span><span class="summary-label">25件 (96%)</span></div>
+            <div class="summary-item"><span class="badge badge-yellow">検索失敗</span><span class="summary-label">0件 (0%)</span></div>
+            <div class="summary-item"><span class="badge badge-gray">再確認</span><span class="summary-label">1件 (3%)</span></div>
+        </div>
+        <div class="section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterTable('all')" data-ja="すべて" data-zh="全部">すべて</button>
+                <button class="filter-btn" onclick="filterTable('情報なし')">情報なし</button>
+                <button class="filter-btn" onclick="filterTable('検索失敗')">検索失敗</button>
+                <button class="filter-btn" onclick="filterTable('再確認')">再確認</button>
+            </div>
+            <table class="data-table" id="unansweredTable">
+                <thead><tr><th>#</th><th data-ja="日時" data-zh="时间">日時</th><th data-ja="タイプ" data-zh="类型">タイプ</th><th data-ja="質問内容" data-zh="问题内容">質問内容</th><th data-ja="Bot回答" data-zh="Bot回答">Bot回答</th></tr></thead>
+                <tbody>
+<tr>
+    <td class="number">1</td>
+    <td class="timestamp">2026-10-31 13:59:54</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">竜とそばかすはどこ</td>
+    <td class="answer-cell">申し訳ございませんが、「竜とそばかす」に関する情報はニュウマン高輪では見つかりませんでした。
+
+映画「竜とそばかすの姫」に関連した商品やショップをお探しでしょうか？よろしければ、お探しの内容についてもう少し詳しく教えていただけますでしょうか？ニュウマン高輪の店舗やサービスについてお気軽にご質問くださ...</td>
+</tr>
+<tr>
+    <td class="number">2</td>
+    <td class="timestamp">2026-10-29 16:54:46</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">化粧ポーチのプレゼントをさがしたい</td>
+    <td class="answer-cell">化粧ポーチのプレゼントをお探しとのことで、ニュウマン高輪の情報をご案内いたします。
+
+化粧ポーチを専門に扱う店舗の情報は見つかりませんでしたが、プレゼントをお探しであれば、South・5Fのギフト専門店 **[PRESENTERS ROOM（プレゼンターズルーム）](https://www.newo...</td>
+</tr>
+<tr>
+    <td class="number">3</td>
+    <td class="timestamp">2026-10-29 11:10:29</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">森田剛の妻</td>
+    <td class="answer-cell">申し訳ございませんが、「森田剛の妻」に関する情報は、ニュウマン高輪の店舗・サービス情報の中では見つかりませんでした。
+
+こちらはニュウマン高輪店に関するお問い合わせ窓口となっております。店舗・施設・サービスについてご質問がございましたら、お気軽にお申し付けください。例えば、以下のようなご案内が可能で...</td>
+</tr>
+<tr>
+    <td class="number">4</td>
+    <td class="timestamp">2026-10-29 11:07:48</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">森田剛</td>
+    <td class="answer-cell">申し訳ございませんが、「森田剛」に関するニュウマン高輪の店舗・サービス情報は見つかりませんでした。
+
+こちらはニュウマン高輪店に関するお問い合わせ窓口となっております。店舗・施設・サービスについてご質問がございましたら、お気軽にお申し付けください。
+
+例えば、以下のようなご案内が可能です。
+- 館内...</td>
+</tr>
+<tr>
+    <td class="number">5</td>
+    <td class="timestamp">2026-10-28 12:47:44</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ネクタイピンを買いたい</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪の店舗情報の中に、ネクタイピン専門の取り扱いが確認できる店舗は見つかりませんでした。
+
+メンズアクセサリーをお探しでしたら、以下のアクセサリー・ジュエリーショップにてご相談いただける可能性がございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|-...</td>
+</tr>
+<tr>
+    <td class="number">6</td>
+    <td class="timestamp">2026-10-25 14:24:38</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">便箋を扱った店</td>
+    <td class="answer-cell">便箋を直接取り扱っているとの明示的な記載は見つかりませんでしたが、ステーショナリーを扱う店舗として以下がございます。便箋が見つかる可能性が高いお店をご案内いたします。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| South・5F | [HIGHTIDE STORE（ハイタ...</td>
+</tr>
+<tr>
+    <td class="number">7</td>
+    <td class="timestamp">2026-10-24 12:42:57</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">シュークリームのお店に行きたいのですが</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪館内にシュークリームを専門に扱う店舗は見つかりませんでした。
+
+ただ、スイーツやケーキをお楽しみいただける店舗はいくつかございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| North・1F | [八芳園洋菓子店](https://...</td>
+</tr>
+<tr>
+    <td class="number">8</td>
+    <td class="timestamp">2026-10-23 13:01:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">soocaは？</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪の情報の中に「SOOCA」に関する店舗・ポップアップの情報は見つかりませんでした。
+
+最新情報は以下よりご確認いただけます。
+
+[ニュー／クローズショップ情報はこちら](https://www.newoman.jp/takanawa/newshop/)
+[トピック...</td>
+</tr>
+<tr>
+    <td class="number">9</td>
+    <td class="timestamp">2026-10-23 12:57:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">sooca POPUP shopここも</td>
+    <td class="answer-cell">申し訳ございませんが、現在の情報の中に「SOOCA」のPOP UP SHOPに関する情報は見つかりませんでした。
+
+最新のポップアップ・イベント情報は、ニュウマン高輪の公式サイトにてご確認いただけます。
+
+[ニュー／クローズショップ情報はこちら](https://www.newoman.jp/tak...</td>
+</tr>
+<tr>
+    <td class="number">10</td>
+    <td class="timestamp">2026-10-22 11:49:01</td>
+    <td><span class="badge badge-gray" data-ja="再確認" data-zh="再確認">再確認</span></td>
+    <td class="question-cell">Addidas</td>
+    <td class="answer-cell">I&#x27;m sorry, but we were unable to find any Adidas store at NEWoMan Takanawa. It appears that Adidas does not currently have a shop in our lineup.
+
+If y...</td>
+</tr>
+<tr>
+    <td class="number">11</td>
+    <td class="timestamp">2026-10-19 16:57:50</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">AIさくらさんはどこにいますか？</td>
+    <td class="answer-cell">申し訳ございませんが、「AIさくらさん」に関する情報はニュウマン高輪の館内情報からは見つかりませんでした。
+
+ご不明な点がございましたら、ニュウマン高輪のサービスカウンター（South 4F）にお問い合わせいただくか、別のキーワードでお探しいただけますでしょうか。
+
+詳しい館内のご案内は[デジタルフ...</td>
+</tr>
+<tr>
+    <td class="number">12</td>
+    <td class="timestamp">2026-10-18 16:47:33</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ヘンリーハンセン</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪店内に「ヘンリーハンセン」（Helly Hansen）の店舗情報は見つかりませんでした。
+
+お探しの商品やブランドについて、他にご質問がございましたらお気軽にお申し付けください。また、アウトドアウェアをお探しでしたら、North・3Fの [and wander（ア...</td>
+</tr>
+<tr>
+    <td class="number">13</td>
+    <td class="timestamp">2026-10-14 14:26:32</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ランドセル</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪にはランドセルを取り扱う店舗の情報は見つかりませんでした。
+
+ランドセル以外のお子様向け商品については、キッズファッションを扱う店舗がございます。他にお探しのものがございましたら、お気軽にお申し付けください。</td>
+</tr>
+<tr>
+    <td class="number">14</td>
+    <td class="timestamp">2026-10-14 14:24:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">カナダグース</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪にはカナダグース（CANADA GOOSE）の店舗は見つかりませんでした。
+
+アウターウェアや高機能ファッションをお探しでしたら、ニュウマン高輪には以下のようなブランドがございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| Nort...</td>
+</tr>
+<tr>
+    <td class="number">15</td>
+    <td class="timestamp">2026-10-13 15:25:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">展望階は持ち込み可能？</td>
+    <td class="answer-cell">「展望階（LUFTBAUM）への持ち込み」に関する具体的な情報は検索結果に見つかりませんでしたが、関連するラウンジ（オープンラウンジ）については持ち込みルールの記載がございましたので、合わせてご案内いたします。
+
+**オープンラウンジ（+Inn）の持ち込みについて**
+館内のオープンラウンジ「+In...</td>
+</tr>
+<tr>
+    <td class="number">16</td>
+    <td class="timestamp">2026-10-13 15:07:32</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">studio1</td>
+    <td class="answer-cell">「studio1」というキーワードについて、ニュウマン高輪の情報をお調べいたしましたが、「studio1」という名称の店舗やサービスは見つかりませんでした。
+
+「AP STUDIO」や「CASETiFY STUDiO」など、スタジオが名前に含まれる店舗はございますが、「studio1」とは異なります...</td>
+</tr>
+<tr>
+    <td class="number">17</td>
+    <td class="timestamp">2026-10-12 15:08:11</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">広域品川　謎解き</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪に関する情報の中に「広域品川 謎解き」に関する情報は見つかりませんでした。
+
+「広域品川」は品川・高輪・大崎・大井町エリアを含む広域エリアのプロジェクト（GREATER SHINAGAWA）を指す場合がございますが、謎解きイベントについての情報は現時点では確認でき...</td>
+</tr>
+<tr>
+    <td class="number">18</td>
+    <td class="timestamp">2026-10-11 17:00:27</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">紳士靴はどこにある？</td>
+    <td class="answer-cell">検索結果に「紳士靴」として専門的に案内できる店舗は見つかりませんでした。ただし、メンズ対応のシューズを取り扱っている店舗をご案内いたします。
+
+ニュウマン高輪には、メンズシューズを取り扱っている以下の店舗がございます。
+
+| 階 | 店舗名 | 電話番号 |
+|---|---|---|
+| Nort...</td>
+</tr>
+<tr>
+    <td class="number">19</td>
+    <td class="timestamp">2026-10-06 15:29:15</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">養蜂はどこでやってるの？</td>
+    <td class="answer-cell">申し訳ございませんが、養蜂が具体的にどの場所（建物・フロア等）で行われているかについての詳細情報は見つかりませんでした。
+
+ご案内できる範囲では、養蜂は**高輪ゲートウェイシティのまちづくりの一環**として行われており、そこで採れた100％高輪産のはちみつが「**高輪はちみつ**」として販売されてい...</td>
+</tr>
+<tr>
+    <td class="number">20</td>
+    <td class="timestamp">2026-10-06 13:12:49</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">ニュウマン高輪の施設年商は？</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪の施設年商に関する情報はご案内できる情報として見つかりませんでした。
+
+年商などの経営・財務情報については、運営会社（株式会社ルミネ）の公式発表やIR情報をご参照いただくか、直接お問い合わせいただけますと幸いです。
+
+**お問い合わせ先:** ルミネ・ニュウマン総...</td>
+</tr>
+<tr>
+    <td class="number">21</td>
+    <td class="timestamp">2026-10-04 17:07:34</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">suicaのイベント</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪でのSuicaに関連したイベントやポップアップの情報は現在見つかりませんでした。
+
+Suicaのペンギングッズやイベントについては、ニュウマン高輪のトピックスページや、直接インフォメーションカウンターへお問い合わせいただくと、最新情報をご確認いただけます。
+
+- ...</td>
+</tr>
+<tr>
+    <td class="number">22</td>
+    <td class="timestamp">2026-10-04 17:06:26</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Suicaのペンギン　ポスター　とご</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪の店舗情報の中から「Suicaのペンギン」のポスターやグッズに関する情報は見つかりませんでした。
+
+ニュウマン高輪では、ファッション・コスメ・グルメなど様々な店舗がございますが、Suicaのペンギングッズを取り扱う店舗については現在確認できておりません。
+
+お探し...</td>
+</tr>
+<tr>
+    <td class="number">23</td>
+    <td class="timestamp">2026-10-04 13:28:18</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Suicaのペンギンエキタグの位置</td>
+    <td class="answer-cell">申し訳ございませんが、「Suicaのペンギン エキタグ」の設置場所に関する情報は、ニュウマン高輪の情報の中では見つかりませんでした。
+
+エキタグはJR東日本が提供するサービスですので、詳しくはJR高輪ゲートウェイ駅の駅係員またはJR東日本のサービスセンターへお問い合わせいただくことをおすすめいたしま...</td>
+</tr>
+<tr>
+    <td class="number">24</td>
+    <td class="timestamp">2026-10-04 12:47:31</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">エキタグのある場所</td>
+    <td class="answer-cell">「エキタグ」についてお調べいたしました。
+
+「エキタグ」に関する情報は見つかりませんでしたが、「えきパーク（Eki Park）」についての情報がございます。もしかして「えきパーク」のことでしょうか？
+
+**えきパーク（Eki Park）** は、**JR高輪ゲートウェイ駅の改札内**に位置しておりま...</td>
+</tr>
+<tr>
+    <td class="number">25</td>
+    <td class="timestamp">2026-10-01 14:05:10</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Suicaペンギン</td>
+    <td class="answer-cell">申し訳ございませんが、ニュウマン高輪の店舗情報の中に「Suicaペンギン」に関連するショップやグッズの取り扱い情報は見つかりませんでした。
+
+Suicaペンギングッズをお探しの場合は、JR高輪ゲートウェイ駅構内の売店や、駅周辺の施設でお取り扱いがある場合がございます。詳しくはJR東日本のサービスセン...</td>
+</tr>
+<tr>
+    <td class="number">26</td>
+    <td class="timestamp">2026-10-01 11:34:01</td>
+    <td><span class="badge badge-red" data-ja="情報なし" data-zh="情報なし">情報なし</span></td>
+    <td class="question-cell">Suicaペンギンのエキタグの場所</td>
+    <td class="answer-cell">申し訳ございませんが、「Suicaペンギンのエキタグ」に関する情報は、ニュウマン高輪の情報の中では見つかりませんでした。
+
+エキタグはJR東日本が提供するサービスで、ニュウマン高輪ではなくJR高輪ゲートウェイ駅構内に設置されている場合がございます。詳しくはJR東日本のエキタグ公式サイト、またはJR高...</td>
+</tr></tbody>
+            </table>
+        </div>
+        <footer class="footer"><span data-ja="NEWoMan高輪 2026年10月 メッセージ履歴分析" data-zh="NEWoMan高輪 2026年10月 消息履历分析">NEWoMan高輪 2026年10月 メッセージ履歴分析</span></footer>
+    </div>
+    <script>
+        let currentLang = 'ja';
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLang(\'' + lang + '\')"]').classList.add('active');
+            document.querySelectorAll('[data-ja][data-zh]').forEach(el => { el.innerHTML = el.getAttribute('data-' + lang); });
+        }
+        function filterTable(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('#unansweredTable tbody tr').forEach(row => {
+                if (type === 'all') { row.style.display = ''; }
+                else { const badge = row.querySelector('.badge'); row.style.display = (badge && badge.getAttribute('data-ja') === type) ? '' : 'none'; }
+            });
+        }
+    </script>
+</body>
+</html>

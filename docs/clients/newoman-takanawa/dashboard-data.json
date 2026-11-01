@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-10-01T10:55:50.236511",
+  "updated_at": "2026-11-01T07:11:19.978114",
   "months": [
     {
       "period": "2025年9月",
@@ -685,6 +685,59 @@
       },
       "report_file": "reports/2026-09.html",
       "unanswered_file": "reports/2026-09_unanswered.html"
+    },
+    {
+      "period": "2026年10月",
+      "year_month": "2026-10",
+      "total_messages": 347,
+      "normal_answer_rate": 92.5,
+      "unanswered_rate": 7.5,
+      "good_rating_rate": 33.3,
+      "feedback_rate": 0.9,
+      "daily_average": 11.2,
+      "unique_users": 0,
+      "human_transfer_rate": 0.0,
+      "foreign_language_pct": 10.7,
+      "weekday_counts": [
+        30,
+        50,
+        36,
+        46,
+        51,
+        64,
+        70
+      ],
+      "source_distribution": {
+        "rag_count": 243,
+        "rag_pct": 70.0,
+        "faq_count": 104,
+        "faq_pct": 30.0,
+        "other_count": 0,
+        "other_pct": 0.0
+      },
+      "language_mixing": {
+        "count": 3,
+        "rate": 0.86,
+        "samples": [
+          {
+            "timestamp": "2026-10-13 17:12:28",
+            "question": "喫煙所はどこにある",
+            "answer": "ニュウマン高輪の喫煙所は以下の場所にございます。<CITATION file=\"a37475af-0b5c-4b0e-a544-c1b88d973160\" filename=\"NEWoMan高輪共通情報一覧_20261013.md\" page=0 />\n\n| フロア | 備考 |\n|---|---|\n| South・1F | 館外 |\n| South・4F | — |\n| North・5F | — |\n| North・28F | 電子たばこ・加熱式たばこ専用 |\n| MIMURE・3F | — |\n\n詳しい場所は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-10-13 12:45:46",
+            "question": "オフィスのエントランスを教えて",
+            "answer": "THE LINKPILLAR 1のオフィスをご利用の場合、**オフィスエントランスまでのエレベーターはSouth・North 2F**にございます。<CITATION file=\"c1b1a574-a2ad-44a5-903c-e656a2617773\" filename=\"Internal Knowledge\" page=0 />\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          },
+          {
+            "timestamp": "2026-10-12 14:20:13",
+            "question": "28階へ行くエレベーターはどこ",
+            "answer": "28階（LUFTBAUM・ルフトバウム）へは、**North 2Fにある専用直通エレベーター**をご利用ください。<CITATION file=\"afe5f511-dd35-4509-a5e3-cc3a11cdda36\" filename=\"North 28・29F【 LUFTBAUM（ルフトバウム）】 .pdf\" page=0 />\n\nこのエレベーターはLUFTBAUM専用で、28F・29Fへ直接お上がりいただけます。\n\n詳しい行き方は、デジタルフロアガイドをご利用ください。[デジタルフロアガイドはこちら](https://platinumaps.jp/d/newoman-takanawa)"
+          }
+        ]
+      },
+      "report_file": "reports/2026-10.html",
+      "unanswered_file": "reports/2026-10_unanswered.html"
     }
   ]
 }
