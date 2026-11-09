@@ -18,6 +18,7 @@ import json
 import re
 import time
 import unicodedata
+import urllib.error
 import urllib.request
 import urllib.parse
 import datetime
@@ -38,8 +39,16 @@ def _get(base_url, path, token, params=None, timeout=60):
     if params:
         url += "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.load(r)
+    for attempt in range(1, 4):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.load(r)
+        except (TimeoutError, urllib.error.URLError) as e:
+            status = getattr(e, "code", None)
+            if attempt == 3 or (status is not None and status < 500):
+                raise
+            print(f"⚠️  GET {path} 失敗（{attempt}/3回目）: {e}。再試行します")
+            time.sleep(5 * attempt)
 
 
 def _post(base_url, path, token, params=None, body=None, timeout=90):
@@ -93,7 +102,7 @@ def fetch_shop_ground_truth(base_url, token, dataset_id):
     """
     try:
         files = _get(base_url, f"/datasets/{dataset_id}/files", token,
-                     {"size": 50, "file_type": "document", "order_by": "updated_at"}).get("items", [])
+                     {"size": 50, "file_type": "document", "order_by": "updated_at"}, timeout=180).get("items", [])
     except Exception as e:
         print(f"⚠️  ショップ一覧の取得に失敗: {e}")
         return None
