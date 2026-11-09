@@ -32,6 +32,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      # 入力の API トークンは自動ではマスクされない。公開リポジトリのログに平文で残らないよう、最初に登録する
+      - name: Mask API token
+        run: |
+          TOKEN=$(jq -r '.inputs.api_token' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$TOKEN"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -44,6 +50,8 @@ jobs:
       - name: Run analysis
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          INPUT_DATASET_ID: ${{ inputs.dataset_id }}
+          INPUT_API_TOKEN: ${{ inputs.api_token }}
         run: |
           YEAR=$(echo "${{ inputs.month }}" | cut -d'-' -f1)
           MONTH_NUM=$(echo "${{ inputs.month }}" | cut -d'-' -f2)
@@ -75,8 +83,8 @@ jobs:
           fi
 
           python3 skill/chatbot-message-analyzer/scripts/analyze.py \
-            --dataset-id "${{ inputs.dataset_id }}" \
-            --token "${{ inputs.api_token }}" \
+            --dataset-id "$INPUT_DATASET_ID" \
+            --token "$INPUT_API_TOKEN" \
             --start-date "$START_DATE" \
             --end-date "$END_DATE" \
             --client "${{ inputs.client_name }}" \

@@ -1,7 +1,7 @@
 {
   "client": "NEWoMan高輪",
   "client_slug": "newoman-takanawa",
-  "updated_at": "2026-11-01T07:11:19.978114",
+  "updated_at": "2026-11-09T17:02:07.289794",
   "months": [
     {
       "period": "2025年9月",
@@ -427,35 +427,35 @@
     {
       "period": "2026年6月",
       "year_month": "2026-06",
-      "total_messages": 591,
-      "normal_answer_rate": 92.7,
-      "unanswered_rate": 7.3,
+      "total_messages": 569,
+      "normal_answer_rate": 92.4,
+      "unanswered_rate": 7.6,
       "good_rating_rate": 57.1,
       "feedback_rate": 1.2,
-      "daily_average": 19.7,
-      "unique_users": 2,
+      "daily_average": 19.0,
+      "unique_users": 206,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.5,
+      "foreign_language_pct": 10.0,
       "weekday_counts": [
-        89,
-        75,
-        62,
+        87,
+        68,
         58,
+        54,
         83,
         123,
-        101
+        96
       ],
       "source_distribution": {
-        "rag_count": 333,
-        "rag_pct": 56.3,
-        "faq_count": 214,
-        "faq_pct": 36.2,
-        "other_count": 44,
-        "other_pct": 7.4
+        "rag_count": 318,
+        "rag_pct": 55.9,
+        "faq_count": 240,
+        "faq_pct": 42.2,
+        "other_count": 11,
+        "other_pct": 1.9
       },
       "language_mixing": {
         "count": 4,
-        "rate": 0.68,
+        "rate": 0.7,
         "samples": [
           {
             "timestamp": "2026-06-26 18:47:58",
@@ -485,35 +485,35 @@
     {
       "period": "2026年7月",
       "year_month": "2026-07",
-      "total_messages": 474,
-      "normal_answer_rate": 92.8,
-      "unanswered_rate": 7.2,
+      "total_messages": 468,
+      "normal_answer_rate": 91.0,
+      "unanswered_rate": 9.0,
       "good_rating_rate": 38.5,
-      "feedback_rate": 2.7,
-      "daily_average": 15.3,
-      "unique_users": 1,
+      "feedback_rate": 2.8,
+      "daily_average": 15.1,
+      "unique_users": 195,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 12.0,
+      "foreign_language_pct": 12.6,
       "weekday_counts": [
         53,
-        37,
-        67,
-        70,
-        64,
+        35,
+        65,
+        69,
+        63,
         107,
         76
       ],
       "source_distribution": {
-        "rag_count": 268,
-        "rag_pct": 56.5,
-        "faq_count": 173,
-        "faq_pct": 36.5,
-        "other_count": 33,
-        "other_pct": 7.0
+        "rag_count": 266,
+        "rag_pct": 56.8,
+        "faq_count": 195,
+        "faq_pct": 41.7,
+        "other_count": 7,
+        "other_pct": 1.5
       },
       "language_mixing": {
         "count": 5,
-        "rate": 1.05,
+        "rate": 1.07,
         "samples": [
           {
             "timestamp": "2026-07-25 17:38:52",
@@ -549,14 +549,14 @@
       "period": "2026年8月",
       "year_month": "2026-08",
       "total_messages": 592,
-      "normal_answer_rate": 89.0,
-      "unanswered_rate": 11.0,
+      "normal_answer_rate": 88.9,
+      "unanswered_rate": 11.1,
       "good_rating_rate": 37.5,
       "feedback_rate": 1.4,
       "daily_average": 19.1,
-      "unique_users": 1,
+      "unique_users": 225,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 6.2,
+      "foreign_language_pct": 7.1,
       "weekday_counts": [
         98,
         63,
@@ -567,12 +567,12 @@
         101
       ],
       "source_distribution": {
-        "rag_count": 280,
-        "rag_pct": 47.3,
-        "faq_count": 133,
-        "faq_pct": 22.5,
-        "other_count": 179,
-        "other_pct": 30.2
+        "rag_count": 426,
+        "rag_pct": 72.0,
+        "faq_count": 157,
+        "faq_pct": 26.5,
+        "other_count": 9,
+        "other_pct": 1.5
       },
       "language_mixing": {
         "count": 3,
@@ -602,14 +602,14 @@
       "period": "2026年9月",
       "year_month": "2026-09",
       "total_messages": 417,
-      "normal_answer_rate": 94.5,
-      "unanswered_rate": 5.5,
+      "normal_answer_rate": 94.0,
+      "unanswered_rate": 6.0,
       "good_rating_rate": 50.0,
       "feedback_rate": 1.0,
       "daily_average": 13.9,
-      "unique_users": 1,
+      "unique_users": 185,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.8,
+      "foreign_language_pct": 13.2,
       "weekday_counts": [
         38,
         86,
@@ -695,9 +695,9 @@
       "good_rating_rate": 33.3,
       "feedback_rate": 0.9,
       "daily_average": 11.2,
-      "unique_users": 0,
+      "unique_users": 170,
       "human_transfer_rate": 0.0,
-      "foreign_language_pct": 10.7,
+      "foreign_language_pct": 12.4,
       "weekday_counts": [
         30,
         50,

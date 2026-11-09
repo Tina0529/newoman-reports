@@ -18,7 +18,7 @@ import argparse
 import sys
 import time
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import Counter
 from pathlib import Path
 import html as html_module
@@ -59,6 +59,22 @@ UNANSWERED_KEYWORDS = [
     "確認できておりません",
 ]
 
+# 外国語で回答した場合の「情報が見つからない」表現（小文字で照合）。日本語のキーワードと同じ基準で未回答に数える
+UNANSWERED_KEYWORDS_FOREIGN = [
+    "unable to find", "could not find", "couldn't find", "cannot find", "can't find",
+    "no information", "do not have information", "don't have information",
+    "未能找到", "未找到", "没有找到", "沒有找到", "找不到", "未能获取", "未能獲取", "查询不到", "查詢不到",
+    "찾을 수 없", "찾지 못", "확인할 수 없", "정보가 없",
+]
+
+
+def has_not_found_phrase(answer):
+    """回答に「情報が見つからない」旨の表現（日本語・外国語）が含まれるか"""
+    if any(kw in answer for kw in UNANSWERED_KEYWORDS):
+        return True
+    normalized = answer.lower().replace("\u2019", "'")
+    return any(kw in normalized for kw in UNANSWERED_KEYWORDS_FOREIGN)
+
 # 垫语（自動回答のプレフィックス）- フィラーのみの場合は未回答とする
 FILLER_PHRASES = [
     "ニュウマン高輪の情報をお調べいたします。",
@@ -87,6 +103,7 @@ CATEGORY_KEYWORDS = {
         "どこ", "場所", "位置", "行き方", "アクセス", "何階", "フロア", "マップ", "案内",
         "LUFTBAUM", "ルフトバウム", "28F", "29F", "屋上", "南館", "北館", "South", "North",
         "エレベーター", "エスカレーター", "階段", "入口", "出口",
+        "where", "how to get", "floor", "在哪", "怎么去", "怎麼去", "如何前往", "几楼", "幾樓", "어디", "몇 층",
     ],
     "店舗・商品照会": [
         "店舗", "ショップ", "店", "ブランド", "カフェ", "レストラン", "食べ物", "飲み物",
@@ -94,19 +111,23 @@ CATEGORY_KEYWORDS = {
         "メニュー", "商品", "在庫", "価格", "料金",
         "わんこ", "犬", "ペット", "リード",
         "和菓子", "スイーツ", "パン", "本", "本屋",
+        "shop", "store", "cafe", "coffee", "restaurant", "recommend", "咖啡", "餐厅", "餐廳", "카페", "식당", "맛집",
     ],
     "施設・サービス": [
         "駐車場", "駐輪場", "ATM", "トイレ", "お手洗い", "化粧室", "授乳室", "ベビールーム",
         "コインロッカー", "荷物", "預かり", "Wi-Fi", "wifi", "充電", "コンセント",
         "ベビーカー", "車椅子", "レンタル", "貸出",
+        "toilet", "restroom", "locker", "parking", "smoking", "厕所", "廁所", "洗手间", "洗手間", "寄存", "行李", "화장실", "주차",
     ],
     "営業時間": [
         "営業時間", "何時から", "何時まで", "開店", "閉店", "休業日", "定休日",
-        "年末年始", "祝日", "イベント",
+        "年末年始", "祝日",
+        "opening hours", "business hours", "what time", "营业时间", "營業時間", "영업시간",
     ],
     "イベント・キャンペーン": [
         "イベント", "キャンペーン", "セール", "割引", "ポイント", "会員", "特典",
         "展示会", "期間限定", "ポップアップ",
+        "event", "campaign", "活动", "活動", "이벤트",
     ],
     "クレーム・フィードバック": [
         "最悪", "ひどい", "不満", "クレーム", "改善", "要望", "ありがとう", "お世話",
@@ -115,8 +136,30 @@ CATEGORY_KEYWORDS = {
 }
 
 
+# 中国語でしか使わない語・字。「和菓子」「人気」のような日本語の漢字だけの質問を
+# 中国語にしないよう、日本語と共通して使う字（一・上・人・和・有 など）は入れない
+ZH_ONLY_WORDS = (
+    '如何', '請問', '请问', '什么', '什麼', '可以', '有没有', '有沒有', '在哪', '想找', '想看', '想去',
+    '咖啡', '餐厅', '餐廳', '厕所', '廁所', '洗手间', '洗手間', '行李',
+)
+ZH_ONLY_CHARS = set('的吗嗎呢么麼哪这這们們怎沒没楼樓裡我你')
+
+
+def _has_chinese_signal(text):
+    if any(w in text for w in ZH_ONLY_WORDS) or any(c in ZH_ONLY_CHARS for c in text):
+        return True
+    # 日本語の文字コード（CP932）に存在しない漢字は簡体字
+    for c in text:
+        if '\u4e00' <= c <= '\u9fff':
+            try:
+                c.encode('cp932')
+            except UnicodeEncodeError:
+                return True
+    return False
+
+
 def detect_language(text):
-    """テキストから言語を検出"""
+    """質問の言語を検出。店名だけの入力など判定できないものは「その他」"""
     if not isinstance(text, str):
         return "その他"
 
@@ -124,9 +167,10 @@ def detect_language(text):
         return "韓国語"
     if re.search(r'[\u3040-\u309F\u30A0-\u30FF]', text):
         return "日本語"
-    if re.search(r'[\u4E00-\u9FFF]', text) and any(c in text for c in '的是在一不了有和个人我这上个为到'):
-        return "中国語"
-    if re.match(r'^[a-zA-Z\s\d\W]+$', text) and len(re.findall(r'[a-zA-Z]{2,}', text)) > 2:
+    if re.search(r'[\u4E00-\u9FFF]', text):
+        # 「駐車場」「営業時間」のように漢字だけの質問は、中国語の手がかりがなければ日本語とする
+        return "中国語" if _has_chinese_signal(text) else "日本語"
+    if re.match(r'^[a-zA-Z\s\d\W]+$', text) and len(re.findall(r"[a-zA-Z']+", text)) > 2:
         return "英語"
 
     return "その他"
@@ -374,9 +418,8 @@ def is_unanswered(answer):
             return False, None
 
     # 条件1: 「情報が見つからない」キーワードを含む
-    for keyword in UNANSWERED_KEYWORDS:
-        if keyword in answer:
-            return True, "情報なし"
+    if has_not_found_phrase(answer):
+        return True, "情報なし"
 
     # 条件2: フィラーを除いた後に実質コンテンツがない
     cleaned = answer_stripped
@@ -574,14 +617,13 @@ def classify_question(question):
     return "雑談・その他"
 
 
-def categorize_unanswered(question, answer):
+def categorize_unanswered(question, answer, has_no_answer_tag=False):
     """未回答のエラータイプを分類"""
-    if pd.isna(answer) or not isinstance(answer, str):
+    if pd.isna(answer) or not isinstance(answer, str) or not answer.strip():
         return "情報なし"
 
-    for kw in UNANSWERED_KEYWORDS:
-        if kw in answer:
-            return "情報なし"
+    if has_no_answer_tag or has_not_found_phrase(answer):
+        return "情報なし"
 
     if any(p in answer for p in ["該当する", "見つかりません", "一致しません"]):
         return "検索失敗"
@@ -651,6 +693,17 @@ def detect_media_type(answer):
         return "リンク含む"
     else:
         return "テキストのみ"
+
+
+def fill_template(html, mapping):
+    """テンプレート内の見本値を一括で実データに置き換える。
+    1回の走査で置換するので、置換後の値が別の見本値と同じでも二重に置換されない。
+    見本値が見つからないときは、古い見本値のままレポートを出さないよう例外で止める。"""
+    missing = [k for k in mapping if k not in html]
+    if missing:
+        raise RuntimeError(f"テンプレートに置換対象が見つかりません: {missing}")
+    pattern = re.compile("|".join(re.escape(k) for k in sorted(mapping, key=len, reverse=True)))
+    return pattern.sub(lambda m: mapping[m.group(0)], html)
 
 
 def escape_html(text):
@@ -747,6 +800,22 @@ def resolve_ai_id(base_url, token, dataset_id):
     sys.exit(1)
 
 
+def _post_with_retry(url, attempts=4, **kwargs):
+    """一時的な 5xx・タイムアウトで月次の自動実行が丸ごと失敗しないようリトライする"""
+    for attempt in range(1, attempts + 1):
+        try:
+            resp = requests.post(url, **kwargs)
+            if resp.status_code < 500 or attempt == attempts:
+                resp.raise_for_status()
+                return resp
+            print(f"⚠️  HTTP {resp.status_code}（{attempt}/{attempts}回目）。再試行します")
+        except (requests.ConnectionError, requests.Timeout) as e:
+            if attempt == attempts:
+                raise
+            print(f"⚠️  {type(e).__name__}（{attempt}/{attempts}回目）。再試行します")
+        time.sleep(5 * attempt)
+
+
 def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None, include_sources=None):
     """GBase API から消息履歴を取得し、CSV 互換の DataFrame を返す
 
@@ -772,9 +841,9 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
         print("❌ --dataset-id または --ai-id が必要です")
         sys.exit(1)
 
-    # Step 2: 時間範囲をISO 8601形式に変換
-    start_time = f"{start_date}T00:00:00Z"
-    end_time = f"{end_date}T23:59:59Z"
+    # Step 2: レポートは JST で集計するので、JST の日付範囲を UTC に変換して取得する
+    start_time = (datetime.strptime(start_date, "%Y-%m-%d") - timedelta(hours=9)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    end_time = (datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1, hours=-9)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     headers = _api_headers(token)
     all_messages = []
@@ -786,7 +855,7 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
     print(f"   期間: {start_date} ~ {end_date}")
 
     while True:
-        resp = requests.post(
+        resp = _post_with_retry(
             f"{base_url}/questions/{ai_id}/session.messages.history.list",
             headers=headers,
             params={
@@ -796,9 +865,8 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
                 "size": size,
                 "include_test": "false",
             },
-            timeout=120,
+            timeout=180,
         )
-        resp.raise_for_status()
         data = resp.json()
 
         items = data.get("items", [])
@@ -816,6 +884,12 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
     if not all_messages:
         print("❌ 指定期間のメッセージが見つかりません")
         sys.exit(1)
+
+    # ページング中のデータ変動による重複を除き、件数を API の total と照合する
+    if all(m.get("id") for m in all_messages):
+        all_messages = list({m["id"]: m for m in all_messages}.values())
+    if total and len(all_messages) != total:
+        print(f"⚠️  取得件数が total と不一致: {len(all_messages)}/{total} 件（取りこぼしの可能性）")
 
     print(f"✅ 合計 {len(all_messages)} 件のメッセージを取得")
 
@@ -875,6 +949,8 @@ def fetch_from_api(base_url, token, dataset_id, start_date, end_date, ai_id=None
             "担当者に接続済み": transfer,
             "回答来源": msg.get("comes_from", "unknown"),
             "セッションソース": source,
+            # 匿名の来訪者は user_id が空なので、ユニークユーザー数はセッションの識別子で数える
+            "来訪者ID": msg.get("user_id") or session_obj.get("user_identifier") or msg.get("session_id", ""),
         })
 
     df = pd.DataFrame(rows)
@@ -894,7 +970,8 @@ def compute_kpi_for_dashboard(df, kpi, period, year_month, avg_daily, language_c
     else:
         human_rate = 0
 
-    unique_users = df['ユーザー'].nunique() if 'ユーザー' in df.columns else 0
+    visitor_col = '来訪者ID' if '来訪者ID' in df.columns else 'ユーザー'
+    unique_users = int(df[visitor_col].nunique()) if visitor_col in df.columns else 0
 
     # 曜日別分布 (月~日 = 0~6)
     weekday_counts = df['曜日'].value_counts().sort_index()
@@ -1034,7 +1111,7 @@ def main():
 
         print(f"🔍 分析を開始します（CSVモード）: {csv_path}")
 
-        for encoding in ['utf-8', 'utf-8-sig', 'shift-jis', 'cp932']:
+        for encoding in ['utf-8-sig', 'utf-8', 'shift-jis', 'cp932']:
             try:
                 df = pd.read_csv(csv_path, encoding=encoding)
                 print(f"✅ CSV読み込み成功（エンコーディング: {encoding}）")
@@ -1087,6 +1164,14 @@ def main():
         df['質問時間'] = df['質問時間'].dt.tz_convert('Asia/Tokyo').dt.tz_localize(None)
         print("🕐 タイムゾーン変換: UTC → JST (+9h)")
 
+    # API モードは指定期間（JST）に確実に収める
+    if args.start_date and args.end_date and not args.csv:
+        before_filter = len(df)
+        in_range = (df['質問時間'] >= pd.Timestamp(args.start_date)) & (df['質問時間'] < pd.Timestamp(args.end_date) + pd.Timedelta(days=1))
+        df = df[in_range].copy()
+        if len(df) != before_filter:
+            print(f"📅 対象期間外を除外: {before_filter - len(df)} 件")
+
     df['日付'] = df['質問時間'].dt.date
     df['曜日'] = df['質問時間'].dt.dayofweek
     df['時間'] = df['質問時間'].dt.hour
@@ -1127,7 +1212,8 @@ def main():
             print(f"📌 FAQ登録回答のため未回答から除外: {int(faq_mask.sum())} 件")
             df.loc[faq_mask, '未回答フラグ'] = False
             df.loc[faq_mask, '未回答タイプ'] = None
-    # 表示用に内部タグを除去
+    # 表示用に内部タグを除去（エラータイプの分類用にタグの有無は残す）
+    df['NO_ANSWERタグ'] = df['回答'].apply(lambda a: isinstance(a, str) and '<NO_ANSWER>' in a)
     df['回答'] = df['回答'].apply(lambda a: a.replace('<NO_ANSWER>', '').lstrip() if isinstance(a, str) else a)
 
     unanswered_count = df['未回答フラグ'].sum()
@@ -1163,17 +1249,17 @@ def main():
     print(f"  好評価率: {kpi['good_rate']:.1f}%")
 
     # 時間分析
-    daily_counts = df.groupby(df['質問時間'].dt.day).size()
-    max_day_in_data = int(df['質問時間'].dt.day.max())
-    min_day_in_data = int(df['質問時間'].dt.day.min())
-    daily_data = [int(daily_counts.get(i, 0)) for i in range(min_day_in_data, max_day_in_data + 1)]
+    # 日付で集計する（「日」だけだと月をまたいだデータが同じ日に合算される）。利用0件の日も期間に含める
+    if args.start_date and args.end_date and not args.csv:
+        first_day, last_day = pd.Timestamp(args.start_date), pd.Timestamp(args.end_date)
+    else:
+        first_day, last_day = df['質問時間'].min().normalize(), df['質問時間'].max().normalize()
+    all_days = pd.date_range(first_day, last_day, freq='D')
+    daily_counts = df.groupby(df['質問時間'].dt.normalize()).size().reindex(all_days, fill_value=0)
+    daily_data = [int(c) for c in daily_counts]
 
-    year = int(df['質問時間'].dt.year.iloc[0])
-    month = int(df['質問時間'].dt.month.iloc[0])
-    month_str = str(month)
     weekday_names_ja = ['月', '火', '水', '木', '金', '土', '日']
-    daily_labels = [f"{month_str}/{i}({weekday_names_ja[datetime(year, month, i).weekday()]})"
-                    for i in range(min_day_in_data, max_day_in_data + 1)]
+    daily_labels = [f"{d.month}/{d.day}({weekday_names_ja[d.weekday()]})" for d in all_days]
 
     weekday_counts = df['曜日'].value_counts().sort_index()
     weekday_data = [int(weekday_counts.get(i, 0)) for i in range(7)]
@@ -1181,11 +1267,11 @@ def main():
     hour_ranges = [(0, 7), (7, 11), (11, 15), (15, 18), (18, 20), (20, 24)]
     hour_data = [int(len(df[(df['時間'] >= s) & (df['時間'] < e)])) for s, e in hour_ranges]
 
-    num_days = len(daily_counts)
+    num_days = len(all_days)
     avg_daily = float(total_messages) / num_days if num_days > 0 else 0
-    max_day = int(daily_counts.idxmax())
+    max_day = daily_counts.idxmax()
     max_count = int(daily_counts.max())
-    min_day = int(daily_counts.idxmin())
+    min_day = daily_counts.idxmin()
     min_count = int(daily_counts.min())
 
     # 質問分類
@@ -1253,7 +1339,8 @@ def main():
             'chunk': 'RAG',
             'faq': 'FAQ',
             'greetings': 'その他',
-            'agent_faq': 'その他',
+            'agent_faq': 'FAQ',
+            'agent_rag': 'RAG',
         }
         df['来源カテゴリ'] = df['回答来源'].map(source_map).fillna('その他')
         # General Agent（2026-08-20〜）は AI が検索して生成した回答も comes_from=greetings になる。
@@ -1282,7 +1369,7 @@ def main():
     unanswered_df = df[df['未回答フラグ'] == True].copy()
     if len(unanswered_df) > 0:
         unanswered_df['エラータイプ'] = unanswered_df.apply(
-            lambda row: categorize_unanswered(row['質問'], row['回答']), axis=1)
+            lambda row: categorize_unanswered(row['質問'], row['回答'], row['NO_ANSWERタグ']), axis=1)
     else:
         unanswered_df['エラータイプ'] = []
 
@@ -1327,13 +1414,15 @@ def main():
 
     generated_date = datetime.now().strftime("%Y/%m/%d")
 
-    category_order = ["位置・ナビゲーション", "雑談・その他", "店舗・商品照会", "施設・サービス", "営業時間"]
+    category_order = ["位置・ナビゲーション", "雑談・その他", "店舗・商品照会", "施設・サービス", "営業時間", "イベント・キャンペーン", "クレーム・フィードバック"]
     badge_colors = {
         "位置・ナビゲーション": "badge-blue",
         "雑談・その他": "badge-gray",
         "店舗・商品照会": "badge-green",
         "施設・サービス": "badge-yellow",
         "営業時間": "badge-purple",
+        "イベント・キャンペーン": "badge-blue",
+        "クレーム・フィードバック": "badge-red",
     }
     category_data = []
     for cat in category_order:
@@ -1354,38 +1443,33 @@ def main():
     unanswered_filename = f"{client_name}_{period}_未回答一覧.html"
     main_html = main_html.replace("__UNANSWERED_LINK__", unanswered_filename)
 
-    # KPI replacements
-    main_html = re.sub(r'<div class="kpi-value">909</div>', f'<div class="kpi-value">{kpi["total_messages"]}</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-value">89\.1%</div>', f'<div class="kpi-value">{kpi["normal_answer_rate"]:.1f}%</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-sublabel">810/909</div>', f'<div class="kpi-sublabel">{kpi["answered_count"]}/{kpi["total_messages"]}</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-value">10\.9%</div>', f'<div class="kpi-value">{kpi["unanswered_rate"]:.1f}%</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-sublabel">99/909</div>', f'<div class="kpi-sublabel">{kpi["unanswered_count"]}/{kpi["total_messages"]}</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-value">70\.0%</div>', f'<div class="kpi-value">{kpi["good_rate"]:.1f}%</div>', main_html)
-    main_html = re.sub(r'<div class="kpi-value">2\.2%</div>', f'<div class="kpi-value">{kpi["feedback_rate"]:.1f}%</div>', main_html)
-    main_html = main_html.replace(
-        'data-ja="評価あり 20件中" data-zh="有评价 20件中">評価あり 20件中</div>',
-        f'data-ja="評価あり {kpi["feedback_count"]}件中" data-zh="有评价 {kpi["feedback_count"]}件中">評価あり {kpi["feedback_count"]}件中</div>'
-    )
-    main_html = re.sub(r'<div class="kpi-sublabel">20/909</div>', f'<div class="kpi-sublabel">{kpi["feedback_count"]}/{kpi["total_messages"]}</div>', main_html)
-
-    # Stats
-    main_html = re.sub(r'<div class="stat-value">29\.3</div>', f'<div class="stat-value">{avg_daily:.1f}</div>', main_html)
-    main_html = re.sub(r'<div class="stat-value">84</div>', f'<div class="stat-value">{max_count}</div>', main_html)
-    main_html = re.sub(r'<div class="stat-value">6</div>', f'<div class="stat-value">{min_count}</div>', main_html)
-    max_date_label = f"{month}/{max_day}"
-    min_date_label = f"{month}/{min_day}"
-    main_html = main_html.replace("__MAX_DATE__", max_date_label)
-    main_html = main_html.replace("__MIN_DATE__", min_date_label)
-
-    # Chart data
-    main_html = re.sub(r"data: \[19,24,33,33,21,47,44,22,17,19,30,34,37,65,33,24,36,22,84,42,45,20,30,8,9,6,17,27,27,13,21\]", f"data: {daily_data}", main_html)
-    main_html = re.sub(r"__DAILY_LABELS__", f"{daily_labels}", main_html)
-    main_html = re.sub(r"data: \[121, 108, 117, 94, 145, 143, 181\]", f"data: {weekday_data}", main_html)
-    main_html = re.sub(r"data: \[0, 0, 0, 0, 0, 0\] /\* hour_data placeholder \*/", f"data: {hour_data}", main_html)
+    # 見本値 → 実データ（fill_template で一括置換）
+    total_str = kpi["total_messages"]
+    template_values = {
+        '<div class="kpi-value">909</div>': f'<div class="kpi-value">{total_str}</div>',
+        '<div class="kpi-value">89.1%</div>': f'<div class="kpi-value">{kpi["normal_answer_rate"]:.1f}%</div>',
+        '<div class="kpi-sublabel">810/909</div>': f'<div class="kpi-sublabel">{kpi["answered_count"]}/{total_str}</div>',
+        '<div class="kpi-value">10.9%</div>': f'<div class="kpi-value">{kpi["unanswered_rate"]:.1f}%</div>',
+        '<div class="kpi-sublabel">99/909</div>': f'<div class="kpi-sublabel">{kpi["unanswered_count"]}/{total_str}</div>',
+        '<div class="kpi-value">70.0%</div>': f'<div class="kpi-value">{kpi["good_rate"]:.1f}%</div>',
+        '<div class="kpi-value">2.2%</div>': f'<div class="kpi-value">{kpi["feedback_rate"]:.1f}%</div>',
+        'data-ja="評価あり 20件中" data-zh="有评价 20件中">評価あり 20件中</div>':
+            f'data-ja="評価あり {kpi["feedback_count"]}件中" data-zh="有评价 {kpi["feedback_count"]}件中">評価あり {kpi["feedback_count"]}件中</div>',
+        '<div class="kpi-sublabel">20/909</div>': f'<div class="kpi-sublabel">{kpi["feedback_count"]}/{total_str}</div>',
+        '<div class="stat-value">29.3</div>': f'<div class="stat-value">{avg_daily:.1f}</div>',
+        '<div class="stat-value">84</div>': f'<div class="stat-value">{max_count}</div>',
+        '<div class="stat-value">6</div>': f'<div class="stat-value">{min_count}</div>',
+        '__MAX_DATE__': f"{max_day.month}/{max_day.day}",
+        '__MIN_DATE__': f"{min_day.month}/{min_day.day}",
+        'data: [19,24,33,33,21,47,44,22,17,19,30,34,37,65,33,24,36,22,84,42,45,20,30,8,9,6,17,27,27,13,21]': f"data: {daily_data}",
+        '__DAILY_LABELS__': f"{daily_labels}",
+        'data: [121, 108, 117, 94, 145, 143, 181]': f"data: {weekday_data}",
+        'data: [0, 0, 0, 0, 0, 0] /* hour_data placeholder */': f"data: {hour_data}",
+    }
 
     # Category
-    cat_values = [d["count"] for d in category_data]
-    main_html = re.sub(r"data: \[302, 256, 233, 97, 11\]", f"data: {cat_values}", main_html)
+    for i, cat in enumerate(category_data):
+        template_values[f"__CAT_VALUE_{i}__"] = str(cat["count"])
 
     table_rows = ""
     for cat in category_data:
@@ -1400,15 +1484,15 @@ def main():
 
     # Session depth
     depth_data = [int(session_depth[k]) for k in ["1回", "2回", "3回", "4回+"]]
-    main_html = re.sub(r"data: \[376, 117, 35, 30\]", f"data: {depth_data}", main_html)
+    template_values["data: [376, 117, 35, 30]"] = f"data: {depth_data}"
 
     # Language
-    lang_values = [int(language_counts.get(l, 0)) for l in ["日本語", "英語", "中国語", "韓国語"]]
-    main_html = re.sub(r"data: \[811, 55, 32, 11\]", f"data: {lang_values}", main_html)
+    for i, lang in enumerate(["日本語", "英語", "中国語", "韓国語", "その他"]):
+        template_values[f"__LANG_VALUE_{i}__"] = str(int(language_counts.get(lang, 0)))
 
     # Media
     media_values = [int(media_counts.get(m, 0)) for m in ["リンク含む", "画像含む", "テーブル含む", "テキストのみ"]]
-    main_html = re.sub(r"data: \[269, 83, 179, 639\]", f"data: {media_values}", main_html)
+    template_values["data: [269, 83, 179, 639]"] = f"data: {media_values}"
 
     # Source Analysis
     if source_stats:
@@ -1516,20 +1600,25 @@ def main():
     # 取りこぼした {{LINK_*}}/{{FAQEXP_*}} を空に（テンプレに残骸を出さない）
     main_html = re.sub(r"\{\{(LINK_|FAQEXP_)[A-Z_]+\}\}", "", main_html)
 
-    # Unanswered CTA
-    main_html = re.sub(r'<div class="cta-value">104</div>', f'<div class="cta-value">{kpi["unanswered_count"]}</div>', main_html)
-    main_html = re.sub(r'<span><span class="badge badge-red">情報なし</span> 83件</span>', f'<span><span class="badge badge-red">情報なし</span> {error_stats["info_nashi"]}件</span>', main_html)
-    main_html = re.sub(r'<span><span class="badge badge-yellow">検索失敗</span> 20件</span>', f'<span><span class="badge badge-yellow">検索失敗</span> {error_stats["search_fail"]}件</span>', main_html)
-    main_html = re.sub(r'<span><span class="badge badge-gray">再確認</span> 1件</span>', f'<span><span class="badge badge-gray">再確認</span> {error_stats["reconfirm"]}件</span>', main_html)
-
-    # Error cards
+    # Unanswered CTA / Error cards
     uc = kpi["unanswered_count"]
-    main_html = re.sub(r'<div class="error-value">83</div>', f'<div class="error-value">{error_stats["info_nashi"]}</div>', main_html)
-    main_html = re.sub(r'<div class="error-percent">80%</div>', f'<div class="error-percent">{error_stats["info_nashi"]/uc*100:.0f}%</div>' if uc > 0 else '<div class="error-percent">0%</div>', main_html)
-    main_html = re.sub(r'<div class="error-value">20</div>', f'<div class="error-value">{error_stats["search_fail"]}</div>', main_html)
-    main_html = re.sub(r'<div class="error-percent">19%</div>', f'<div class="error-percent">{error_stats["search_fail"]/uc*100:.0f}%</div>' if uc > 0 else '<div class="error-percent">0%</div>', main_html)
-    main_html = re.sub(r'<div class="error-value">1</div>', f'<div class="error-value">{error_stats["reconfirm"]}</div>', main_html)
-    main_html = re.sub(r'<div class="error-percent">1%</div>', f'<div class="error-percent">{error_stats["reconfirm"]/uc*100:.0f}%</div>' if uc > 0 else '<div class="error-percent">0%</div>', main_html)
+
+    def error_pct(count):
+        return f"{count / uc * 100:.0f}%" if uc > 0 else "0%"
+
+    template_values.update({
+        '<div class="cta-value">104</div>': f'<div class="cta-value">{uc}</div>',
+        '<span><span class="badge badge-red">情報なし</span> 83件</span>': f'<span><span class="badge badge-red">情報なし</span> {error_stats["info_nashi"]}件</span>',
+        '<span><span class="badge badge-yellow">検索失敗</span> 20件</span>': f'<span><span class="badge badge-yellow">検索失敗</span> {error_stats["search_fail"]}件</span>',
+        '<span><span class="badge badge-gray">再確認</span> 1件</span>': f'<span><span class="badge badge-gray">再確認</span> {error_stats["reconfirm"]}件</span>',
+        '<div class="error-value">83</div>': f'<div class="error-value">{error_stats["info_nashi"]}</div>',
+        '<div class="error-percent">80%</div>': f'<div class="error-percent">{error_pct(error_stats["info_nashi"])}</div>',
+        '<div class="error-value">20</div>': f'<div class="error-value">{error_stats["search_fail"]}</div>',
+        '<div class="error-percent">19%</div>': f'<div class="error-percent">{error_pct(error_stats["search_fail"])}</div>',
+        '<div class="error-value">1</div>': f'<div class="error-value">{error_stats["reconfirm"]}</div>',
+        '<div class="error-percent">1%</div>': f'<div class="error-percent">{error_pct(error_stats["reconfirm"])}</div>',
+    })
+    main_html = fill_template(main_html, template_values)
 
     # ========================================
     # 分析サマリー（動的生成）
@@ -1725,12 +1814,11 @@ def main():
         f.write(main_html)
     print(f"\n✅ メインレポート生成: {main_filename}")
 
-    sub_filename = None
-    if total_unanswered > 10:
-        sub_filename = output_dir / f"{client_name}_{period}_未回答一覧.html"
-        with open(sub_filename, "w", encoding="utf-8") as f:
-            f.write(unanswered_html)
-        print(f"✅ 未回答一覧生成: {sub_filename}")
+    # メインレポートから必ずリンクされるので、件数によらず生成する
+    sub_filename = output_dir / f"{client_name}_{period}_未回答一覧.html"
+    with open(sub_filename, "w", encoding="utf-8") as f:
+        f.write(unanswered_html)
+    print(f"✅ 未回答一覧生成: {sub_filename}")
 
     # リンク整合性 / FAQ 期限監視 の詳細サブページ生成（API モード・データありの時のみ）
     main_report_basename = f"{client_name}_{period}_分析レポート.html"
@@ -1796,7 +1884,7 @@ def main():
         update_dashboard_json(
             site_dir, args.client_slug, client_name, month_stats,
             str(main_filename),
-            str(sub_filename) if total_unanswered > 10 else None,
+            str(sub_filename),
         )
 
         # レポートHTMLをサイトディレクトリにコピー
@@ -1820,15 +1908,14 @@ def main():
             f.write(html_content)
         print(f"✅ レポートコピー: {dest_main}")
 
-        if total_unanswered > 10:
-            dest_sub = reports_dir / f"{year_month}_unanswered.html"
-            shutil.copy2(sub_filename, dest_sub)
-            # サブページ内「メインレポートに戻る」リンクを相対名に（#アンカーは保持）
-            dest_sub.write_text(
-                dest_sub.read_text(encoding="utf-8").replace(
-                    f'href="{main_report_basename}', f'href="{year_month}.html'),
-                encoding="utf-8")
-            print(f"✅ 未回答一覧コピー: {dest_sub}")
+        dest_sub = reports_dir / f"{year_month}_unanswered.html"
+        shutil.copy2(sub_filename, dest_sub)
+        # サブページ内「メインレポートに戻る」リンクを相対名に（#アンカーは保持）
+        dest_sub.write_text(
+            dest_sub.read_text(encoding="utf-8").replace(
+                f'href="{main_report_basename}', f'href="{year_month}.html'),
+            encoding="utf-8")
+        print(f"✅ 未回答一覧コピー: {dest_sub}")
 
         # リンク/FAQ 詳細サブページをコピー（サブページ内の戻りリンクも相対名に修正）
         if link_detail_made:

@@ -1473,8 +1473,8 @@
             
             // Category
             const catLabels = currentLang === 'ja'
-                ? ['位置・ナビ', '雑談・その他', '店舗・商品', '施設', '営業時間']
-                : ['位置/导航', '闲聊/其他', '店铺/商品', '设施', '营业时间'];
+                ? ['位置・ナビ', '雑談・その他', '店舗・商品', '施設', '営業時間', 'イベント', 'ご意見']
+                : ['位置/导航', '闲聊/其他', '店铺/商品', '设施', '营业时间', '活动', '意见反馈'];
             
             const categoryChart = echarts.init(document.getElementById('categoryChart'));
             categoryChart.setOption({
@@ -1492,11 +1492,13 @@
                     label: { show: false },
                     emphasis: { label: { show: true, fontSize: 12, fontWeight: 600 } },
                     data: [
-                        { value: 302, name: catLabels[0], itemStyle: { color: palette.primary } },
-                        { value: 256, name: catLabels[1], itemStyle: { color: palette.gray } },
-                        { value: 233, name: catLabels[2], itemStyle: { color: palette.success } },
-                        { value: 97, name: catLabels[3], itemStyle: { color: palette.warning } },
-                        { value: 11, name: catLabels[4], itemStyle: { color: palette.purple } }
+                        { value: __CAT_VALUE_0__, name: catLabels[0], itemStyle: { color: palette.primary } },
+                        { value: __CAT_VALUE_1__, name: catLabels[1], itemStyle: { color: palette.gray } },
+                        { value: __CAT_VALUE_2__, name: catLabels[2], itemStyle: { color: palette.success } },
+                        { value: __CAT_VALUE_3__, name: catLabels[3], itemStyle: { color: palette.warning } },
+                        { value: __CAT_VALUE_4__, name: catLabels[4], itemStyle: { color: palette.purple } },
+                        { value: __CAT_VALUE_5__, name: catLabels[5], itemStyle: { color: palette.secondary } },
+                        { value: __CAT_VALUE_6__, name: catLabels[6], itemStyle: { color: palette.danger } }
                     ]
                 }]
             });
@@ -1545,10 +1547,11 @@
                     center: ['35%', '50%'],
                     label: { show: false },
                     data: [
-                        { value: 811, name: currentLang === 'ja' ? '日本語' : '日语', itemStyle: { color: palette.danger } },
-                        { value: 55, name: currentLang === 'ja' ? '英語' : '英语', itemStyle: { color: palette.primary } },
-                        { value: 32, name: currentLang === 'ja' ? '中国語' : '中文', itemStyle: { color: palette.success } },
-                        { value: 11, name: currentLang === 'ja' ? '韓国語' : '韩语', itemStyle: { color: palette.warning } }
+                        { value: __LANG_VALUE_0__, name: currentLang === 'ja' ? '日本語' : '日语', itemStyle: { color: palette.danger } },
+                        { value: __LANG_VALUE_1__, name: currentLang === 'ja' ? '英語' : '英语', itemStyle: { color: palette.primary } },
+                        { value: __LANG_VALUE_2__, name: currentLang === 'ja' ? '中国語' : '中文', itemStyle: { color: palette.success } },
+                        { value: __LANG_VALUE_3__, name: currentLang === 'ja' ? '韓国語' : '韩语', itemStyle: { color: palette.warning } },
+                        { value: __LANG_VALUE_4__, name: currentLang === 'ja' ? 'その他（店名のみ等）' : '其他（仅店名等）', itemStyle: { color: palette.gray } }
                     ]
                 }]
             });
